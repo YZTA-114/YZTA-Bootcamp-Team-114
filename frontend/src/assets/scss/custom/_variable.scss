@@ -1,0 +1,90 @@
+// Variables
+//
+// Variables should follow the `$component-state-property-size` formula for
+// consistent naming. Ex: $nav-link-disabled-color and $modal-content-box-shadow-xs.
+
+// Colors
+$amour: #eeede9;
+$grey: #929292;
+$leight-beige: #eaffb0;
+$oil: #212121;
+$mirage: #181A1F;
+
+// Font weights
+$font-weight-regular:   400;
+$font-weight-semi-bold: 500;
+$font-weight-bold:      700;
+
+// Font families
+$font-family-primary-regular: 'Inter-Regular', sans-serif;
+$font-family-primary-medium: 'Inter-Medium', sans-serif;
+$font-family-primary-thin: 'Inter-Thin', sans-serif;
+$font-family-primary-extra-light: 'Inter-ExtraLight', sans-serif;
+
+// Sizes
+$fluid-screen: 100vw;
+$fluid-bp: calc(($fluid-screen - 20rem) / 2240);
+$step--2: calc(0.730625rem + 2.85 * $fluid-bp);
+$step--1: calc(0.855rem + 4.21 * $fluid-bp);
+$step-0: calc(1rem + 6 * $fluid-bp);
+$step-1: calc(1.17rem + 8.34 * $fluid-bp);
+$step-2: calc(1.36875rem + 11.38 * $fluid-bp);
+$step-3: calc(1.601875rem + 15.31 * $fluid-bp);
+$step-4: calc(1.87375rem + 20.38 * $fluid-bp);
+$step-5: calc(2.1925rem + 26.86 * $fluid-bp);
+$step-6: calc(2.565rem + 35.14 * $fluid-bp);
+$step-7: calc(3.00125rem + 45.68 * $fluid-bp);
+$step-8: calc(3.51125rem + 59.08 * $fluid-bp);
+$step-9: calc(4.108125rem + 76.03 * $fluid-bp);
+$step-10: calc(4.806875rem + 97.46 * $fluid-bp);
+$space-3xs: calc(0.25rem + 1.5 * $fluid-bp);
+$space-2xs: calc(0.5rem + 3 * $fluid-bp);
+$space-xs: calc(0.75rem + 4.5 * $fluid-bp);
+$space-s: calc(1rem + 6 * $fluid-bp);
+$space-m: calc(1.5rem + 9 * $fluid-bp);
+$space-l: calc(2rem + 12 * $fluid-bp);
+$space-xl: calc(3rem + 18 * $fluid-bp);
+$space-2xl: calc(4rem + 24 * $fluid-bp);
+$space-3xl: calc(6rem + 36 * $fluid-bp);
+$space-4xl: calc(8rem + 48 * $fluid-bp);
+$space-5xl: calc(10rem + 60 * $fluid-bp);
+$space-6xl: calc(12rem + 72 * $fluid-bp);
+$space-3xs-2xs: calc(0.25rem + 7 * $fluid-bp);
+$space-2xs-xs: calc(0.5rem + 8.5 * $fluid-bp);
+$space-xs-s: calc(0.75rem + 10 * $fluid-bp);
+$space-s-m: calc(1rem + 17 * $fluid-bp);
+$space-m-l: calc(1.5rem + 20 * $fluid-bp);
+$space-l-xl: calc(2rem + 34 * $fluid-bp);
+$space-xl-2xl: calc(3rem + 40 * $fluid-bp);
+$space-2xl-3xl: calc(4rem + 68 * $fluid-bp);
+$space-3xl-4xl: calc(6rem + 80 * $fluid-bp);
+$space-4xl-5xl: calc(8rem + 92 * $fluid-bp);
+$space-5xl-6xl: calc(10rem + 104 * $fluid-bp);
+$space-l-4xl: calc(2rem + 144 * $fluid-bp);
+$space-xl-4xl: calc(3rem + 128 * $fluid-bp);
+$space-xl-5xl: calc(3rem + 172 * $fluid-bp);
+$space-2xl-6xl: calc(4rem + 200 * $fluid-bp);
+$space-3xl-6xl: calc(6rem + 168 * $fluid-bp);
+$space-4xl-6xl: calc(8rem + 136 * $fluid-bp);
+
+// Font sizes
+$font-size-xxs: calc($space-3xs-2xs + 0.1rem);
+$font-size-xs: calc($space-2xs-xs + 0.1rem);
+$font-size-s: $space-xs-s;
+$font-size-m: $space-s-m;
+$font-size-l: $space-m-l;
+$font-size-xl: $space-l-xl;
+$font-size-xxl: $space-xl-2xl;
+$font-size-3xl: $space-2xl-3xl;
+
+// Space sizes
+$space-size-xxs: $space-3xs-2xs;
+$space-size-xs: $space-xs-s;
+$space-size-s: $space-s-m;
+$space-size-m: $space-m-l;
+$space-size-l: $space-l-xl;
+$space-size-xl: $space-xl-2xl;
+$space-size-xxl: $space-2xl-3xl;
+$space-size-3xl: $space-3xl-4xl;
+$space-size-4xl: $space-4xl-5xl;
+$space-size-5xl: $space-5xl-6xl;
