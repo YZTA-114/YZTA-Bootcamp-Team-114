@@ -1,9 +1,41 @@
 <template>
   <MainLayout>
     <template #content>
-      <div class="home-page">
-        <div class="home-container">
-          <h1 class="home-title">This is frontend project base</h1>
+      <div id="home-page">
+        <div id="home-page-hero" class="container">
+          <div id="home-cta">
+            <h1 class="title">Eğitime Herkesin</h1>
+            <h1 class="title">Dokunabileceği Bir Dünya</h1>
+            <p class="description">
+              Eğitimdeki her şeyi, herkesin erişebileceği bir platformda
+              deneyin.
+            </p>
+            <div class="cta-buttons">
+              <SecondaryButton>Şimdi Başla</SecondaryButton>
+            </div>
+          </div>
+          <div class="home-page-hero-cards">
+            <div class="card">
+              <span class="card-title">Eğitim</span>
+              <span class="card-description">Eğitimdeki her şeyi, herkesin erişebileceği bir platformda deneyin.</span>
+            </div>
+            <div class="card md">
+              <span class="card-title">Eğitim</span>
+              <span class="card-description">Eğitimdeki her şeyi, herkesin erişebileceği bir platformda deneyin.</span>
+            </div>
+            <div class="card sm">
+              <span class="card-title">Eğitim</span>
+              <span class="card-description">Eğitimdeki her şeyi, herkesin erişebileceği bir platformda deneyin.</span>
+            </div>
+            <div class="card md">
+              <span class="card-title">Eğitim</span>
+              <span class="card-description">Eğitimdeki her şeyi, herkesin erişebileceği bir platformda deneyin.</span>
+            </div>
+            <div class="card">
+              <span class="card-title">Eğitim</span>
+              <span class="card-description">Eğitimdeki her şeyi, herkesin erişebileceği bir platformda deneyin.</span>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -12,35 +44,5 @@
 
 <script setup>
 import MainLayout from "@/layout/main/MainLayout.vue";
+import SecondaryButton from "@/components/custom/button/SecondaryButton.vue";
 </script>
-
-<style lang="scss">
-@import "@/assets/scss/custom";
-
-.home-page {
-  min-height: calc(100vh - 80px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #fff;
-}
-
-.home-container {
-  text-align: center;
-  max-width: 800px;
-  padding: 2rem;
-}
-
-.home-title {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: 3rem;
-  color: #000;
-  margin: 0;
-  line-height: 1.2;
-  
-  @media (max-width: 768px) {
-    font-size: 2rem;
-  }
-}
-</style>

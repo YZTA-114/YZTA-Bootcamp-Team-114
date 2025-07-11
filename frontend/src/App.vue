@@ -25,7 +25,7 @@ body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
-  background: #181a1f !important;
+  background: #000000 !important;
   scrollbar-width: none;
 }
 </style>

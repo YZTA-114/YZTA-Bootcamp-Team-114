@@ -1,0 +1,79 @@
+#home-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $black;
+  padding-block: $space-size-l;
+
+  #home-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+
+    .title {
+      font-size: $font-size-xxl;
+      font-weight: 700;
+      color: $white;
+      font-family: $font-family-primary-regular;
+    }
+
+    .description {
+      font-size: $font-size-s;
+      color: $white;
+      font-family: $font-family-primary-regular;
+    }
+
+    .cta-buttons {
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+    }
+  }
+
+  .home-page-hero-cards {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 1rem;
+    height: 25rem;
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end;
+      gap: 1rem;
+      background-color: $pink;
+      padding: 1rem;
+      border-radius: 1rem;
+      width: auto;
+      height: 100%;
+      padding: 2rem;
+
+      &.sm {
+        height: 15rem;
+      }
+
+      &.md {
+        height: 20rem;
+      }
+    }
+
+    .card .card-title {
+      font-size: $font-size-s;
+      font-weight: 700;
+      color: $black;
+      font-family: $font-family-primary-regular;
+    }
+
+    .card .card-description {
+      font-size: $font-size-s;
+      font-weight: 700;
+      color: $black;
+      font-family: $font-family-primary-regular;
+    }
+  }
+}
