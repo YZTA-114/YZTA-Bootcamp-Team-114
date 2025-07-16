@@ -1,0 +1,643 @@
+// Dashboard Page Styles
+@import '../variables/_variable.scss';
+
+// Student Dashboard
+.student-dashboard {
+  font-family: $font-family-primary-regular;
+  background-color: $black;
+
+  .welcome-section {
+    background: $orange;
+    color: $white;
+    padding: $space-xl;
+    border-radius: 12px;
+    margin-bottom: $space-l;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .welcome-content {
+      .welcome-title {
+        font-size: $font-size-xxl;
+        font-weight: $font-weight-bold;
+        font-family: $font-family-primary-medium;
+        margin: 0 0 $space-s 0;
+      }
+
+      .welcome-subtitle {
+        font-size: $font-size-m;
+        font-family: $font-family-primary-regular;
+        opacity: 0.9;
+        margin: 0;
+      }
+    }
+
+    .welcome-actions {
+      .btn {
+        background-color: rgba($white, 0.2);
+        border: 1px solid rgba($white, 0.3);
+        color: $white;
+        padding: $space-s $space-l;
+        border-radius: 8px;
+        font-weight: $font-weight-semi-bold;
+        font-family: $font-family-primary-medium;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: rgba($white, 0.3);
+          transform: translateY(-2px);
+        }
+
+        i {
+          margin-right: $space-xs;
+        }
+      }
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: $space-m;
+    margin-bottom: $space-l;
+
+    .stat-card {
+      background-color: $white;
+      padding: $space-l;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba($black, 0.2);
+      display: flex;
+      align-items: center;
+      gap: $space-m;
+      transition: transform 0.2s ease;
+      font-family: $font-family-primary-regular;
+
+      &:hover {
+        transform: translateY(-4px);
+      }
+
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $font-size-l;
+        color: $white;
+
+        &:nth-child(1) {
+          background: linear-gradient(135deg, $pink, darken($pink, 10%));
+        }
+
+        &:nth-child(2) {
+          background: linear-gradient(135deg, $orange, darken($orange, 10%));
+        }
+
+        &:nth-child(3) {
+          background: linear-gradient(135deg, $yellow, darken($yellow, 10%));
+        }
+
+        &:nth-child(4) {
+          background: linear-gradient(135deg, #28a745, darken(#28a745, 10%));
+        }
+      }
+
+      .stat-content {
+        .stat-number {
+          font-size: $font-size-xxl;
+          font-weight: $font-weight-bold;
+          font-family: $font-family-primary-medium;
+          margin: 0 0 $space-xs 0;
+          color: $black;
+        }
+
+        .stat-label {
+          font-size: $font-size-s;
+          font-family: $font-family-primary-regular;
+          color: rgba($black, 0.7);
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-l;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .activity-list {
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: $space-m;
+      padding: $space-s 0;
+      border-bottom: 1px solid rgba($black, 0.05);
+      font-family: $font-family-primary-regular;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $font-size-s;
+        color: $white;
+
+        &.assignment {
+          background-color: $orange;
+        }
+
+        &.grade {
+          background-color: $yellow;
+        }
+
+        &.course {
+          background-color: $pink;
+        }
+
+        &.announcement {
+          background-color: #28a745;
+        }
+      }
+
+      .activity-content {
+        flex: 1;
+
+        .activity-text {
+          font-size: $font-size-s;
+          font-family: $font-family-primary-regular;
+          margin: 0 0 $space-xs 0;
+          color: $black;
+        }
+
+        .activity-time {
+          font-size: $font-size-xs;
+          font-family: $font-family-primary-regular;
+          color: rgba($black, 0.6);
+        }
+      }
+    }
+  }
+
+  .deadline-list {
+    .deadline-item {
+      display: flex;
+      align-items: center;
+      gap: $space-m;
+      padding: $space-s 0;
+      border-bottom: 1px solid rgba($black, 0.05);
+      font-family: $font-family-primary-regular;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .deadline-date {
+        text-align: center;
+        min-width: 60px;
+
+        .deadline-day {
+          display: block;
+          font-size: $font-size-l;
+          font-weight: $font-weight-bold;
+          font-family: $font-family-primary-medium;
+          color: $pink;
+        }
+
+        .deadline-month {
+          display: block;
+          font-size: $font-size-xs;
+          font-family: $font-family-primary-regular;
+          color: rgba($black, 0.6);
+          text-transform: uppercase;
+        }
+      }
+
+      .deadline-content {
+        flex: 1;
+
+        .deadline-title {
+          font-size: $font-size-s;
+          font-weight: $font-weight-semi-bold;
+          font-family: $font-family-primary-medium;
+          margin: 0 0 $space-xs 0;
+          color: $black;
+        }
+
+        .deadline-course {
+          font-size: $font-size-xs;
+          font-family: $font-family-primary-regular;
+          color: rgba($black, 0.7);
+          margin: 0 0 $space-xs 0;
+        }
+
+        .deadline-time {
+          font-size: $font-size-xs;
+          font-family: $font-family-primary-medium;
+          color: $orange;
+          font-weight: $font-weight-semi-bold;
+        }
+      }
+
+      .deadline-actions {
+        .btn-sm {
+          padding: $space-xs $space-s;
+          font-size: $font-size-xs;
+          border-radius: 6px;
+        }
+      }
+    }
+  }
+}
+
+// Teacher Dashboard
+.teacher-dashboard {
+  font-family: $font-family-primary-regular;
+  background-color: $black;
+
+  .welcome-section {
+    background: linear-gradient(135deg, $pink 0%, darken($pink, 15%) 100%);
+    color: $white;
+    padding: $space-xl;
+    border-radius: 12px;
+    margin-bottom: $space-l;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .welcome-content {
+      .welcome-title {
+        font-size: $font-size-xxl;
+        font-weight: $font-weight-bold;
+        font-family: $font-family-primary-medium;
+        margin: 0 0 $space-s 0;
+      }
+
+      .welcome-subtitle {
+        font-size: $font-size-m;
+        font-family: $font-family-primary-regular;
+        opacity: 0.9;
+        margin: 0;
+      }
+    }
+
+    .welcome-actions {
+      .btn {
+        background-color: rgba($white, 0.2);
+        border: 1px solid rgba($white, 0.3);
+        color: $white;
+        padding: $space-s $space-l;
+        border-radius: 8px;
+        font-weight: $font-weight-semi-bold;
+        font-family: $font-family-primary-medium;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: rgba($white, 0.3);
+          transform: translateY(-2px);
+        }
+
+        i {
+          margin-right: $space-xs;
+        }
+      }
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: $space-m;
+    margin-bottom: $space-l;
+
+    .stat-card {
+      background-color: $white;
+      padding: $space-l;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba($black, 0.2);
+      display: flex;
+      align-items: center;
+      gap: $space-m;
+      transition: transform 0.2s ease;
+      font-family: $font-family-primary-regular;
+
+      &:hover {
+        transform: translateY(-4px);
+      }
+
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $font-size-l;
+        color: $white;
+
+        &:nth-child(1) {
+          background: linear-gradient(135deg, $pink, darken($pink, 10%));
+        }
+
+        &:nth-child(2) {
+          background: linear-gradient(135deg, $orange, darken($orange, 10%));
+        }
+
+        &:nth-child(3) {
+          background: linear-gradient(135deg, $yellow, darken($yellow, 10%));
+        }
+
+        &:nth-child(4) {
+          background: linear-gradient(135deg, #28a745, darken(#28a745, 10%));
+        }
+      }
+
+      .stat-content {
+        .stat-number {
+          font-size: $font-size-xxl;
+          font-weight: $font-weight-bold;
+          font-family: $font-family-primary-medium;
+          margin: 0 0 $space-xs 0;
+          color: $black;
+        }
+
+        .stat-label {
+          font-size: $font-size-s;
+          font-family: $font-family-primary-regular;
+          color: rgba($black, 0.7);
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-l;
+    margin-bottom: $space-l;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .submission-list {
+    .submission-item {
+      display: flex;
+      align-items: center;
+      gap: $space-m;
+      padding: $space-s 0;
+      border-bottom: 1px solid rgba($black, 0.05);
+      font-family: $font-family-primary-regular;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .submission-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .submission-content {
+        flex: 1;
+
+        .submission-title {
+          font-size: $font-size-s;
+          font-weight: $font-weight-semi-bold;
+          font-family: $font-family-primary-medium;
+          margin: 0 0 $space-xs 0;
+          color: $black;
+        }
+
+        .submission-student {
+          font-size: $font-size-xs;
+          font-family: $font-family-primary-medium;
+          color: $pink;
+          margin: 0 0 $space-xs 0;
+          font-weight: $font-weight-semi-bold;
+        }
+
+        .submission-course {
+          font-size: $font-size-xs;
+          font-family: $font-family-primary-regular;
+          color: rgba($black, 0.7);
+          margin: 0 0 $space-xs 0;
+        }
+
+        .submission-time {
+          font-size: $font-size-xs;
+          font-family: $font-family-primary-regular;
+          color: rgba($black, 0.6);
+        }
+      }
+
+      .submission-actions {
+        .btn-sm {
+          padding: $space-xs $space-s;
+          font-size: $font-size-xs;
+        }
+      }
+    }
+  }
+
+  .class-list {
+    .class-item {
+      display: flex;
+      align-items: center;
+      gap: $space-m;
+      padding: $space-s 0;
+      border-bottom: 1px solid rgba($black, 0.05);
+      font-family: $font-family-primary-regular;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .class-time {
+        text-align: center;
+        min-width: 80px;
+
+        .class-hour {
+          display: block;
+          font-size: $font-size-s;
+          font-weight: $font-weight-semi-bold;
+          font-family: $font-family-primary-medium;
+          color: $pink;
+        }
+
+        .class-duration {
+          display: block;
+          font-size: $font-size-xs;
+          font-family: $font-family-primary-regular;
+          color: rgba($black, 0.6);
+        }
+      }
+
+      .class-content {
+        flex: 1;
+
+        .class-title {
+          font-size: $font-size-s;
+          font-weight: $font-weight-semi-bold;
+          font-family: $font-family-primary-medium;
+          margin: 0 0 $space-xs 0;
+          color: $black;
+        }
+
+        .class-course {
+          font-size: $font-size-xs;
+          font-family: $font-family-primary-regular;
+          color: rgba($black, 0.7);
+          margin: 0 0 $space-xs 0;
+        }
+
+        .class-students {
+          font-size: $font-size-xs;
+          font-family: $font-family-primary-medium;
+          color: $orange;
+          font-weight: $font-weight-semi-bold;
+        }
+      }
+
+      .class-actions {
+        .btn-sm {
+          padding: $space-xs $space-s;
+          font-size: $font-size-xs;
+        }
+      }
+    }
+  }
+
+  .quick-actions {
+    .section-title {
+      font-size: $font-size-l;
+      font-weight: $font-weight-semi-bold;
+      font-family: $font-family-primary-medium;
+      margin: 0 0 $space-m 0;
+      color: $white;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: $space-m;
+
+      .action-card {
+        background-color: $white;
+        padding: $space-l;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba($black, 0.2);
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: left;
+        font-family: $font-family-primary-regular;
+
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 6px 20px rgba($black, 0.3);
+        }
+
+        .action-icon {
+          width: 50px;
+          height: 50px;
+          border-radius: 10px;
+          background: linear-gradient(135deg, $pink, darken($pink, 10%));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: $font-size-m;
+          color: $white;
+          margin-bottom: $space-m;
+        }
+
+        .action-title {
+          font-size: $font-size-m;
+          font-weight: $font-weight-semi-bold;
+          font-family: $font-family-primary-medium;
+          margin: 0 0 $space-s 0;
+          color: $black;
+        }
+
+        .action-description {
+          font-size: $font-size-s;
+          font-family: $font-family-primary-regular;
+          color: rgba($black, 0.7);
+          margin: 0;
+          line-height: 1.4;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design for Dashboard Pages
+@media (max-width: 768px) {
+  .student-dashboard,
+  .teacher-dashboard {
+    .welcome-section {
+      flex-direction: column;
+      gap: $space-m;
+      text-align: center;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .teacher-dashboard {
+    .actions-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .student-dashboard,
+  .teacher-dashboard {
+    .welcome-section {
+      padding: $space-l;
+    }
+
+    .stats-grid {
+      .stat-card {
+        padding: $space-m;
+      }
+    }
+
+    .dashboard-card {
+      .card-header,
+      .card-content {
+        padding: $space-m;
+      }
+    }
+  }
+} 
