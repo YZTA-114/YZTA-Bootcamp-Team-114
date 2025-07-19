@@ -22,36 +22,16 @@ const routes = [
         name: 'student-dashboard',
         component: () => import('@/pages/student/StudentDashboard.vue')
       },
-      /* {
+      {
         path: 'courses',
         name: 'student-courses',
         component: () => import('@/pages/student/StudentCourses.vue')
       },
       {
-        path: 'assignments',
-        name: 'student-assignments',
-        component: () => import('@/pages/student/StudentAssignments.vue')
-      },
-      {
-        path: 'grades',
-        name: 'student-grades',
-        component: () => import('@/pages/student/StudentGrades.vue')
-      },
-      {
-        path: 'calendar',
-        name: 'student-calendar',
-        component: () => import('@/pages/student/StudentCalendar.vue')
-      },
-      {
-        path: 'resources',
-        name: 'student-resources',
-        component: () => import('@/pages/student/StudentResources.vue')
-      },
-      {
-        path: 'profile',
-        name: 'student-profile',
-        component: () => import('@/pages/student/StudentProfile.vue')
-      } */
+        path: 'quizzes/:quizId',
+        name: 'take-quiz',
+        component: () => import('@/pages/student/TakeQuiz.vue')
+      }
     ]
   },
   // Teacher Dashboard Routes
