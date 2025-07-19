@@ -1,7 +1,7 @@
 <template>
   <LoginLayout>
     <template #left>
-      <RegisterForm />
+      <RegisterForm userType="teacher" />
     </template>
     <template #right>
       <TestimonialPanel />

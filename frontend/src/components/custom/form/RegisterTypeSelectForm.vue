@@ -1,8 +1,8 @@
 <template>
   <div class="register-type-select-form">
     <div class="register-type-select-form__header">
-      <h1 class="register-type-select-form__title">Choose Your Account Type</h1>
-      <p class="register-type-select-form__subtitle">Select the type of account that best describes you.</p>
+      <h1 class="register-type-select-form__title">Kayıt Tipi Seç</h1>
+      <p class="register-type-select-form__subtitle">Lütfen kayıt tipinizi seçin.</p>
     </div>
 
     <div class="register-type-select-form__options">
@@ -17,8 +17,8 @@
           </svg>
         </div>
         <div class="register-type-select-form__option-content">
-          <h3 class="register-type-select-form__option-title">Student</h3>
-          <p class="register-type-select-form__option-description">Join as a student to access learning materials and courses.</p>
+          <h3 class="register-type-select-form__option-title">Öğrenci olarak kayıt ol</h3>
+          <p class="register-type-select-form__option-description">Öğrenci olarak kayıt olarak öğrenme malzemelerine ve kurslara erişin.</p>
         </div>
       </button>
 
@@ -33,14 +33,14 @@
           </svg>
         </div>
         <div class="register-type-select-form__option-content">
-          <h3 class="register-type-select-form__option-title">Teacher</h3>
-          <p class="register-type-select-form__option-description">Join as a teacher to create and manage educational content.</p>
+          <h3 class="register-type-select-form__option-title">Öğretmen olarak kayıt ol</h3>
+          <p class="register-type-select-form__option-description">Öğretmen olarak kayıt olarak eğitim içeriği oluşturup yönetin.</p>
         </div>
       </button>
     </div>
 
     <div class="register-type-select-form__login">
-      Already have an account? <router-link :to="{ name: 'login' }">Sign in</router-link>
+      Zaten hesabın var mı? <router-link :to="{ name: 'login' }">Giriş Yap</router-link>
     </div>
   </div>
 </template>

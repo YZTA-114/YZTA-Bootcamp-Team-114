@@ -1,22 +1,22 @@
 <template>
   <div class="forgot-password-form">
     <div class="forgot-password-form__header">
-      <h1 class="forgot-password-form__title">Forgot Password?</h1>
-      <p class="forgot-password-form__subtitle">Don't worry! It happens. Please enter the address associated with your account.</p>
+      <h1 class="forgot-password-form__title">Şifremi Unuttum?</h1>
+      <p class="forgot-password-form__subtitle">Kayıtlı e-posta adresinizi girin, size şifre sıfırlama bağlantısı göndereceğiz.</p>
     </div>
 
     <form class="forgot-password-form__form" @submit.prevent="handleSubmit">
       <FormInput
         v-model="form.email"
         type="email"
-        label="Email"
-        placeholder="Enter your email"
+        label="E-posta Adresi"
+        placeholder="E-posta adresinizi girin"
         id="forgot-email"
         required
       />
 
       <button type="submit" class="forgot-password-form__submit">
-        SUBMIT
+        Sıfırlama Bağlantısı Gönder
       </button>
     </form>
 
@@ -25,7 +25,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
-        Back to login
+        Giriş sayfasına dön
       </router-link>
     </div>
   </div>
@@ -86,18 +86,18 @@ const handleSubmit = () => {
 
 .forgot-password-form__submit {
   width: 100%;
-  padding: $space-s 0;
+  padding: $space-m 0;
   background: $black;
   color: $white;
   border: none;
   border-radius: 0.5rem;
-  font-size: $font-size-s;
-  font-weight: $font-weight-bold;
+  font-size: $font-size-m;
+  font-weight: $font-weight-semi-bold;
   font-family: $font-family-primary-bold;
   cursor: pointer;
   transition: background 0.2s;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.01em;
 
   &:hover {
     background: #333;

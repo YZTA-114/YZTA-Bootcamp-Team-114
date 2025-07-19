@@ -1,8 +1,8 @@
 <template>
   <div class="login-form">
     <div class="login-form__header">
-      <h1 class="login-form__title">Hello, Welcome Back!</h1>
-      <p class="login-form__subtitle">We're happy to see you again, let's Stay ahead of the game.</p>
+      <h1 class="login-form__title">Giriş Yap</h1>
+      <p class="login-form__subtitle">Tekrar hoş geldiniz, birlikte başarıya ulaşalım.</p>
     </div>
 
     <div class="login-form__social-buttons">
@@ -12,7 +12,7 @@
 
     <div class="login-form__divider">
       <span class="login-form__divider-line"></span>
-      <span class="login-form__divider-text">Or Continue With</span>
+      <span class="login-form__divider-text">veya</span>
       <span class="login-form__divider-line"></span>
     </div>
 
@@ -20,8 +20,8 @@
       <FormInput
         v-model="form.email"
         type="email"
-        label="Email"
-        placeholder="Enter your email"
+        label="E-posta"
+        placeholder="E-posta adresinizi girin"
         id="login-email"
         required
       />
@@ -29,23 +29,23 @@
       <FormInput
         v-model="form.password"
         type="password"
-        label="Password"
-        placeholder="Enter your password"
+        label="Şifre"
+        placeholder="Şifrenizi girin"
         id="login-password"
         required
       />
 
       <div class="login-form__forgot">
-        <router-link :to="{ name: 'forgot-password' }">Forgot Password?</router-link>
+        <router-link :to="{ name: 'forgot-password' }">Şifremi Unuttum?</router-link>
       </div>
 
       <button type="submit" class="login-form__submit">
-        LOGIN
+        GİRİŞ YAP
       </button>
     </form>
 
     <div class="login-form__signup">
-      Don't have an account? <router-link :to="{ name: 'register-type-select' }">Sign up for free</router-link>
+      Hesabın yok mu? <router-link :to="{ name: 'register-type-select' }">Kayıt Ol</router-link>
     </div>
   </div>
 </template>
