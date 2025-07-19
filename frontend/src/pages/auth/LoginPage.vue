@@ -1,13 +1,16 @@
 <template>
-    <MainLayout>
-        <div class="login-page">
-            <div class="login-page-content">
-                <h1>Login</h1>
-            </div>
-        </div>
-    </MainLayout>
+  <LoginLayout>
+    <template #left>
+      <LoginForm />
+    </template>
+    <template #right>
+      <TestimonialPanel />
+    </template>
+  </LoginLayout>
 </template>
 
 <script setup>
-import MainLayout from "@/layout/main/MainLayout.vue";
+import LoginLayout from "@/layout/main/LoginLayout.vue";
+import LoginForm from "@/components/custom/login/LoginForm.vue";
+import TestimonialPanel from "@/components/custom/auth/TestimonialPanel.vue";
 </script>

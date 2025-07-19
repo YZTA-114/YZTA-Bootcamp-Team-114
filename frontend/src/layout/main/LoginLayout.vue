@@ -1,7 +1,7 @@
 <template>
   <div class="login-layout">
-    <div class="login-layout__logo">
-      <BrandLogo :width="80" :height="80" />
+    <div class="login-layout__left">
+      <slot name="left" />
     </div>
     <div class="login-layout__right">
       <slot name="right" />
@@ -10,47 +10,59 @@
 </template>
 
 <script setup>
-import BrandLogo from '@/components/custom/logo/BrandLogo.vue';
+// No imports needed
 </script>
 
 <style scoped lang="scss">
 @import '@/assets/scss/custom/_variable.scss';
+
 .login-layout {
   display: flex;
   min-height: 100vh;
-  background: $black;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-.login-layout__logo {
-  position: absolute;
-  top: $space-xl;
-  left: $space-xl;
-  z-index: 10;
-}
-.login-layout__right {
   background: $white;
-  border-radius: $space-xl;
-  min-width: 480px;
-  width: 520px;
-  min-height: 650px;
+}
+
+.login-layout__left {
+  flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  padding: $space-m;
+  background: $white;
+  min-height: 100vh;
+  overflow-y: auto;
 }
+
+.login-layout__right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  border-radius: $space-xl 0 0 $space-xl;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
 @media (max-width: 900px) {
-  .login-layout__right {
-    min-width: 90vw;
-    width: 95vw;
-    min-height: 400px;
-    border-radius: $space-xl;
+  .login-layout {
+    flex-direction: column;
   }
-  .login-layout__logo {
-    top: $space-m;
-    left: $space-m;
+  
+  .login-layout__left {
+    flex: none;
+    min-height: 100vh;
+    padding: $space-s;
+  }
+  
+  .login-layout__right {
+    display: none;
+  }
+}
+
+@media (max-height: 700px) {
+  .login-layout__left {
+    padding: $space-xs;
   }
 }
 </style> 

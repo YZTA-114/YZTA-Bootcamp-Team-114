@@ -11,6 +11,26 @@ const routes = [
     name: 'login',
     component: () => import('@/pages/auth/LoginPage.vue')
   },
+  {
+    path: '/auth/forgot-password',
+    name: 'forgot-password',
+    component: () => import('@/pages/auth/ForgotPasswordPage.vue')
+  },
+  {
+    path: '/register/select-type',
+    name: 'register-type-select',
+    component: () => import('@/pages/auth/RegisterTypeSelectPage.vue')
+  },
+  {
+    path: '/register/student',
+    name: 'register-student',
+    component: () => import('@/pages/auth/StudentRegisterPage.vue')
+  },
+  {
+    path: '/register/teacher',
+    name: 'register-teacher',
+    component: () => import('@/pages/auth/TeacherRegisterPage.vue')
+  },
   // Student Dashboard Routes
   {
     path: '/student',

@@ -1,29 +1,18 @@
 <template>
   <LoginLayout>
+    <template #left>
+      <ForgotPasswordForm />
+    </template>
     <template #right>
-      <div class="forgot-password-form">
-        <div class="forgot-password-form__icon" aria-hidden="true">
-          <svg width="48" height="48" fill="none" viewBox="0 0 24 24"><rect width="24" height="24" rx="12" fill="#E3F2FD"/><path d="M12 17v.01M12 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 0v2" stroke="#1E88E5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <h1 id="forgot-password-title" class="forgot-password-form__title">Şifreni mi unuttun?</h1>
-        <div class="forgot-password-form__desc" id="forgot-password-desc">Şifreni sıfırlamak için e-posta adresine bir kod gönderilecek</div>
-        <form class="forgot-password-form__fields" aria-labelledby="forgot-password-title" aria-describedby="forgot-password-desc">
-          <label class="forgot-password-form__label" for="forgot-email">E-posta Adresi</label>
-          <input id="forgot-email" type="email" placeholder="E-posta adresinizi girin" class="forgot-password-form__input" aria-required="true" aria-label="E-posta adresi" />
-          <button type="submit" class="forgot-password-form__submit" aria-label="Şifreyi sıfırla">Şifreyi Sıfırla</button>
-        </form>
-        <div class="forgot-password-form__back">
-          <router-link :to="{ name: 'login' }" aria-label="Giriş sayfasına dön">&larr; Giriş sayfasına dön</router-link>
-        </div>
-        <!-- Hata mesajı örneği, gerçek hata olursa gösterilmeli -->
-        <!-- <div role="alert" class="forgot-password-form__error">Hatalı e-posta adresi girdiniz.</div> -->
-      </div>
+      <TestimonialPanel />
     </template>
   </LoginLayout>
 </template>
 
 <script setup>
 import LoginLayout from '@/layout/main/LoginLayout.vue';
+import ForgotPasswordForm from '@/components/custom/form/ForgotPasswordForm.vue';
+import TestimonialPanel from '@/components/custom/auth/TestimonialPanel.vue';
 </script>
 
 <style scoped lang="scss">
