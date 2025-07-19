@@ -7,19 +7,19 @@ const Country = require('../models/locale/Country');
 dotenv.config({ path: './config/config.env' });
 
 // Connect to DB
-mongoose.connect(process.env.MONGO_URI);
+mongoose.connect("mongodb+srv://coktasmuharremsait:LKugqDLBrkUAt3Bw@cluster0.devoclj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
 
 // Language data
 const languages = [
   {
     isoCode: "tr",
     name: "Türkçe",
-    icon: ""
+    icon: "https://i.ibb.co/hRYWdRNJ/turkey.png"
   },
   {
     isoCode: "en",
     name: "English",
-    icon: ""
+    icon: "https://i.ibb.co/Q37vzJsF/united-states.png"
   }
 ];
 
@@ -28,12 +28,12 @@ const countries = [
   {
     isoCode: "TR",
     englishName: "Turkey",
-    icon: ""
+    icon: "https://i.ibb.co/hRYWdRNJ/turkey.png"
   },
   {
     isoCode: "US",
     englishName: "United States",
-    icon: ""
+    icon: "https://i.ibb.co/Q37vzJsF/united-states.png"
   }
 ];
 

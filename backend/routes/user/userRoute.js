@@ -11,8 +11,11 @@ const { protect, authorize } = require('../../middleware/auth');
 
 // Include other resource routers
 const userProfileRouter = require('./userProfileRoute');
-
+const classroomParticipationRouter = require('../classroom/classroomParticipationRoute');
+const classroomRouter = require('../classroom/classroomRoute');
 // Re-route into other resource routers
+router.use('/:userId/classroomParticipations', classroomParticipationRouter);
+router.use('/:userId/classrooms', classroomRouter);
 router.use('/:userId/userprofiles', userProfileRouter);
 
 // anything below this is going to use protect.
