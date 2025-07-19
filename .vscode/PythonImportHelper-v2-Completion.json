@@ -1,0 +1,92 @@
+[
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "PyPDF2",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "PyPDF2",
+        "description": "PyPDF2",
+        "detail": "PyPDF2",
+        "documentation": {}
+    },
+    {
+        "label": "re",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "re",
+        "description": "re",
+        "detail": "re",
+        "documentation": {}
+    },
+    {
+        "label": "_Known",
+        "kind": 6,
+        "importPath": "frontend.node_modules.flatted.python.flatted",
+        "description": "frontend.node_modules.flatted.python.flatted",
+        "peekOfCode": "class _Known:\n    def __init__(self):\n        self.key = []\n        self.value = []\nclass _String:\n    def __init__(self, value):\n        self.value = value\ndef _array_keys(value):\n    keys = []\n    i = 0",
+        "detail": "frontend.node_modules.flatted.python.flatted",
+        "documentation": {}
+    },
+    {
+        "label": "_String",
+        "kind": 6,
+        "importPath": "frontend.node_modules.flatted.python.flatted",
+        "description": "frontend.node_modules.flatted.python.flatted",
+        "peekOfCode": "class _String:\n    def __init__(self, value):\n        self.value = value\ndef _array_keys(value):\n    keys = []\n    i = 0\n    for _ in value:\n        keys.append(i)\n        i += 1\n    return keys",
+        "detail": "frontend.node_modules.flatted.python.flatted",
+        "documentation": {}
+    },
+    {
+        "label": "parse",
+        "kind": 2,
+        "importPath": "frontend.node_modules.flatted.python.flatted",
+        "description": "frontend.node_modules.flatted.python.flatted",
+        "peekOfCode": "def parse(value, *args, **kwargs):\n    json = _json.loads(value, *args, **kwargs)\n    wrapped = []\n    for value in json:\n        wrapped.append(_wrap(value))\n    input = []\n    for value in wrapped:\n        if isinstance(value, _String):\n            input.append(value.value)\n        else:",
+        "detail": "frontend.node_modules.flatted.python.flatted",
+        "documentation": {}
+    },
+    {
+        "label": "stringify",
+        "kind": 2,
+        "importPath": "frontend.node_modules.flatted.python.flatted",
+        "description": "frontend.node_modules.flatted.python.flatted",
+        "peekOfCode": "def stringify(value, *args, **kwargs):\n    known = _Known()\n    input = []\n    output = []\n    i = int(_index(known, input, value))\n    while i < len(input):\n        output.append(_transform(known, input, input[i]))\n        i += 1\n    return _json.dumps(output, *args, **kwargs)",
+        "detail": "frontend.node_modules.flatted.python.flatted",
+        "documentation": {}
+    },
+    {
+        "label": "extract_turkish_questions",
+        "kind": 2,
+        "importPath": "frontend.extract_questions",
+        "description": "frontend.extract_questions",
+        "peekOfCode": "def extract_turkish_questions(pdf_path):\n    \"\"\"PDF'den Türkçe sorularını çıkar\"\"\"\n    try:\n        with open(pdf_path, 'rb') as file:\n            pdf_reader = PyPDF2.PdfReader(file)\n            print(f\"PDF sayfa sayısı: {len(pdf_reader.pages)}\")\n            print(\"=\" * 50)\n            all_text = \"\"\n            for page_num, page in enumerate(pdf_reader.pages):\n                text = page.extract_text()",
+        "detail": "frontend.extract_questions",
+        "documentation": {}
+    },
+    {
+        "label": "extract_turkish_questions",
+        "kind": 2,
+        "importPath": "frontend.extract_turkish_questions",
+        "description": "frontend.extract_turkish_questions",
+        "peekOfCode": "def extract_turkish_questions(pdf_path):\n    \"\"\"PDF'den sadece Türkçe sorularını çıkar\"\"\"\n    try:\n        with open(pdf_path, 'rb') as file:\n            pdf_reader = PyPDF2.PdfReader(file)\n            print(f\"PDF sayfa sayısı: {len(pdf_reader.pages)}\")\n            print(\"=\" * 80)\n            all_text = \"\"\n            for page_num, page in enumerate(pdf_reader.pages):\n                text = page.extract_text()",
+        "detail": "frontend.extract_turkish_questions",
+        "documentation": {}
+    }
+]
