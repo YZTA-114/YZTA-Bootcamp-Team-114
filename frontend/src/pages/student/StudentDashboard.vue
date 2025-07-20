@@ -211,6 +211,12 @@ const navItems = ref([
     icon: 'ri-book-line'
   },
   {
+    id: 'quizzes',
+    label: 'My Quizzes',
+    path: '/student/quizzes',
+    icon: 'ri-question-answer-line'
+  },
+  {
     id: 'assignments',
     label: 'Quizler',
     path: '/student/assignments',

@@ -27,6 +27,10 @@ initDb();
 const auth = require("./routes/auth/authRoute");
 const users = require("./routes/user/userRoute");
 const userProfiles = require("./routes/user/userProfileRoute");
+const classrooms = require("./routes/classroom/classroomRoute");
+const classroomParticipations = require("./routes/classroom/classroomParticipationRoute");
+const lessons = require("./routes/classroom/lessonRoute");
+const resources = require("./routes/classroom/resourceRoute");
 
 const cors = require("cors");
 const app = express();
@@ -117,6 +121,10 @@ app.use(
 app.use("/api/v1/users", users);
 app.use("/api/v1/userprofiles", userProfiles);
 app.use("/api/v1/auth", auth);
+app.use("/api/v1/classrooms", classrooms);
+app.use("/api/v1/classroomParticipations", classroomParticipations);
+app.use("/api/v1/lessons", lessons);
+app.use("/api/v1/resources", resources);
 
 // Error handler with performance logging
 app.use(errorHandler);

@@ -11,6 +11,26 @@ const routes = [
     name: 'login',
     component: () => import('@/pages/auth/LoginPage.vue')
   },
+  {
+    path: '/auth/forgot-password',
+    name: 'forgot-password',
+    component: () => import('@/pages/auth/ForgotPasswordPage.vue')
+  },
+  {
+    path: '/register/select-type',
+    name: 'register-type-select',
+    component: () => import('@/pages/auth/RegisterTypeSelectPage.vue')
+  },
+  {
+    path: '/register/student',
+    name: 'register-student',
+    component: () => import('@/pages/auth/StudentRegisterPage.vue')
+  },
+  {
+    path: '/register/teacher',
+    name: 'register-teacher',
+    component: () => import('@/pages/auth/TeacherRegisterPage.vue')
+  },
   // Student Dashboard Routes
   {
     path: '/student',
@@ -23,40 +43,23 @@ const routes = [
         component: () => import('@/pages/student/StudentDashboard.vue')
       },
       {
+<<<<<<< HEAD
         path: 'documents',
         name: 'student-documents',
         component: () => import('@/pages/student/StudentDocuments.vue')
       },
       /* {
+=======
+>>>>>>> ca0c9c385e65ee4d886f1aab429bc345e9ebc396
         path: 'courses',
         name: 'student-courses',
         component: () => import('@/pages/student/StudentCourses.vue')
       },
       {
-        path: 'assignments',
-        name: 'student-assignments',
-        component: () => import('@/pages/student/StudentAssignments.vue')
-      },
-      {
-        path: 'grades',
-        name: 'student-grades',
-        component: () => import('@/pages/student/StudentGrades.vue')
-      },
-      {
-        path: 'calendar',
-        name: 'student-calendar',
-        component: () => import('@/pages/student/StudentCalendar.vue')
-      },
-      {
-        path: 'resources',
-        name: 'student-resources',
-        component: () => import('@/pages/student/StudentResources.vue')
-      },
-      {
-        path: 'profile',
-        name: 'student-profile',
-        component: () => import('@/pages/student/StudentProfile.vue')
-      } */
+        path: 'quizzes/:quizId',
+        name: 'take-quiz',
+        component: () => import('@/pages/student/TakeQuiz.vue')
+      }
     ]
   },
   // Teacher Dashboard Routes

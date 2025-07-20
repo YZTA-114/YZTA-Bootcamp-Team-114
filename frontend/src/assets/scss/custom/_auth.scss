@@ -1,0 +1,240 @@
+// Authentication Styles
+// This file contains styles for login and registration pages
+
+@import './_variable.scss';
+
+// Common form styles
+.auth-form {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-xs;
+}
+
+.auth-form__title {
+  font-size: $font-size-l;
+  font-weight: $font-weight-bold;
+  color: $black;
+  margin-bottom: $space-s;
+  text-align: center;
+  font-family: $font-family-primary-regular;
+}
+
+.auth-form__label {
+  font-size: $font-size-s;
+  color: $black;
+  margin-bottom: $space-2xs;
+  font-weight: $font-weight-semi-bold;
+  font-family: $font-family-primary-medium;
+}
+
+.auth-form__fields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.auth-form__input {
+  width: 100%;
+  padding: $space-2xs $space-s;
+  border: 1.5px solid $orange;
+  border-radius: 0.5rem;
+  font-size: $font-size-m;
+  background: $white;
+  color: $black;
+  font-family: inherit;
+  outline: none;
+  transition: border 0.2s;
+
+  &:focus {
+    border: 2px solid $orange;
+  }
+}
+
+.auth-form__buttons {
+  display: flex;
+  gap: $space-xs;
+  margin-top: $space-xs;
+}
+
+.auth-form__back-btn {
+  flex: 1;
+  padding: $space-s 0;
+  background: transparent;
+  color: $orange;
+  border: 1.5px solid $orange;
+  border-radius: 0.5rem;
+  font-size: $font-size-m;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: $orange;
+    color: $white;
+  }
+}
+
+.auth-form__submit {
+  flex: 1;
+  width: 100%;
+}
+
+.auth-form__login-link {
+  font-size: $font-size-s;
+  color: $black;
+  margin-top: $space-m;
+  font-family: $font-family-primary-regular;
+
+  a {
+    color: $orange;
+    text-decoration: none;
+    font-weight: $font-weight-semi-bold;
+  }
+}
+
+// Progress bar styles
+.auth-form__progress {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: $space-s;
+}
+
+.auth-form__progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3xs;
+  flex: 1;
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background: #e0e0e0;
+    z-index: 1;
+  }
+
+  &.completed:not(:last-child)::after {
+    background: $orange;
+  }
+}
+
+.auth-form__progress-number {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: $white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  z-index: 2;
+  position: relative;
+}
+
+.auth-form__progress-step.active .auth-form__progress-number,
+.auth-form__progress-step.completed .auth-form__progress-number {
+  background: $orange;
+}
+
+.auth-form__progress-text {
+  font-size: $font-size-xs;
+  color: $black;
+  text-align: center;
+  font-family: $font-family-primary-regular;
+}
+
+// Social login styles
+.auth-form__divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  color: #bbb;
+  font-size: $font-size-xs;
+  gap: $space-2xs;
+  margin: $space-xs 0 $space-3xs 0;
+
+  span {
+    flex: 1;
+    height: 1px;
+    background: #eee;
+  }
+}
+
+.auth-form__socials {
+  width: 100%;
+  display: flex;
+  gap: $space-xs;
+  justify-content: center;
+}
+
+.auth-form__social {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: $space-2xs;
+  justify-content: center;
+  padding: $space-2xs 0;
+  border: 1.5px solid $black;
+  border-radius: 0.5rem;
+  background: $white;
+  color: $black;
+  font-size: $font-size-m;
+  font-weight: $font-weight-semi-bold;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+
+  img {
+    width: 20px;
+    height: 20px;
+    filter: grayscale(1) contrast(2);
+  }
+}
+
+// Error message styles
+.auth-form__error {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: $space-2xs;
+  background: #fff0f0;
+  border: 1.5px solid #D32F2F;
+  color: #D32F2F;
+  border-radius: 0.5rem;
+  padding: $space-2xs $space-s;
+  margin-bottom: $space-xs;
+  font-size: $font-size-m;
+  font-weight: $font-weight-semi-bold;
+}
+
+.auth-form__error-icon {
+  font-size: 1.2rem;
+}
+
+.auth-form__error-text {
+  flex: 1;
+}
+
+// Utility classes
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+} 

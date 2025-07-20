@@ -1,5 +1,12 @@
 const mongoose = require("mongoose");
 
+const userProfileOptions = {
+  discriminatorKey: "userProfileType",
+  collection: "userprofiles",
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+};
+
 const UserProfileSchema = new mongoose.Schema(
   {
     firstName: {
@@ -47,10 +54,7 @@ const UserProfileSchema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-  }
+  userProfileOptions
 );
 
 module.exports = mongoose.model("UserProfile", UserProfileSchema);
