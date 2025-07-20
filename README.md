@@ -243,8 +243,6 @@
   - **Daily Scrum**: [Sprint 1 Daily Scrum](./readmeFiles/sprints/sprintOne/dailyScrum/)
   - **Product Backlog URL:** [Click for Backlog (Notion)](https://charmed-quart-e4d.notion.site/220b0bc6365b80a88297d43e8c960d37?v=220b0bc6365b8125bcbe000c047597bf&source=copy_link)
   - **Sprint Review:**
-    - 
-
     * In the first sprint, we selected a team leader and decided on the tools we would use moving forward. We also defined some core user roles and agreed to continue with this structure in the next sprint.
 
     * We experienced some challenges when deciding on the main idea of the application. However, through team discussions, we managed to resolve these issues and established the foundation of the project.
@@ -332,7 +330,7 @@
   </details>
 
   <details>
-    <summary><h3>Sprint 1 - Burndown Chart</h3></summary>
+    <summary><h3>Sprint 2 - Burndown Chart</h3></summary>
     <img src="./readmeFiles/sprints/sprintTwo/stories.png" style="max-width: 100%; height: auto;">
     <img src="./readmeFiles/sprints/sprintTwo/burndown.png" style="max-width: 100%; height: auto;">
   </details>
@@ -364,7 +362,6 @@
   - **Daily Scrum**: [Sprint 2 Daily Scrum](./readmeFiles/sprints/sprintTwo/dailyScrum/)
   - **Product Backlog URL:** [Click for Backlog (Notion)](https://charmed-quart-e4d.notion.site/220b0bc6365b80a88297d43e8c960d37?v=220b0bc6365b8125bcbe000c047597bf&source=copy_link)
   - **Sprint Review:**
-    - 
 
     * During this sprint, we adopted a more structured and effective use of GitHub as a team. We established a shared practice for branch structures, commit messages, and pull request management, which made our workflow more transparent and traceable.
 
