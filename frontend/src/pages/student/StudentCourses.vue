@@ -75,7 +75,7 @@ import DashboardNav from '@/components/dashboard/DashboardNav.vue'
 const router = useRouter()
 
 // User data
-const userName = ref('John Doe')
+const userName = ref('Muhammet')
 const userRole = ref('Student')
 const userAvatar = ref('/default-avatar.png')
 const currentPage = ref('My Courses')

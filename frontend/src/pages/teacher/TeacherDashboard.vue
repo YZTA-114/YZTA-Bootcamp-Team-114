@@ -262,7 +262,7 @@ const recentSubmissions = ref([
   {
     id: 1,
     assignmentTitle: 'Final Project Submission',
-    studentName: 'John Doe',
+    studentName: 'Muhammet',
     studentAvatar: '/default-avatar.png',
     courseName: 'Computer Science 201',
     submittedAt: '2 hours ago'

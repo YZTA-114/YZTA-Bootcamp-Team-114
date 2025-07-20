@@ -1,4 +1,5 @@
 import {
+  RiGoogleFill,
   RiArrowDownSLine,
   RiArrowDropLeftLine,
   RiArrowDropRightLine,
@@ -88,6 +89,7 @@ import {
 
 
 const remixIcons = [
+  {name: 'ri-google-fill', component: RiGoogleFill},
   { name: "ri-arrow-down-s", component: RiArrowDownSLine },
   { name: "ri-circle-fill", component: RiCircleFill },
   { name: "ri-bard-fill", component: RiBardFill },

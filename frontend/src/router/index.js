@@ -43,14 +43,11 @@ const routes = [
         component: () => import('@/pages/student/StudentDashboard.vue')
       },
       {
-<<<<<<< HEAD
         path: 'documents',
         name: 'student-documents',
         component: () => import('@/pages/student/StudentDocuments.vue')
       },
-      /* {
-=======
->>>>>>> ca0c9c385e65ee4d886f1aab429bc345e9ebc396
+      {
         path: 'courses',
         name: 'student-courses',
         component: () => import('@/pages/student/StudentCourses.vue')
@@ -59,7 +56,7 @@ const routes = [
         path: 'quizzes/:quizId',
         name: 'take-quiz',
         component: () => import('@/pages/student/TakeQuiz.vue')
-      }
+      },
     ]
   },
   // Teacher Dashboard Routes

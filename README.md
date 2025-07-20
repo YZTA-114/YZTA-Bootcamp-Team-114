@@ -271,6 +271,124 @@
   </details>
 
   </details>
+
+  <details>
+    <summary><h1>Sprint 2</h1></summary>
+
+
+  <details>
+    <summary><h3>Sprint 2 - Web Screenshots</h3></summary>
+  <table style="width: 100%;">
+  <tr>
+      <td colspan="4" style="text-align: center;"><h2>Home Page</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 100%;"><img src="./readmeFiles/sprints/sprintTwo/screenshots/main_page.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align: center;"><h2>Authentication pages</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 100%;"><img src="./readmeFiles/sprints/sprintTwo/screenshots/login.png" style="max-width: 100%; height: auto;"></td>
+      <td style="width: 100%;"><img src="./readmeFiles/sprints/sprintTwo/screenshots/registration_page.png" style="max-width: 100%; height: auto;"></td>
+       <td style="width: 100%;"><img src="./readmeFiles/sprints/sprintTwo/screenshots/select_role.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align: center;"><h2>Student Dashboard</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintTwo/screenshots/student_dashboard_1.png" style="max-width: 100%; height: auto;"></td>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintTwo/screenshots/student_dashboard_2.png" style="max-width: 100%; height: auto;"></td>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintTwo/screenshots/student_dashboard_3.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align: center;"><h2>Student Dashboard - Documents</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintTwo/screenshots/documents.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align: center;"><h2>Quiz Taking Page</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 25%;"><img src="./readmeFiles/sprints/sprintTwo/screenshots/quiz_taking.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+  </table>
+  </details>   
+
+  <details>
+  <summary><h3>Sprint 2 - Database Schema</h3></summary>
+  <img src="./readmeFiles/sprints/sprintTwo/screenshots/database_design_users.png" style="max-width: 100%; height: auto;">
+  <img src="./readmeFiles/sprints/sprintTwo/screenshots/database_design_classrooms.png" style="max-width: 100%; height: auto;">
+  <img src="./readmeFiles/sprints/sprintTwo/screenshots/database_design_quizzes.png" style="max-width: 100%; height: auto;">
+  </details>
+
+  <details>
+  <summary><h3>Sprint 2 - Project Management</h3></summary>
+  <img src="./readmeFiles/sprints/sprintTwo/management/notion_1.png" style="max-width: 100%; height: auto;">
+  <img src="./readmeFiles/sprints/sprintTwo/management/notion_2.png" style="max-width: 100%; height: auto;">
+  <img src="./readmeFiles/sprints/sprintTwo/management/notion_3.png" style="max-width: 100%; height: auto;">
+  <img src="./readmeFiles/sprints/sprintTwo/management/notion_4.png" style="max-width: 100%; height: auto;">
+  </details>
+
+  <details>
+    <summary><h3>Sprint 1 - Burndown Chart</h3></summary>
+    <img src="./readmeFiles/sprints/sprintTwo/stories.png" style="max-width: 100%; height: auto;">
+    <img src="./readmeFiles/sprints/sprintTwo/burndown.png" style="max-width: 100%; height: auto;">
+  </details>
+
+
+  - **Sprint Notes**:
+    - It was decided to simplify the project's MVP functionalities
+    - It was decided to complete the student dashboard first to test ai actions
+    - It was decided to use contrast colors(orange, black, white, pink) for accessibility
+    - It was decided to use https://uploadthing.com/ as file storage for testing purposes
+    - The common environment and folder structure for development were determined
+  - **Expected point completion within Sprint**: 68 points
+  - **Point Completion Logic**: 
+    - **Story Point Estimation**: Using Fibonacci sequence (1, 2, 3, 5, 8, 13, 21) for story point estimation
+    - **Point Assignment Criteria**:
+      - 1 point: Very simple tasks (5-15 minutes)
+      - 2 points: Simple tasks (15-30 minutes)
+      - 3 points: Small tasks (30-60 minutes)
+      - 5 points: Medium tasks (1-2 hours)
+      - 8 points: Large tasks (2-4 hours)
+      - 13 points: Very large tasks (4-8 hours)
+      - 21 points: Epic tasks (8+ hours, should be broken down)
+    - **Completion Criteria**: A story is considered complete when:
+      - All acceptance criteria are met
+      - Code is reviewed and approved
+      - Feature is tested and functional
+      - Documentation is updated
+      - No critical bugs remain
+  - **Daily Scrum**: [Sprint 2 Daily Scrum](./readmeFiles/sprints/sprintTwo/dailyScrum/)
+  - **Product Backlog URL:** [Click for Backlog (Notion)](https://charmed-quart-e4d.notion.site/220b0bc6365b80a88297d43e8c960d37?v=220b0bc6365b8125bcbe000c047597bf&source=copy_link)
+  - **Sprint Review:**
+    - 
+
+    * During this sprint, we adopted a more structured and effective use of GitHub as a team. We established a shared practice for branch structures, commit messages, and pull request management, which made our workflow more transparent and traceable.
+
+    * To prevent conflicts and enable parallel development, we collaboratively defined the core folder structure and code architecture of the project. Each team member was able to work within the set framework, ensuring smooth integration.
+    * Team communication was efficient throughout the sprint. Technical and design-related issues were identified and resolved collectively, fostering strong collaboration and productivity.
+    * Uncertainties regarding the theme, color palette, and typography were resolved. As a result, a more consistent and professional foundation for the frontend design was established.
+    * While this sprint was primarily focused on user experience (UX), the user interface (UI) designs did not yet reach the desired level. Visual consistency and design quality will be a top priority in the next sprint.
+    * As the team has now become more accustomed to the development process, we’ve built a foundation that will allow us to integrate more features quickly and reliably in future sprints.
+    * During development, we made an effort to create reusable components, which is a significant gain for the scalability of the project.
+    * The overall application structure has become more modular and manageable. This makes future maintenance easier and provides a strong foundation for the addition of new features.
+
+  - **Sprint Review Participants:** `Muharrem Sait Çoktaş`, `Muhammet Emin Bülbül`, `Süleyman Atman`, `İkbal Gençarslan`, `Ayten Adiyan`
+  - **Sprint Retrospective:**
+    * Panel components were successfully completed in terms of visual design. However, accessibility features such as screen reader support, alternative texts (alt-text), and ARIA labels have not yet been implemented. These improvements have been transferred to the third sprint.
+    * The multi-step registration process was successfully integrated. However, some issues were identified regarding full keyboard navigation support and screen reader compatibility. Necessary adjustments will be made in the next sprint.
+    * The localization of authentication forms into Turkish has been completed. However, dynamic language switching and internationalization (i18n) controls have not yet been fully applied across all pages. Related improvements will continue in the next sprint.
+    * Student and teacher panels have been developed and made active. However, all components have not yet undergone accessibility and usability testing. Accessibility-focused tests will be conducted with real users in the upcoming sprint.
+    * The quiz component (TakeQuiz.vue, timer, question navigation) has been integrated into the project. However, auditory notification support for the timer via screen readers has not been added. This development is included in the third sprint plan.
+    * Classroom and lesson models (Classroom, Lesson, Resource) have been successfully created and tested via Postman. However, these models have not yet been integrated into the user interface. Required integration work will be completed in the next sprint.
+    * AI services were not implemented in this sprint. Development of related features (e.g., content recommendation systems) is planned for the third sprint.
+    * TTS (Text-to-Speech) models were not integrated in this sprint. Work on this feature will be carried out in the third sprint to enable visually impaired users to access textual content audibly.
+    * UI design updates are planned. Within this scope, a more professional and cohesive visual structure will be established.
+    * A UI/UX review will be conducted to evaluate the overall design language, component consistency, and user experience of the application. Necessary improvements will be made based on the findings.
+  </details>
   </body>
   </html>
 

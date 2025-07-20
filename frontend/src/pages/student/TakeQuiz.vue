@@ -67,7 +67,7 @@
             <div class="placeholder-icon">?</div>
           </div>
           <div class="profile-info">
-            <div class="user-name">John Doe</div>
+            <div class="user-name">Muhammet</div>
             <div class="user-role">Student</div>
           </div>
         </div>
