@@ -1,5 +1,5 @@
 // Dashboard Page Styles
-@import '../variables/_variable.scss';
+@import '@/assets/scss/custom/variables/_variable.scss';
 
 // Student Dashboard
 .student-dashboard {
@@ -255,7 +255,6 @@
         .btn-sm {
           padding: $space-xs $space-s;
           font-size: $font-size-xs;
-          border-radius: 6px;
         }
       }
     }

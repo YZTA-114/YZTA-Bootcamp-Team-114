@@ -10,7 +10,7 @@
     @settings="handleSettings"
   >
     <template #sidebar-nav>
-      <DashboardNav :nav-items="navItems" :collapsed="false" />
+      <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
     </template>
 
     <template #content>

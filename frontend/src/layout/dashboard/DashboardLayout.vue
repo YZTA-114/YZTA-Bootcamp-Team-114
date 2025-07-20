@@ -222,7 +222,7 @@ onUnmounted(() => {
     padding: $space-m;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start; // space-between yerine flex-start
     border-bottom: 1px solid rgba($white, 0.1);
 
     .logo {
@@ -241,7 +241,7 @@ onUnmounted(() => {
       padding: $space-xs;
       border-radius: 4px;
       transition: background-color 0.2s ease;
-
+      margin-left: auto; // Eklendi: ikonu sağa yaslar
       &:hover {
         background-color: rgba($white, 0.1);
       }
@@ -301,6 +301,15 @@ onUnmounted(() => {
       }
     }
   }
+}
+
+.dashboard-sidebar.sidebar-collapsed {
+  justify-content: flex-start !important;
+  padding-bottom: 0 !important;
+}
+.dashboard-sidebar.sidebar-collapsed .sidebar-footer,
+.dashboard-sidebar.sidebar-collapsed .user-info {
+  display: none !important;
 }
 
 .dashboard-main {
@@ -401,10 +410,14 @@ onUnmounted(() => {
           }
 
           img {
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
+            border: 2px solid $pink;
+            background: $white;
+            box-shadow: 0 2px 8px rgba($black, 0.08);
+            margin-right: 6px;
           }
         }
 

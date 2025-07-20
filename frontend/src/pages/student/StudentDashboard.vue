@@ -10,7 +10,23 @@
     @settings="handleSettings"
   >
     <template #sidebar-nav>
-      <DashboardNav :nav-items="navItems" :collapsed="false" />
+      <div class="sidebar-classroom-dropdown">
+        <div class="dropdown-selected" @click="dropdownOpen = !dropdownOpen">
+          {{ selectedClassroom.name }}
+          <span class="dropdown-arrow" :class="{ open: dropdownOpen }">▼</span>
+        </div>
+        <div v-if="dropdownOpen" class="dropdown-list">
+          <div
+            v-for="classroom in classrooms"
+            :key="classroom.id"
+            class="dropdown-item"
+            @click="selectClassroom(classroom)"
+          >
+            {{ classroom.name }}
+          </div>
+        </div>
+      </div>
+      <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
     </template>
 
     <template #content>
@@ -18,13 +34,13 @@
         <!-- Welcome Section -->
         <div class="welcome-section">
           <div class="welcome-content">
-            <h1 class="welcome-title">Welcome back, {{ userName }}!</h1>
-            <p class="welcome-subtitle">Here's what's happening with your courses today.</p>
+            <h1 class="welcome-title">Hoşgeldin Muhammet</h1>
+            <p class="welcome-subtitle">Bugün derslerinde neler var.</p>
           </div>
           <div class="welcome-actions">
             <button class="btn btn-primary" @click="goToCourses">
               <ri-book-line />
-              View Courses
+              Dersleri Görüntüle
             </button>
           </div>
         </div>
@@ -37,7 +53,7 @@
             </div>
             <div class="stat-content">
               <h3 class="stat-number">{{ stats.enrolledCourses }}</h3>
-              <p class="stat-label">Enrolled Courses</p>
+              <p class="stat-label">Kayıtlı Dersler</p>
             </div>
           </div>
 
@@ -47,7 +63,7 @@
             </div>
             <div class="stat-content">
               <h3 class="stat-number">{{ stats.pendingAssignments }}</h3>
-              <p class="stat-label">Pending Assignments</p>
+              <p class="stat-label">Bekleyen Quizler</p>
             </div>
           </div>
 
@@ -57,7 +73,7 @@
             </div>
             <div class="stat-content">
               <h3 class="stat-number">{{ stats.averageGrade }}%</h3>
-              <p class="stat-label">Average Grade</p>
+              <p class="stat-label">Başarı Oranı</p>
             </div>
           </div>
 
@@ -67,7 +83,7 @@
             </div>
             <div class="stat-content">
               <h3 class="stat-number">{{ stats.completedCourses }}</h3>
-              <p class="stat-label">Completed Courses</p>
+              <p class="stat-label">Tamamlanan Dersler</p>
             </div>
           </div>
         </div>
@@ -75,24 +91,22 @@
         <!-- Recent Activity & Upcoming Deadlines -->
         <div class="dashboard-grid">
           <!-- Recent Activity -->
-          <div class="dashboard-card">
+          <div class="dashboard-card quiz-card">
             <div class="card-header">
-              <h2 class="card-title">Recent Activity</h2>
-              <button class="btn btn-text" @click="viewAllActivity">View All</button>
+              <h2 class="card-title">Öğretmen Quiz</h2>
+              <!-- <button class="btn btn-primary" @click="solveQuiz">ÇÖZ</button> -->
             </div>
             <div class="card-content">
-              <div class="activity-list">
-                <div 
-                  v-for="activity in recentActivity" 
-                  :key="activity.id" 
-                  class="activity-item"
-                >
-                  <div class="activity-icon" :class="activity.type">
-                    <component :is="activity.icon" />
+              <div class="quiz-list">
+                <div v-for="quiz in quizzes" :key="quiz.id" class="quiz-item">
+                  <div class="quiz-info">
+                    <div class="quiz-row"><strong>Quiz Adı:</strong> {{ quiz.name }}</div>
+                    <div class="quiz-row"><strong>Süre:</strong> {{ quiz.duration }} dk</div>
+                    <div class="quiz-row"><strong>Ders:</strong> {{ quiz.course }}</div>
                   </div>
-                  <div class="activity-content">
-                    <p class="activity-text">{{ activity.text }}</p>
-                    <span class="activity-time">{{ activity.time }}</span>
+                  <div class="quiz-actions">
+                    <button class="btn btn-sm btn-solve" @click="solveQuiz(quiz)">Çöz</button>
+                    <button class="btn btn-sm btn-danger" @click="deleteQuiz(quiz)">Sil</button>
                   </div>
                 </div>
               </div>
@@ -100,34 +114,56 @@
           </div>
 
           <!-- Upcoming Deadlines -->
-          <div class="dashboard-card">
+          <div class="dashboard-card quiz-card">
             <div class="card-header">
-              <h2 class="card-title">Upcoming Deadlines</h2>
-              <button class="btn btn-text" @click="viewAllDeadlines">View All</button>
+              <h2 class="card-title">Benim Quiz'im</h2>
             </div>
             <div class="card-content">
-              <div class="deadline-list">
-                <div 
-                  v-for="deadline in upcomingDeadlines" 
-                  :key="deadline.id" 
-                  class="deadline-item"
-                >
-                  <div class="deadline-date">
-                    <span class="deadline-day">{{ deadline.day }}</span>
-                    <span class="deadline-month">{{ deadline.month }}</span>
+              <div class="quiz-list">
+                <div v-for="quiz in myQuizzes" :key="quiz.id" class="quiz-item">
+                  <div class="quiz-info">
+                    <div class="quiz-row"><strong>Quiz Adı:</strong> {{ quiz.name }}</div>
+                    <div class="quiz-row"><strong>Süre:</strong> {{ quiz.duration }} dk</div>
+                    <div class="quiz-row"><strong>Ders:</strong> {{ quiz.course }}</div>
                   </div>
-                  <div class="deadline-content">
-                    <h4 class="deadline-title">{{ deadline.title }}</h4>
-                    <p class="deadline-course">{{ deadline.course }}</p>
-                    <span class="deadline-time">{{ deadline.time }}</span>
-                  </div>
-                  <div class="deadline-actions">
-                    <button class="btn btn-sm btn-outline" @click="viewDeadline(deadline)">
-                      View
-                    </button>
+                  <div class="quiz-actions">
+                    <button class="btn btn-sm btn-solve" @click="solveMyQuiz(quiz)">Çöz</button>
+                    <button class="btn btn-sm btn-danger" @click="deleteMyQuiz(quiz)">Sil</button>
                   </div>
                 </div>
               </div>
+              <div class="myquiz-bottom-actions">
+                <button class="btn btn-primary" @click="createQuiz">Yeni Quiz Oluştur</button>
+              </div>
+            </div>
+          </div>
+          <!-- Çözdüklerim -->
+          <div class="dashboard-card solved-card">
+            <div class="card-header">
+              <h2 class="card-title">Çözdüklerim</h2>
+            </div>
+            <div class="card-content">
+              <table class="solved-table">
+                <thead>
+                  <tr>
+                    <th>Ders Adı</th>
+                    <th>Çözülen Süre (dk)</th>
+                    <th>Doğru Sayısı</th>
+                    <th>Toplam Soru</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in solvedList" :key="item.id">
+                    <td>{{ item.course }}</td>
+                    <td>{{ item.duration }}</td>
+                    <td>{{ item.correct }}</td>
+                    <td>{{ item.total }}</td>
+                    <td>
+                      <button class="btn btn-primary" @click="showReport(item)">Rapor</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -146,9 +182,9 @@ import DashboardNav from '@/components/dashboard/DashboardNav.vue'
 const router = useRouter()
 
 // User data
-const userName = ref('John Doe')
+const userName = ref('Muhammet')
 const userRole = ref('Student')
-const userAvatar = ref('/default-avatar.png')
+const userAvatar = ref('/default.png')
 const currentPage = ref('Dashboard')
 const notificationCount = ref(3)
 
@@ -170,101 +206,73 @@ const navItems = ref([
   },
   {
     id: 'courses',
-    label: 'My Courses',
+    label: 'Dersler',
     path: '/student/courses',
     icon: 'ri-book-line'
   },
   {
     id: 'assignments',
-    label: 'Assignments',
+    label: 'Quizler',
     path: '/student/assignments',
     icon: 'ri-task-line'
   },
   {
     id: 'grades',
-    label: 'Grades',
-    path: '/student/grades',
+    label: 'Dokümanlar',
+    path: '/student/documents',
     icon: 'ri-bar-chart-line'
   },
   {
     id: 'calendar',
-    label: 'Calendar',
+    label: 'Takvim',
     path: '/student/calendar',
     icon: 'ri-calendar-line'
   },
   {
     id: 'resources',
-    label: 'Resources',
+    label: 'Kaynaklarım',
     path: '/student/resources',
     icon: 'ri-folder-line'
   },
   {
     id: 'profile',
-    label: 'Profile',
+    label: 'Profil',
     path: '/student/profile',
     icon: 'ri-user-line'
   }
 ])
 
-// Recent activity
-const recentActivity = ref([
-  {
-    id: 1,
-    type: 'assignment',
-    icon: 'ri-file-text-line',
-    text: 'Assignment submitted for Mathematics 101',
-    time: '2 hours ago'
-  },
-  {
-    id: 2,
-    type: 'grade',
-    icon: 'ri-star-line',
-    text: 'New grade received for Physics Lab',
-    time: '1 day ago'
-  },
-  {
-    id: 3,
-    type: 'course',
-    icon: 'ri-book-line',
-    text: 'New course material available in Chemistry',
-    time: '2 days ago'
-  },
-  {
-    id: 4,
-    type: 'announcement',
-    icon: 'ri-notification-line',
-    text: 'Important announcement from your instructor',
-    time: '3 days ago'
-  }
+// Benim Quiz'im verisi
+const myQuizzes = ref([
+  { id: 1, name: 'Tarih Quiz 1', duration: 10, course: 'Tarih' },
+  { id: 2, name: 'Biyoloji Quiz 2', duration: 18, course: 'Biyoloji' },
+  { id: 3, name: 'Coğrafya Quiz 3', duration: 12, course: 'Coğrafya' }
 ])
 
-// Upcoming deadlines
-const upcomingDeadlines = ref([
-  {
-    id: 1,
-    day: '15',
-    month: 'Dec',
-    title: 'Final Project Submission',
-    course: 'Computer Science 201',
-    time: '11:59 PM'
-  },
-  {
-    id: 2,
-    day: '18',
-    month: 'Dec',
-    title: 'Research Paper',
-    course: 'English Literature',
-    time: '11:59 PM'
-  },
-  {
-    id: 3,
-    day: '20',
-    month: 'Dec',
-    title: 'Lab Report',
-    course: 'Physics 101',
-    time: '11:59 PM'
-  }
-])
+function createQuiz() {
+  alert('Yeni quiz oluşturma sayfasına yönlendirilecek!')
+}
+function solveMyQuiz(quiz) {
+  alert(quiz.name + ' quizini çözme sayfasına yönlendirilecek!')
+}
+function deleteMyQuiz(quiz) {
+  alert('Sil: ' + quiz.name)
+}
+
+// Classroom dropdown için veri
+const classrooms = [
+  { id: 1, name: 'Classroom 1' },
+  { id: 2, name: 'Classroom 2' },
+  { id: 3, name: 'Classroom 3' }
+]
+const selectedClassroom = ref(classrooms[0])
+const dropdownOpen = ref(false)
+
+function selectClassroom(classroom) {
+  selectedClassroom.value = classroom
+  dropdownOpen.value = false
+  // İstersen burada route değişimi de ekleyebilirsin
+}
 
 // Methods
 const handleLogout = () => {
@@ -284,16 +292,25 @@ const goToCourses = () => {
   router.push('/student/courses')
 }
 
-const viewAllActivity = () => {
-  router.push('/student/activity')
+// Quiz verisi
+const quizzes = ref([
+  { id: 1, name: 'Matematik Quiz 1', duration: 20, course: 'Matematik' },
+  { id: 2, name: 'Fizik Quiz 2', duration: 15, course: 'Fizik' },
+  { id: 3, name: 'Kimya Quiz 3', duration: 25, course: 'Kimya' }
+])
+
+function deleteQuiz(quiz) {
+  alert('Sil: ' + quiz.name)
 }
 
-const viewAllDeadlines = () => {
-  router.push('/student/deadlines')
-}
-
-const viewDeadline = (deadline) => {
-  router.push(`/student/assignments/${deadline.id}`)
+// Çözdüklerim verisi
+const solvedList = ref([
+  { id: 1, course: 'Matematik', duration: 18, correct: 8, total: 10 },
+  { id: 2, course: 'Fizik', duration: 15, correct: 7, total: 10 },
+  { id: 3, course: 'Kimya', duration: 20, correct: 9, total: 10 }
+])
+function showReport(item) {
+  alert(item.course + ' dersi için rapor sayfasına yönlendirilecek!')
 }
 
 // Lifecycle
@@ -307,6 +324,9 @@ onMounted(() => {
 @import '@/assets/scss/custom/_variable.scss';
 
 .student-dashboard {
+  min-height: 100vh;
+  box-sizing: border-box;
+  overflow-y: auto;
   .welcome-section {
     background: $orange;
     color: $white;
@@ -588,6 +608,49 @@ onMounted(() => {
   }
 }
 
+.quiz-card .card-header {
+  align-items: flex-start;
+}
+.quiz-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.quiz-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #f7f7f7;
+  border-radius: 8px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  position: relative;
+}
+.quiz-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.quiz-row {
+  font-size: $font-size-s;
+  color: $black;
+}
+.quiz-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+.btn-danger {
+  background: $pink;
+  color: $white;
+  border: none;
+  &:hover {
+    background: darken($pink, 10%);
+  }
+}
+
 // Button styles
 .btn {
   display: inline-flex;
@@ -625,6 +688,157 @@ onMounted(() => {
   &.btn-sm {
     padding: $space-xs $space-s;
     font-size: $font-size-xs;
+  }
+}
+.btn-solve {
+  background: #fff;
+  color: $pink;
+  border: 2px solid $pink;
+  font-weight: $font-weight-semi-bold;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.btn-solve:hover {
+  background: rgba($pink, 0.08);
+  color: $pink;
+}
+
+// Sidebar classroom listesi için stil
+.sidebar-classrooms {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+.sidebar-classroom {
+  font-size: $font-size-s;
+  font-weight: $font-weight-semi-bold;
+  color: $yellow;
+  background: rgba($yellow, 0.08);
+  border-radius: 6px;
+  padding: 6px 12px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-classroom.big {
+  font-size: 1.3rem;
+  font-weight: bold;
+  background: #f5f5f5;
+  color: #222;
+  padding: 18px 24px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  width: 90%; // veya 100% ya da istediğin kadar
+  min-width: 200px;
+  text-align: center;
+}
+
+.sidebar-classroom-dropdown {
+  position: relative;
+  margin-bottom: 18px;
+  padding: 0 16px;
+}
+.dropdown-selected {
+  font-size: 1.3rem;
+  font-weight: bold;
+  background: #f5f5f5;
+  color: #222;
+  padding: 18px 24px;
+  border-radius: 10px;
+  width: 90%;
+  min-width: 200px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.dropdown-arrow {
+  margin-left: 10px;
+  font-size: 1.1rem;
+  transition: transform 0.2s;
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  z-index: 10;
+  width: 100%;
+}
+.dropdown-item {
+  padding: 14px 24px;
+  font-size: 1.1rem;
+  color: #222;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
+  &:hover {
+    background: #f0f0f0;
+  }
+}
+.myquiz-bottom-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+.solved-card {
+  .card-content {
+    padding-bottom: 0;
+    min-height: 260px;
+  }
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  grid-column: span 2;
+}
+.solved-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 18px;
+  background: #fff;
+  border: 2px solid $pink;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba($pink, 0.08);
+  overflow: hidden;
+  th, td {
+    border-bottom: 1px solid #eee;
+    padding: 14px 10px;
+    text-align: center;
+    font-size: $font-size-s;
+    color: $black;
+  }
+  th {
+    background: $pink;
+    color: $white;
+    font-weight: $font-weight-bold;
+    font-size: $font-size-m;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid darken($pink, 10%);
+  }
+  tr {
+    &:nth-child(even) {
+      background: #fdf2f8;
+    }
+    &:nth-child(odd) {
+      background: #fff;
+    }
+  }
+  tr:last-child td {
+    border-bottom: none;
   }
 }
 </style> 

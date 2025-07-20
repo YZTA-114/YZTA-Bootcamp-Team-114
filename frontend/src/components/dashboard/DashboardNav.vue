@@ -35,8 +35,8 @@
               :class="{ 'active': isActive(child.path) }"
             >
               <component :is="child.icon" class="nav-subicon" />
-              <span class="nav-subtext">{{ child.label }}</span>
-              <span class="nav-badge" v-if="child.badge">{{ child.badge }}</span>
+              <span class="nav-subtext" v-if="!collapsed">{{ child.label }}</span>
+              <span class="nav-badge" v-if="child.badge && !collapsed">{{ child.badge }}</span>
             </router-link>
           </li>
         </ul>

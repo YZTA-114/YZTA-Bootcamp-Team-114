@@ -2,7 +2,7 @@
 // This file imports all dashboard-related styles
 
 // Import variables
-@import './_variable.scss';
+@import '@/assets/scss/custom/variables/_variable.scss';
 
 // Import dashboard components
 @import './components/_dashboard.scss';
