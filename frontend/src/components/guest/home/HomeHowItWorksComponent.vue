@@ -49,7 +49,7 @@
 @import '@/assets/scss/custom/_variable.scss';
 .creative-how-it-works {
   width: 100vw;
-  background: #faf6ff;
+  background: $black;
   padding: 64px 0 48px 0;
   display: flex;
   flex-direction: column;
@@ -64,8 +64,8 @@
   font-family: $font-family-primary-regular;
 }
 .chiw-badge {
-  background: #fff;
-  color: #a084e8;
+  background: $white;
+  color: $black;
   font-weight: 700;
   font-size: 1.1rem;
   border-radius: 18px;
@@ -79,7 +79,7 @@
 .chiw-title {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #222;
+  color: $white;
   margin-bottom: 18px;
   text-shadow: 0 2px 8px rgba(160,132,232,0.08);
   font-family: $font-family-primary-regular;
@@ -119,7 +119,7 @@
 .chiw-step:hover {
   transform: translateY(-8px) scale(1.03) rotate(-1deg);
   box-shadow: 0 12px 40px 0 rgba(160, 132, 232, 0.18);
-  background: #faf6ff;
+  background: $orange;
 }
 .chiw-icon img {
   width: 72px;
@@ -133,7 +133,7 @@
 .chiw-step-title {
   font-size: 1.18rem;
   font-weight: 800;
-  color: #a084e8;
+  color: $black;
   margin-bottom: 12px;
   font-family: $font-family-primary-regular;
 }
@@ -145,7 +145,7 @@
 }
 .chiw-tip {
   font-size: 0.97rem;
-  color: #a084e8;
+  color: $black;
   font-style: italic;
   margin-top: 8px;
   background: #faf6ff;

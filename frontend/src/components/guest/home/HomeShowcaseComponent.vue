@@ -30,10 +30,11 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import '@/assets/scss/custom/_variable.scss';
 .showcase-section {
   width: 100vw;
-  background: #eaf3fa;
+  background: $black;
   padding: 64px 0 32px 0;
   display: flex;
   flex-direction: column;

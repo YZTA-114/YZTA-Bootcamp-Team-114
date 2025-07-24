@@ -29,10 +29,11 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import '@/assets/scss/custom/_variable.scss';
 .testimonial-section {
   width: 100vw;
-  background: #fff;
+  background: $black;
   padding: 64px 0 32px 0;
   display: flex;
   flex-direction: column;
@@ -41,7 +42,7 @@ export default {
 .testimonial-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #222;
+  color: $white;
   margin-bottom: 36px;
   text-align: center;
   max-width: 700px;

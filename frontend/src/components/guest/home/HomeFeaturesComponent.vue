@@ -41,6 +41,20 @@
               <p>Her zaman destek alabileceğiniz aktif bir topluluk.</p>
             </div>
           </div>
+          <div class="feature-card">
+            <div class="feature-dot"></div>
+            <div>
+              <h3>Yüksek Kontrast</h3>
+              <p>Görsel içerikler yüksek kontrast ile sunulur, göz yormaz.</p>
+            </div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-dot"></div>
+            <div>
+              <h3>Topluluk Desteği</h3>
+              <p>Her zaman destek alabileceğiniz aktif bir topluluk.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -56,11 +70,11 @@ export default {
 <style scoped lang="scss">
 @import '@/assets/scss/custom/_variable.scss';
 .home-features-section {
-  min-height: 100vh;
+  padding-bottom: $space-xl;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #faf6ff;
+  background: $black;
   width: 100%;
   font-family: $font-family-primary-regular;
 }
@@ -99,7 +113,7 @@ export default {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #a084e8;
+  background: $black;
 }
 .features-title {
   font-size: 2.8rem;
@@ -136,9 +150,7 @@ export default {
   position: relative;
   font-family: $font-family-primary-regular;
 }
-.features-btn:hover {
-  background: linear-gradient(90deg, #8f6be8 60%, #a084e8 100%);
-}
+
 .features-right {
   flex: 2;
   display: flex;
@@ -167,7 +179,7 @@ export default {
   font-family: $font-family-primary-regular;
 }
 .feature-card.main {
-  background: linear-gradient(120deg, #a084e8 70%, #8f6be8 100%);
+  background: linear-gradient(120deg, $orange 70%, $orange 100%);
   color: #fff;
   box-shadow: 0 8px 32px 0 rgba(160, 132, 232, 0.18);
   transform: translateY(-18px);

@@ -4,7 +4,6 @@
     <div class="footer-content">
       <div class="footer-col footer-brand">
         <div class="footer-logo-row">
-          <img src="@/assets/images/logo.png" alt="FeelEd Logo" class="footer-logo-img" />
           <span class="footer-logo-text">FeelEd</span>
         </div>
         <div class="footer-info">
@@ -53,7 +52,7 @@ export default {
 .footer-section {
   position: relative;
   width: 100vw;
-  background: #d3e8e7;
+  background: $black;
   padding: 64px 0 48px 0;
   overflow: hidden;
   font-family: $font-family-primary-regular;
@@ -62,7 +61,7 @@ export default {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 100px;
-  background: #d3e8e7;
+  background: $black;
   border-top-left-radius: 80px 16px;
   border-top-right-radius: 80px 16px;
   z-index: 0;

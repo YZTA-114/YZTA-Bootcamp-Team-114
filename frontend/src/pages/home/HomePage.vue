@@ -94,7 +94,7 @@ import HomeBigCtaComponent from "@/components/guest/home/HomeBigCtaComponent.vue
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 64px 24px 0 24px;
+  padding: 0px 24px 0 24px;
   box-sizing: border-box;
 }
 </style>

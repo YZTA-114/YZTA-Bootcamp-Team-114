@@ -14,10 +14,11 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import '@/assets/scss/custom/_variable.scss';
 .big-cta-section {
   width: 100vw;
-  background: #d3e8e7;
+  background: $black;
   display: flex;
   align-items: center;
   justify-content: center;
