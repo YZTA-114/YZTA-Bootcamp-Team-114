@@ -1,6 +1,6 @@
 <template>
   <DashboardLayout
-    :user-name="userName"
+    :user-name="user.userProfile.firstName"
     :user-role="userRole"
     :user-avatar="userAvatar"
     :current-page="currentPage"
@@ -173,16 +173,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed} from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '@/layout/dashboard/DashboardLayout.vue'
 import DashboardNav from '@/components/dashboard/DashboardNav.vue'
+import { useStore } from 'vuex'
 
 // Router
 const router = useRouter()
+const store = useStore();
+
+const user = computed(() => store.getters['auth/getUser']);
 
 // User data
-const userName = ref('Muhammet')
 const userRole = ref('Student')
 const userAvatar = ref('/default.png')
 const currentPage = ref('Dashboard')

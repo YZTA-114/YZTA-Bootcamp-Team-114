@@ -199,4 +199,37 @@ exports.joinClassroomByCode = asyncHandler(async (req, res, next) => {
             participation: participation
         }
     });
-}); 
+});
+
+// @desc Leave classroom
+// @route DELETE /api/v1/classrooms/leave/:classroomId
+// @access Private
+exports.leaveClassroom = asyncHandler(async (req, res, next) => {
+    const classroom = await Classroom.findById(req.params.classroomId);
+
+    if(!classroom) {
+        return next(
+            new ErrorResponse(`No classroom with the id of ${req.params.classroomId}`, 404)
+        );
+    }
+
+    // Check if user is in the classroom
+    const participation = await ClassroomParticipation.findOne({
+        classroom: classroom._id,
+        user: req.user.id
+    });
+
+    if(!participation) {
+        return next(
+            new ErrorResponse(`You are not enrolled in this classroom`, 404)
+        );
+    }
+    
+    await participation.deleteOne();
+    
+    res.status(200).json({
+        success: true,
+        message: `Successfully left classroom: ${classroom.name}`,
+        data: {}
+    });
+});

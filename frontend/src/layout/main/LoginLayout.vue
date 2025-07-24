@@ -19,7 +19,7 @@
 .login-layout {
   display: flex;
   min-height: 100vh;
-  background: $white;
+  background: $black;
 }
 
 .login-layout__left {
@@ -28,7 +28,7 @@
   align-items: center;
   justify-content: center;
   padding: $space-m;
-  background: $white;
+  background: $black;
   min-height: 100vh;
   overflow-y: auto;
 }

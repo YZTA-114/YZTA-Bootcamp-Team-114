@@ -9,7 +9,7 @@
         :placeholder="placeholder"
         :required="required"
         :disabled="disabled"
-        class="form-input__field"
+        :class="['form-input__field', { 'form-input__field--error': error }]"
         @input="$emit('update:modelValue', $event.target.value)"
         @focus="$emit('focus', $event)"
         @blur="$emit('blur', $event)"
@@ -32,6 +32,7 @@
         </svg>
       </button>
     </div>
+    <span v-if="error" class="form-input__error">{{ error }}</span>
   </div>
 </template>
 
@@ -66,6 +67,10 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
+  },
+  error: {
+    type: String,
+    default: ''
   }
 })
 
@@ -97,7 +102,7 @@ const togglePassword = () => {
 
 .form-input__label {
   font-size: $font-size-xs;
-  color: $black;
+  color: $white;
   font-weight: $font-weight-semi-bold;
   font-family: $font-family-primary-medium;
   margin-bottom: 0;
@@ -119,7 +124,7 @@ const togglePassword = () => {
   color: $black;
   font-family: $font-family-primary-regular;
   outline: none;
-  transition: border 0.2s;
+  transition: border 0.2s, background 0.2s;
 
   &:focus {
     border: 1.5px solid $black;
@@ -133,6 +138,15 @@ const togglePassword = () => {
     background: #f5f5f5;
     color: #bbb;
     cursor: not-allowed;
+  }
+
+  &--error {
+    border-color: #dc3545;
+    background-color: #fff8f8;
+
+    &:focus {
+      border-color: #dc3545;
+    }
   }
 }
 
@@ -154,5 +168,12 @@ const togglePassword = () => {
   &:hover {
     color: $black;
   }
+}
+
+.form-input__error {
+  font-size: $font-size-xs;
+  color: #dc3545;
+  margin-top: 0;
+  font-family: $font-family-primary-regular;
 }
 </style> 

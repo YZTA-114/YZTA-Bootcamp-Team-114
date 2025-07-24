@@ -16,7 +16,7 @@
       <span class="login-form__divider-line"></span>
     </div>
 
-    <form class="login-form__form" @submit.prevent="handleSubmit">
+    <form class="login-form__form" @submit.prevent="submitForm">
       <FormInput
         v-model="form.email"
         type="email"
@@ -24,6 +24,7 @@
         placeholder="E-posta adresinizi girin"
         id="login-email"
         required
+        :error="v$.email.$errors.length > 0 ? v$.email.$errors[0].$message : ''"
       />
       
       <FormInput
@@ -33,14 +34,15 @@
         placeholder="Şifrenizi girin"
         id="login-password"
         required
+        :error="v$.password.$errors.length > 0 ? v$.password.$errors[0].$message : ''"
       />
 
       <div class="login-form__forgot">
         <router-link :to="{ name: 'forgot-password' }">Şifremi Unuttum?</router-link>
       </div>
 
-      <button type="submit" class="login-form__submit">
-        GİRİŞ YAP
+      <button type="submit" class="login-form__submit" :disabled="isLoading">
+        {{ isLoading ? 'Giriş Yapılıyor...' : 'GİRİŞ YAP' }}
       </button>
     </form>
 
@@ -54,15 +56,53 @@
 import { ref } from 'vue'
 import FormInput from '@/components/custom/form/FormInput.vue'
 import SocialLoginButton from '@/components/custom/form/SocialLoginButton.vue'
+import { useStore } from 'vuex';
+import { useAsyncState } from '@vueuse/core';
+import useVuelidate from '@vuelidate/core';
+import { required, email, maxLength, helpers, minLength } from '@vuelidate/validators';
+import { useToast } from 'vue-toastification';
+
+const store = useStore();
+const toast = useToast();
 
 const form = ref({
-  email: 'sadeghsadegil999@gmail.com',
-  password: '••••••••'
-})
+  email: '',
+  password: ''
+});
 
-const handleSubmit = () => {
-  console.log('Login form submitted:', form.value)
+const rules = {
+  email: {
+    required: helpers.withMessage('E-posta adresi zorunludur.', required),
+    maxLength: helpers.withMessage('E-posta adresi 50 karakterden uzun olamaz.', maxLength(50)),
+    email: helpers.withMessage('Lütfen geçerli bir e-posta adresi giriniz.', email)
+  },
+  password: {
+    required: helpers.withMessage('Şifre zorunludur.', required),
+    maxLength: helpers.withMessage('Şifre 50 karakterden uzun olamaz.', maxLength(50)),
+    minLength: helpers.withMessage('Şifre en az 6 karakter olmalıdır.', minLength(6)),
+  }
 }
+
+const v$ = useVuelidate(rules, form);
+
+const handleSubmit = async () => {
+  await store.dispatch('auth/userLogin', form.value).then(() => {
+    /* router.push('/student/dashboard'); */
+    toast.success('Giriş başarılı');
+  }).catch((error) => {
+    toast.error(error.message);
+  });
+}
+
+const { isLoading, execute: submitForm } = useAsyncState(async () => {
+  const result = await v$.value.$validate();
+  if(result) {
+    await handleSubmit();
+  } else {
+    // Touch all fields to show errors immediately
+    v$.value.$touch();
+  }
+}, { immediate: false });
 
 const handleGoogleLogin = () => {
   console.log('Google login clicked')
@@ -93,7 +133,7 @@ const handleAppleLogin = () => {
 .login-form__title {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $black;
+  color: $white;
   margin: 0 0 $space-xs 0;
   font-family: $font-family-primary-bold;
   line-height: 1.2;
@@ -145,7 +185,7 @@ const handleAppleLogin = () => {
 }
 
 .login-form__forgot a {
-  color: $black;
+  color: $white;
   text-decoration: none;
   font-size: $font-size-xs;
   font-weight: $font-weight-semi-bold;
@@ -153,15 +193,15 @@ const handleAppleLogin = () => {
   transition: color 0.2s;
 
   &:hover {
-    color: #666;
+    color: #efefef;
   }
 }
 
 .login-form__submit {
   width: 100%;
   padding: $space-s 0;
-  background: $black;
-  color: $white;
+  background: $white;
+  color: $black;
   border: none;
   border-radius: 0.5rem;
   font-size: $font-size-s;
@@ -173,7 +213,7 @@ const handleAppleLogin = () => {
   letter-spacing: 0.05em;
 
   &:hover {
-    background: #333;
+    background: #efefef;
   }
 
   &:active {
@@ -188,14 +228,14 @@ const handleAppleLogin = () => {
   font-family: $font-family-primary-regular;
 
   a {
-    color: $black;
+    color: $white;
     text-decoration: none;
     font-weight: $font-weight-semi-bold;
     font-family: $font-family-primary-medium;
     transition: color 0.2s;
 
     &:hover {
-      color: #333;
+      color: #efefef;
     }
   }
 }
