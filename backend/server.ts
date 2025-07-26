@@ -31,6 +31,10 @@ const classrooms = require("./routes/classroom/classroomRoute");
 const classroomParticipations = require("./routes/classroom/classroomParticipationRoute");
 const lessons = require("./routes/classroom/lessonRoute");
 const resources = require("./routes/classroom/resourceRoute");
+const quizzes = require("./routes/quiz/quiz");
+const quizQuestions = require("./routes/quiz/question");
+const quizTakes = require("./routes/quiz/quizTake");
+const quizResponses = require("./routes/quiz/response");
 
 const cors = require("cors");
 const app = express();
@@ -125,6 +129,10 @@ app.use("/api/v1/classrooms", classrooms);
 app.use("/api/v1/classroomParticipations", classroomParticipations);
 app.use("/api/v1/lessons", lessons);
 app.use("/api/v1/resources", resources);
+app.use("/api/v1/quizzes", quizzes);
+app.use("/api/v1/quiz-questions", quizQuestions);
+app.use("/api/v1/quiz-takes", quizTakes);
+app.use("/api/v1/quiz-responses", quizResponses);
 
 // Error handler with performance logging
 app.use(errorHandler);
