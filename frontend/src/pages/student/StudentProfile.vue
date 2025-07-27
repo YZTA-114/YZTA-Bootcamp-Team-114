@@ -679,34 +679,47 @@ export default {
       background: rgba(255,255,255,0.1);
       color: #fff;
     }
-    .dropdown-empty {
-      padding: 16px 18px;
-      color: #bbb;
-      text-align: center;
-      font-size: 1rem;
-    }
     .dropdown-footer {
-      padding: 10px 18px 0 18px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      margin-top: 8px;
-      text-align: right;
+      padding: 8px 18px 12px 18px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 4px;
+      display: flex;
+      justify-content: flex-end;
+      background: #232323;
+      border-radius: 0 0 12px 12px;
     }
     .join-class-btn {
+      width: 100%;
+      padding: 10px 16px;
       background: $orange;
       color: #fff;
       border: none;
       border-radius: 8px;
-      padding: 10px 22px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      transition: background 0.2s;
+      transition: all 0.2s ease;
+      &:hover {
+        background: darken($orange, 10%);
+        transform: translateY(-1px);
+      }
+      &:active {
+        transform: translateY(0);
+      }
     }
-    .join-class-btn:hover {
-      background: darken($orange, 10%);
+    .dropdown-empty {
+      padding: 16px 18px;
+      color: #888;
+      font-size: 1rem;
+      text-align: center;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   }
 }

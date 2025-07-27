@@ -222,7 +222,8 @@ defineProps({
 // Emits
 const emit = defineEmits(['logout', 'profile', 'settings'])
 
-// Reactive data
+const SIDEBAR_COLLAPSE_KEY = 'dashboardSidebarCollapsed'
+
 const isSidebarCollapsed = ref(true)
 const isUserMenuOpen = ref(false)
 const isNotificationMenuOpen = ref(false)
@@ -232,6 +233,7 @@ const isMobile = ref(false)
 // Methods
 const toggleSidebar = () => {
   isSidebarCollapsed.value = !isSidebarCollapsed.value
+  localStorage.setItem(SIDEBAR_COLLAPSE_KEY, isSidebarCollapsed.value ? '1' : '0')
 }
 
 const closeSidebar = () => {
@@ -283,6 +285,11 @@ const handleResize = () => {
 onMounted(() => {
   handleResize()
   window.addEventListener('resize', handleResize)
+  // Sidebar durumunu localStorage'dan yükle
+  const saved = localStorage.getItem(SIDEBAR_COLLAPSE_KEY)
+  if (saved !== null) {
+    isSidebarCollapsed.value = saved === '1'
+  }
 })
 
 onUnmounted(() => {
