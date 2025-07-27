@@ -335,13 +335,13 @@
     cursor: pointer;
 
     &:hover {
-      color: $white;
-      background-color: rgba($white, 0.1);
+      color: $orange;
+      background-color: rgba($orange, 0.08);
     }
 
     &.active {
-      color: $white;
-      background-color: rgba($white, 0.15);
+      color: $orange;
+      background-color: rgba($orange, 0.15);
       font-weight: $font-weight-semi-bold;
       font-family: $font-family-primary-medium;
 
@@ -352,7 +352,7 @@
         top: 0;
         bottom: 0;
         width: 4px;
-        background-color: $yellow;
+        background-color: $orange;
       }
     }
 
@@ -364,6 +364,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      color: $orange;
     }
 
     .nav-text {

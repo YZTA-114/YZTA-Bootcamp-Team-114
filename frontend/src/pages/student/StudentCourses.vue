@@ -9,6 +9,9 @@
     @profile="handleProfile"
     @settings="handleSettings"
   >
+    <template #breadcrumb>
+      <span>Dersler</span>
+    </template>
     <template #sidebar-nav>
       <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
     </template>
@@ -91,9 +94,8 @@ const isSidebarCollapsed = ref(false)
 const navItems = ref([
   { id: 'dashboard', label: 'Dashboard', path: '/student/dashboard', icon: 'ri-dashboard-line' },
   { id: 'courses', label: 'Dersler', path: '/student/courses', icon: 'ri-book-line' },
-  { id: 'assignments', label: 'Quizler', path: '/student/assignments', icon: 'ri-task-line' },
-  { id: 'documents', label: 'Dokümanlarım', path: '/student/documents', icon: 'ri-file-text-line' },
-  { id: 'calendar', label: 'Takvim', path: '/student/calendar', icon: 'ri-calendar-line' },
+  { id: 'quizzes', label: 'Quizler', path: '/student/quizzes', icon: 'ri-task-line' },
+  { id: 'documents', label: 'Dökümanlar', path: '/student/documents', icon: 'ri-file-text-line' },
   { id: 'profile', label: 'Profil', path: '/student/profile', icon: 'ri-user-line' }
 ])
 
@@ -168,14 +170,14 @@ const handleSettings = () => router.push('/student/settings')
     min-width: 0;
     
     .courses-header-block {
-      background: $yellow;
+      background: $orange;
       border-radius: $space-s;
       padding: $space-xl $space-xl $space-m $space-xl;
       margin-bottom: $space-xs;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      box-shadow: 0 4px 16px rgba($yellow, 0.10);
+      box-shadow: 0 4px 16px rgba($orange, 0.10);
       @media (max-width: 600px) {
         padding: $space-m $space-s $space-xs $space-s;
       }
@@ -196,7 +198,7 @@ const handleSettings = () => router.push('/student/settings')
         border: none;
         font-size: $font-size-m;
         font-weight: $font-weight-semi-bold;
-        color: $yellow;
+        color: $orange;
         padding: 0 0 $space-3xs 0;
         border-bottom: 2px solid transparent;
         cursor: pointer;
@@ -204,7 +206,7 @@ const handleSettings = () => router.push('/student/settings')
         font-family: $font-family-primary-medium;
         &.active {
           color: $grey;
-          border-bottom: 2.5px solid $yellow;
+          border-bottom: 2.5px solid $orange;
           font-weight: $font-weight-bold;
         }
       }
@@ -225,7 +227,7 @@ const handleSettings = () => router.push('/student/settings')
         &:hover {
           box-shadow: 0 8px 32px rgba($black, 0.10);
           transform: translateY(-2px) scale(1.01);
-          border-color: rgba($yellow, 0.18);
+          border-color: rgba($orange, 0.18);
         }
         .course-card-img {
           width: 110px;
@@ -264,7 +266,7 @@ const handleSettings = () => router.push('/student/settings')
               align-items: center;
               gap: $space-3xs;
               font-size: $font-size-m;
-              color: $yellow;
+              color: $orange;
               i {
                 font-size: $font-size-m;
               }
@@ -288,7 +290,7 @@ const handleSettings = () => router.push('/student/settings')
               border-radius: $space-3xs;
               padding: 2px 10px;
               font-weight: $font-weight-semi-bold;
-              border: 1px solid $yellow;
+              border: 1px solid $orange;
             }
           }
           .course-footer {
@@ -301,7 +303,7 @@ const handleSettings = () => router.push('/student/settings')
               font-size: $font-size-xs;
             }
             .view-more {
-              background: $yellow;
+              background: $orange;
               color: $white;
               border: none;
               border-radius: $space-xs;
@@ -353,7 +355,7 @@ const handleSettings = () => router.push('/student/settings')
             cursor: pointer;
             transition: color 0.2s;
             &:hover {
-              color: $yellow;
+              color: $orange;
             }
           }
         }
@@ -377,12 +379,12 @@ const handleSettings = () => router.push('/student/settings')
           }
           &.today {
             .day-num {
-              color: $yellow;
+              color: $orange;
             }
             .dot {
               width: 6px;
               height: 6px;
-              background: $yellow;
+              background: $orange;
               border-radius: 50%;
               margin-top: 2px;
             }

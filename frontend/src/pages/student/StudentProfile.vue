@@ -9,6 +9,9 @@
     @profile="handleProfile"
     @settings="handleSettings"
   >
+    <template #breadcrumb>
+      <span>Profil</span>
+    </template>
     <template #sidebar-classroom-dropdown>
       <div class="sidebar-classroom-dropdown modern-dropdown">
         <div class="dropdown-selected" @click="dropdownOpen = !dropdownOpen">
@@ -185,22 +188,16 @@ export default {
           icon: 'ri-book-line'
         },
         {
-          id: 'assignments',
+          id: 'quizzes',
           label: 'Quizler',
-          path: '/student/assignments',
+          path: '/student/quizzes',
           icon: 'ri-task-line'
         },
         {
           id: 'documents',
-          label: 'Dokümanlarım',
+          label: 'Dökümanlar',
           path: '/student/documents',
           icon: 'ri-file-text-line'
-        },
-        {
-          id: 'calendar',
-          label: 'Takvim',
-          path: '/student/calendar',
-          icon: 'ri-calendar-line'
         },
         {
           id: 'profile',

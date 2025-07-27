@@ -6,6 +6,9 @@
     :current-page="'Dokümanlar'"
     :notification-count="notificationCount"
   >
+    <template #breadcrumb>
+      <span>Dökümanlar</span>
+    </template>
     <template #sidebar-nav>
       <DashboardNav :nav-items="navItems" :collapsed="false" />
     </template>
@@ -576,22 +579,16 @@ const navItems = ref([
     icon: 'ri-book-line'
   },
   {
-    id: 'assignments',
+    id: 'quizzes',
     label: 'Quizler',
-    path: '/student/assignments',
+    path: '/student/quizzes',
     icon: 'ri-task-line'
   },
   {
     id: 'documents',
-    label: 'Dokümanlarım',
+    label: 'Dökümanlar',
     path: '/student/documents',
     icon: 'ri-file-text-line'
-  },
-  {
-    id: 'calendar',
-    label: 'Takvim',
-    path: '/student/calendar',
-    icon: 'ri-calendar-line'
   },
   {
     id: 'profile',

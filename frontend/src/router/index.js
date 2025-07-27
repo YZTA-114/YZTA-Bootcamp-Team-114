@@ -53,9 +53,9 @@ const routes = [
         component: () => import('@/pages/student/StudentCourses.vue')
       },
       {
-        path: 'quizzes/:quizId',
-        name: 'take-quiz',
-        component: () => import('@/pages/student/TakeQuiz.vue')
+        path: 'quizzes',
+        name: 'student-quizzes',
+        component: () => import('@/pages/student/StudentQuizzes.vue')
       },
       {
         path: 'profile',
