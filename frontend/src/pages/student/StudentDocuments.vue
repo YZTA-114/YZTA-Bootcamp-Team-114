@@ -6,528 +6,579 @@
     :current-page="'Dokümanlar'"
     :notification-count="notificationCount"
   >
+    <template #breadcrumb>
+      <span>Dökümanlar</span>
+    </template>
     <template #sidebar-nav>
       <DashboardNav :nav-items="navItems" :collapsed="false" />
     </template>
+    <template #sidebar-classroom-dropdown>
+      <div class="sidebar-classroom-dropdown modern-dropdown">
+        <div class="dropdown-selected" @click="dropdownOpen = !dropdownOpen">
+          <span class="dropdown-selected-title">{{ selectedClassroom.name }}</span>
+          <span class="dropdown-arrow" :class="{ open: dropdownOpen }">▼</span>
+        </div>
+        <div v-if="dropdownOpen" class="dropdown-list">
+          <div class="dropdown-header">Sınıflar</div>
+          <div class="dropdown-search-wrapper">
+            <input type="text" v-model="classroomSearch" placeholder="Sınıf ara..." class="dropdown-search" />
+          </div>
+          <div class="dropdown-items">
+            <div
+              v-for="classroom in filteredClassrooms"
+              :key="classroom.id"
+              class="dropdown-item"
+              :class="{ selected: classroom.id === selectedClassroom.id }"
+              @click="selectClassroom(classroom)"
+            >
+              {{ classroom.name }}
+            </div>
+            <div v-if="filteredClassrooms.length === 0" class="dropdown-empty">Sonuç bulunamadı</div>
+          </div>
+          <div class="dropdown-footer">
+            <button class="join-class-btn" @click="joinNewClass">
+              <ri-add-line />
+              Yeni Sınıfa Katıl
+            </button>
+          </div>
+        </div>
+      </div>
+    </template>
     <template #content>
       <div class="student-documents">
-        <!-- Header Section -->
-        <div class="documents-header">
-          <div class="header-left">
-        <h1>Dokümanlar</h1>
-            <p class="document-count">Toplam {{ documents.length }} dokümanınız var</p>
+        <div class="documents-header-block">
+          <h1>Dokümanlar</h1>
+          <p class="document-count">Toplam {{ documents.length }} dokümanınız var</p>
+        </div>
+        <div class="documents-content-wrapper">
+          <div class="documents-header">
+            <div class="header-left">
+              <!-- <p class="document-count">Toplam {{ documents.length }} dokümanınız var</p> -->
+            </div>
+            <div class="header-right">
+              <div class="header-actions">
+                <button 
+                  @click="showUploadModal = true"
+                  class="upload-btn"
+                  title="Doküman Ekle"
+                >
+                  <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17,8 12,3 7,8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  <span>Doküman Ekle</span>
+                </button>
+                
+                <div class="view-controls">
+                  <div class="view-mode-dropdown">
+                    <button 
+                      @click="toggleViewModeDropdown"
+                      class="view-mode-toggle-btn"
+                      title="Görünüm Modunu Değiştir"
+                    >
+                      <span>Görünüm Modu</span>
+                      <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 4v6h6"/>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                      </svg>
+                    </button>
+                    
+                    <div v-if="showViewModeDropdown" class="view-mode-options">
+                      <div class="view-mode-header">
+                        <h4>Görünüm Seçenekleri</h4>
+                        <button class="close-view-mode-btn" @click="toggleViewModeDropdown">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                          </svg>
+                        </button>
+                      </div>
+                      <div class="view-mode-buttons">
+                        <button 
+                          @click="selectViewMode('grid')" 
+                          :class="{ active: viewMode === 'grid' }"
+                          class="view-option-btn"
+                        >
+                          <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                          </svg>
+                          <span>Grid Görünümü</span>
+                        </button>
+                        <button 
+                          @click="selectViewMode('list')" 
+                          :class="{ active: viewMode === 'list' }"
+                          class="view-option-btn"
+                        >
+                          <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="8" y1="6" x2="21" y2="6"/>
+                            <line x1="8" y1="12" x2="21" y2="12"/>
+                            <line x1="8" y1="18" x2="21" y2="18"/>
+                            <line x1="3" y1="6" x2="3.01" y2="6"/>
+                            <line x1="3" y1="12" x2="3.01" y2="12"/>
+                            <line x1="3" y1="18" x2="3.01" y2="18"/>
+                          </svg>
+                          <span>Liste Görünümü</span>
+                        </button>
+                        <button 
+                          @click="selectViewMode('compact')" 
+                          :class="{ active: viewMode === 'compact' }"
+                          class="view-option-btn"
+                        >
+                          <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="8" y1="6" x2="21" y2="6"/>
+                            <line x1="8" y1="12" x2="21" y2="12"/>
+                            <line x1="8" y1="18" x2="21" y2="18"/>
+                            <line x1="3" y1="6" x2="3.01" y2="6"/>
+                            <line x1="3" y1="12" x2="3.01" y2="12"/>
+                            <line x1="3" y1="18" x2="3.01" y2="18"/>
+                          </svg>
+                          <span>Kompakt Görünümü</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="header-right">
-            <div class="header-actions">
+
+          <!-- Search and Filter Bar -->
+          <div class="documents-search-bar">
+            <div class="search-input-wrapper">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input v-model="search" placeholder="Doküman ara..." />
+            </div>
+            
+            <!-- Course Dropdown -->
+            <div class="filter-dropdown">
               <button 
-                @click="showUploadModal = true"
-                class="upload-btn"
-                title="Doküman Ekle"
+                @click="toggleCourseDropdown"
+                class="filter-dropdown-btn"
+                :class="{ active: showCourseDropdown }"
               >
-                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="17,8 12,3 7,8"/>
-                  <line x1="12" y1="3" x2="12" y2="15"/>
+                <div class="filter-btn-content">
+                  <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22,4 12,14.01 9,11.01"/>
+                  </svg>
+                  <span class="filter-text">{{ selectedCourse || 'Tüm Dersler' }}</span>
+                </div>
+                <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6,9 12,15 18,9"></polyline>
                 </svg>
-                <span>Doküman Ekle</span>
               </button>
               
-              <div class="view-controls">
-                <div class="view-mode-dropdown">
+              <div v-if="showCourseDropdown" class="filter-dropdown-menu">
+                <div class="dropdown-header">
+                  <h4>Ders Seçin</h4>
+                  <button class="close-dropdown-btn" @click="toggleCourseDropdown">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+                <div class="dropdown-options">
                   <button 
-                    @click="toggleViewModeDropdown"
-                    class="view-mode-toggle-btn"
-                    title="Görünüm Modunu Değiştir"
+                    @click="selectCourse('')"
+                    class="dropdown-option"
+                    :class="{ selected: selectedCourse === '' }"
                   >
-                    <span>Görünüm Modu</span>
-                    <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M1 4v6h6"/>
-                      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                    <span>Tüm Dersler</span>
+                    <svg v-if="selectedCourse === ''" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20,6 9,17 4,12"></polyline>
                     </svg>
                   </button>
-                  
-                  <div v-if="showViewModeDropdown" class="view-mode-options">
-                    <div class="view-mode-header">
-                      <h4>Görünüm Seçenekleri</h4>
-                      <button class="close-view-mode-btn" @click="toggleViewModeDropdown">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <line x1="18" y1="6" x2="6" y2="18"/>
-                          <line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                      </button>
-                    </div>
-                    <div class="view-mode-buttons">
-                      <button 
-                        @click="selectViewMode('grid')" 
-                        :class="{ active: viewMode === 'grid' }"
-                        class="view-option-btn"
-                      >
-                        <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <rect x="3" y="3" width="7" height="7"/>
-                          <rect x="14" y="3" width="7" height="7"/>
-                          <rect x="14" y="14" width="7" height="7"/>
-                          <rect x="3" y="14" width="7" height="7"/>
-                        </svg>
-                        <span>Grid Görünümü</span>
-                      </button>
-                      <button 
-                        @click="selectViewMode('list')" 
-                        :class="{ active: viewMode === 'list' }"
-                        class="view-option-btn"
-                      >
-                        <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <line x1="8" y1="6" x2="21" y2="6"/>
-                          <line x1="8" y1="12" x2="21" y2="12"/>
-                          <line x1="8" y1="18" x2="21" y2="18"/>
-                          <line x1="3" y1="6" x2="3.01" y2="6"/>
-                          <line x1="3" y1="12" x2="3.01" y2="12"/>
-                          <line x1="3" y1="18" x2="3.01" y2="18"/>
-                        </svg>
-                        <span>Liste Görünümü</span>
-                      </button>
-                      <button 
-                        @click="selectViewMode('compact')" 
-                        :class="{ active: viewMode === 'compact' }"
-                        class="view-option-btn"
-                      >
-                        <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <line x1="8" y1="6" x2="21" y2="6"/>
-                          <line x1="8" y1="12" x2="21" y2="12"/>
-                          <line x1="8" y1="18" x2="21" y2="18"/>
-                          <line x1="3" y1="6" x2="3.01" y2="6"/>
-                          <line x1="3" y1="12" x2="3.01" y2="12"/>
-                          <line x1="3" y1="18" x2="3.01" y2="18"/>
-                        </svg>
-                        <span>Kompakt Görünümü</span>
-                      </button>
-                    </div>
-                  </div>
+                  <button 
+                    v-for="c in courses" 
+                    :key="c"
+                    @click="selectCourse(c)"
+                    class="dropdown-option"
+                    :class="{ selected: selectedCourse === c }"
+                  >
+                    <span>{{ c }}</span>
+                    <svg v-if="selectedCourse === c" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category Dropdown -->
+            <div class="filter-dropdown">
+              <button 
+                @click="toggleCategoryDropdown"
+                class="filter-dropdown-btn"
+                :class="{ active: showCategoryDropdown }"
+              >
+                <div class="filter-btn-content">
+                  <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"/>
+                  </svg>
+                  <span class="filter-text">{{ selectedCategory || 'Tüm Kategoriler' }}</span>
+                </div>
+                <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6,9 12,15 18,9"></polyline>
+                </svg>
+              </button>
+              
+              <div v-if="showCategoryDropdown" class="filter-dropdown-menu">
+                <div class="dropdown-header">
+                  <h4>Kategori Seçin</h4>
+                  <button class="close-dropdown-btn" @click="toggleCategoryDropdown">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+                <div class="dropdown-options">
+                  <button 
+                    @click="selectCategory('')"
+                    class="dropdown-option"
+                    :class="{ selected: selectedCategory === '' }"
+                  >
+                    <span>Tüm Kategoriler</span>
+                    <svg v-if="selectedCategory === ''" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                  </button>
+                  <button 
+                    v-for="cat in categories" 
+                    :key="cat"
+                    @click="selectCategory(cat)"
+                    class="dropdown-option"
+                    :class="{ selected: selectedCategory === cat }"
+                  >
+                    <span>{{ cat }}</span>
+                    <svg v-if="selectedCategory === cat" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Search and Filter Bar -->
-        <div class="documents-search-bar">
-          <div class="search-input-wrapper">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.35-4.35"/>
-            </svg>
-            <input v-model="search" placeholder="Doküman ara..." />
-          </div>
           
-          <!-- Course Dropdown -->
-          <div class="filter-dropdown">
-            <button 
-              @click="toggleCourseDropdown"
-              class="filter-dropdown-btn"
-              :class="{ active: showCourseDropdown }"
-            >
-              <div class="filter-btn-content">
-                <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                  <polyline points="22,4 12,14.01 9,11.01"/>
-                </svg>
-                <span class="filter-text">{{ selectedCourse || 'Tüm Dersler' }}</span>
-              </div>
-              <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="6,9 12,15 18,9"></polyline>
-              </svg>
-            </button>
-            
-            <div v-if="showCourseDropdown" class="filter-dropdown-menu">
-              <div class="dropdown-header">
-                <h4>Ders Seçin</h4>
-                <button class="close-dropdown-btn" @click="toggleCourseDropdown">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
-              </div>
-              <div class="dropdown-options">
-                <button 
-                  @click="selectCourse('')"
-                  class="dropdown-option"
-                  :class="{ selected: selectedCourse === '' }"
-                >
-                  <span>Tüm Dersler</span>
-                  <svg v-if="selectedCourse === ''" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="20,6 9,17 4,12"></polyline>
-                  </svg>
-                </button>
-                <button 
-                  v-for="c in courses" 
-                  :key="c"
-                  @click="selectCourse(c)"
-                  class="dropdown-option"
-                  :class="{ selected: selectedCourse === c }"
-                >
-                  <span>{{ c }}</span>
-                  <svg v-if="selectedCourse === c" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="20,6 9,17 4,12"></polyline>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
 
-          <!-- Category Dropdown -->
-          <div class="filter-dropdown">
-            <button 
-              @click="toggleCategoryDropdown"
-              class="filter-dropdown-btn"
-              :class="{ active: showCategoryDropdown }"
-            >
-              <div class="filter-btn-content">
-                <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"/>
-                </svg>
-                <span class="filter-text">{{ selectedCategory || 'Tüm Kategoriler' }}</span>
-              </div>
-              <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="6,9 12,15 18,9"></polyline>
-              </svg>
-            </button>
-            
-            <div v-if="showCategoryDropdown" class="filter-dropdown-menu">
-              <div class="dropdown-header">
-                <h4>Kategori Seçin</h4>
-                <button class="close-dropdown-btn" @click="toggleCategoryDropdown">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
-              </div>
-              <div class="dropdown-options">
-                <button 
-                  @click="selectCategory('')"
-                  class="dropdown-option"
-                  :class="{ selected: selectedCategory === '' }"
-                >
-                  <span>Tüm Kategoriler</span>
-                  <svg v-if="selectedCategory === ''" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="20,6 9,17 4,12"></polyline>
-                  </svg>
-                </button>
-                <button 
-                  v-for="cat in categories" 
-                  :key="cat"
-                  @click="selectCategory(cat)"
-                  class="dropdown-option"
-                  :class="{ selected: selectedCategory === cat }"
-                >
-                  <span>{{ cat }}</span>
-                  <svg v-if="selectedCategory === cat" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="20,6 9,17 4,12"></polyline>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        
-
-        <!-- Documents Content -->
-        <div class="documents-content">
-          <!-- Grid View -->
-          <div v-if="viewMode === 'grid'" class="documents-grid">
-            <div 
-              v-for="doc in filteredDocuments" 
-              :key="doc.id" 
-              class="document-card"
-              @click="selectDocument(doc)"
-            >
-              <div class="card-header">
-                <span class="category-tag" :class="getCategoryClass(doc.category)">{{ doc.category }}</span>
-                <button class="more-options">
-                  <i class="ri-more-2-fill"></i>
-                </button>
-              </div>
-              <div class="document-preview">
-                <i class="ri-file-text-line"></i>
-              </div>
-              <div class="card-content">
-                <h4 class="document-title">{{ doc.title }}</h4>
-                <p class="document-author">{{ doc.teacher }}</p>
-                <p class="document-date">{{ formatDate(doc.date) }}</p>
-              </div>
-              <div class="card-actions">
-                <div class="action-icons">
-                  <button class="action-icon-btn" @click.stop="previewDocument(doc)" title="Görüntüle">
-                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  </button>
-                  <button class="action-icon-btn" @click.stop="downloadDocument(doc)" title="İndir">
-                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7,10 12,15 17,10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                  </button>
-                  <button class="action-icon-btn delete-btn" @click.stop="deleteDocument(doc)" title="Sil">
-                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="3,6 5,6 21,6"/>
-                      <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
-                      <line x1="10" y1="11" x2="10" y2="17"/>
-                      <line x1="14" y1="11" x2="14" y2="17"/>
-                    </svg>
+          <!-- Documents Content -->
+          <div class="documents-content">
+            <!-- Grid View -->
+            <div v-if="viewMode === 'grid'" class="documents-grid">
+              <div 
+                v-for="doc in filteredDocuments" 
+                :key="doc.id" 
+                class="document-card"
+                @click="selectDocument(doc)"
+              >
+                <div class="card-header">
+                  <span class="category-tag" :class="getCategoryClass(doc.category)">{{ doc.category }}</span>
+                  <button class="more-options">
+                    <i class="ri-more-2-fill"></i>
                   </button>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- List View -->
-          <div v-else-if="viewMode === 'list'" class="documents-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Doküman Adı</th>
-                  <th>Kategori</th>
-                  <th>Öğretmen</th>
-                  <th>Ders</th>
-                  <th>Tarih</th>
-                  <th>İşlemler</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="doc in filteredDocuments" :key="doc.id">
-                  <td>
-                    <div class="document-info">
-                      <i class="ri-file-text-line"></i>
-                      <span>{{ doc.title }}</span>
+                <div class="document-preview">
+                  <div class="preview-image">
+                    <img 
+                      :src="doc.fileType === 'pdf' ? 'https://via.placeholder.com/300x400/4caf50/ffffff?text=PDF+Dokümanı' : 
+                           doc.fileType === 'doc' || doc.fileType === 'docx' ? 'https://via.placeholder.com/300x400/2196f3/ffffff?text=Word+Dokümanı' :
+                           doc.fileType === 'ppt' || doc.fileType === 'pptx' ? 'https://via.placeholder.com/300x400/ff9800/ffffff?text=PowerPoint+Sunumu' :
+                           doc.fileType === 'xls' || doc.fileType === 'xlsx' ? 'https://via.placeholder.com/300x400/9c27b0/ffffff?text=Excel+Tablosu' :
+                           'https://via.placeholder.com/300x400/666666/ffffff?text=Doküman'" 
+                      :alt="doc.title" 
+                    />
+                    <div class="file-type-overlay">
+                      <span class="file-type-badge">{{ doc.fileType ? doc.fileType.toUpperCase() : 'PDF' }}</span>
                     </div>
-                  </td>
-                  <td>
-                    <span class="category-badge" :class="getCategoryClass(doc.category)">{{ doc.category }}</span>
-                  </td>
-                  <td>{{ doc.teacher }}</td>
-                  <td>{{ doc.course }}</td>
-                  <td>{{ formatDate(doc.date) }}</td>
+                  </div>
+                </div>
+                <div class="card-content">
+                  <h4 class="document-title">{{ doc.title }}</h4>
+                  <p class="document-author">{{ doc.teacher }}</p>
+                  <p class="document-date">{{ formatDate(doc.date) }}</p>
+                </div>
+                <div class="card-actions">
+                  <div class="action-icons">
+                    <button class="action-icon-btn" @click.stop="previewDocument(doc)" title="Görüntüle">
+                      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    </button>
+                    <button class="action-icon-btn" @click.stop="downloadDocument(doc)" title="İndir">
+                      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                      </svg>
+                    </button>
+                    <button class="action-icon-btn delete-btn" @click.stop="deleteDocument(doc)" title="Sil">
+                      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"/>
+                        <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
+                        <line x1="10" y1="11" x2="10" y2="17"/>
+                        <line x1="14" y1="11" x2="14" y2="17"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- List View -->
+            <div v-else-if="viewMode === 'list'" class="documents-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Doküman Adı</th>
+                    <th>Kategori</th>
+                    <th>Öğretmen</th>
+                    <th>Ders</th>
+                    <th>Tarih</th>
+                    <th>İşlemler</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="doc in filteredDocuments" :key="doc.id">
+                    <td>
+                      <div class="document-info">
+                        <i class="ri-file-text-line"></i>
+                        <span>{{ doc.title }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="category-badge" :class="getCategoryClass(doc.category)">{{ doc.category }}</span>
+                    </td>
+                    <td>{{ doc.teacher }}</td>
+                    <td>{{ doc.course }}</td>
+                    <td>{{ formatDate(doc.date) }}</td>
                                      <td>
-                     <div class="action-buttons">
-                       <button class="action-btn" @click="previewDocument(doc)" title="Görüntüle">
-                         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                           <circle cx="12" cy="12" r="3"/>
-                         </svg>
-                       </button>
-                       <button class="action-btn" @click="downloadDocument(doc)" title="İndir">
-                         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                           <polyline points="7,10 12,15 17,10"/>
-                           <line x1="12" y1="15" x2="12" y2="3"/>
-                         </svg>
-                       </button>
-                       <button class="action-btn delete-btn" @click="deleteDocument(doc)" title="Sil">
-                         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                           <polyline points="3,6 5,6 21,6"/>
-                           <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
-                           <line x1="10" y1="11" x2="10" y2="17"/>
-                           <line x1="14" y1="11" x2="14" y2="17"/>
-                         </svg>
-                       </button>
-                     </div>
-                   </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                       <div class="action-buttons">
+                         <button class="action-btn" @click="previewDocument(doc)" title="Görüntüle">
+                           <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                             <circle cx="12" cy="12" r="3"/>
+                           </svg>
+                         </button>
+                         <button class="action-btn" @click="downloadDocument(doc)" title="İndir">
+                           <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                             <polyline points="7,10 12,15 17,10"/>
+                             <line x1="12" y1="15" x2="12" y2="3"/>
+                           </svg>
+                         </button>
+                         <button class="action-btn delete-btn" @click="deleteDocument(doc)" title="Sil">
+                           <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                             <polyline points="3,6 5,6 21,6"/>
+                             <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
+                             <line x1="10" y1="11" x2="10" y2="17"/>
+                             <line x1="14" y1="11" x2="14" y2="17"/>
+                           </svg>
+                         </button>
+                       </div>
+                     </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-          <!-- Compact View -->
-          <div v-else class="documents-compact">
-            <div v-for="doc in filteredDocuments" :key="doc.id" class="compact-item">
-              <div class="compact-info">
-                <i class="ri-file-text-line"></i>
-                <div class="info-text">
-                  <h4>{{ doc.title }}</h4>
-                  <p>{{ doc.teacher }} • {{ doc.course }} • {{ formatDate(doc.date) }}</p>
+            <!-- Compact View -->
+            <div v-else class="documents-compact">
+              <div v-for="doc in filteredDocuments" :key="doc.id" class="compact-item">
+                <div class="compact-info">
+                  <i class="ri-file-text-line"></i>
+                  <div class="info-text">
+                    <h4>{{ doc.title }}</h4>
+                    <p>{{ doc.teacher }} • {{ doc.course }} • {{ formatDate(doc.date) }}</p>
+                  </div>
                 </div>
-              </div>
                              <div class="compact-actions">
-                 <span class="category-tag" :class="getCategoryClass(doc.category)">{{ doc.category }}</span>
-                 <div class="compact-action-icons">
-                   <button class="action-icon-btn-small" @click="previewDocument(doc)" title="Görüntüle">
-                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                       <circle cx="12" cy="12" r="3"/>
-                     </svg>
-                   </button>
-                   <button class="action-icon-btn-small" @click="downloadDocument(doc)" title="İndir">
-                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                       <polyline points="7,10 12,15 17,10"/>
-                       <line x1="12" y1="15" x2="12" y2="3"/>
-                     </svg>
-                   </button>
-                   <button class="action-icon-btn-small delete-btn" @click="deleteDocument(doc)" title="Sil">
-                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                       <polyline points="3,6 5,6 21,6"/>
-                       <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
-                       <line x1="10" y1="11" x2="10" y2="17"/>
-                       <line x1="14" y1="11" x2="14" y2="17"/>
-                     </svg>
-                   </button>
+                   <span class="category-tag" :class="getCategoryClass(doc.category)">{{ doc.category }}</span>
+                   <div class="compact-action-icons">
+                     <button class="action-icon-btn-small" @click="previewDocument(doc)" title="Görüntüle">
+                       <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                         <circle cx="12" cy="12" r="3"/>
+                       </svg>
+                     </button>
+                     <button class="action-icon-btn-small" @click="downloadDocument(doc)" title="İndir">
+                       <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                         <polyline points="7,10 12,15 17,10"/>
+                         <line x1="12" y1="15" x2="12" y2="3"/>
+                       </svg>
+                     </button>
+                     <button class="action-icon-btn-small delete-btn" @click="deleteDocument(doc)" title="Sil">
+                       <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                         <polyline points="3,6 5,6 21,6"/>
+                         <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
+                         <line x1="10" y1="11" x2="10" y2="17"/>
+                         <line x1="14" y1="11" x2="14" y2="17"/>
+                       </svg>
+                     </button>
+                   </div>
                  </div>
-               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Document Preview Modal -->
-        <div v-if="selectedDoc" class="document-preview-modal" @click="closePreview">
-          <div class="modal-content" @click.stop>
-            <div class="modal-header">
-              <h3>{{ selectedDoc.title }}</h3>
-              <button class="close-btn" @click="closePreview">
-                <i class="ri-close-line"></i>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="document-details">
-                <p><strong>Öğretmen:</strong> {{ selectedDoc.teacher }}</p>
-                <p><strong>Ders:</strong> {{ selectedDoc.course }}</p>
-                <p><strong>Kategori:</strong> {{ selectedDoc.category }}</p>
-                <p><strong>Tarih:</strong> {{ formatDate(selectedDoc.date) }}</p>
-              </div>
-              <div class="document-actions">
-                <button class="primary-btn" @click="downloadDocument(selectedDoc)">
-                  <i class="ri-download-line"></i>
-                  İndir
-                </button>
-                <button class="secondary-btn" @click="closePreview">
-                  Kapat
-                </button>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Upload Document Modal -->
-        <div v-if="showUploadModal" class="document-preview-modal" @click="closeUploadModal">
-          <div class="modal-content upload-modal" @click.stop>
-            <div class="modal-header">
-              <h3>Yeni Doküman Ekle</h3>
-              <button class="close-btn" @click="closeUploadModal">
-                <i class="ri-close-line"></i>
-              </button>
+          <!-- Document Preview Modal -->
+          <div v-if="selectedDoc" class="document-preview-modal" @click="closePreview">
+            <div class="modal-content" @click.stop>
+              <div class="modal-header">
+                <h3>{{ selectedDoc.title }}</h3>
+                <button class="close-btn" @click="closePreview">
+                  <i class="ri-close-line"></i>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="document-details">
+                  <p><strong>Öğretmen:</strong> {{ selectedDoc.teacher }}</p>
+                  <p><strong>Ders:</strong> {{ selectedDoc.course }}</p>
+                  <p><strong>Kategori:</strong> {{ selectedDoc.category }}</p>
+                  <p><strong>Tarih:</strong> {{ formatDate(selectedDoc.date) }}</p>
+                </div>
+                <div class="document-actions">
+                  <button class="primary-btn" @click="downloadDocument(selectedDoc)">
+                    <i class="ri-download-line"></i>
+                    İndir
+                  </button>
+                  <button class="secondary-btn" @click="closePreview">
+                    Kapat
+                  </button>
+                </div>
+              </div>
             </div>
-            <div class="modal-body">
-              <form @submit.prevent="uploadDocument" class="upload-form">
-                <div class="form-group">
-                  <label for="documentTitle">Doküman Başlığı *</label>
-                  <input 
-                    id="documentTitle"
-                    v-model="newDocument.title" 
-                    type="text" 
-                    placeholder="Doküman başlığını girin"
-                    required
-                  />
-                </div>
-                
-                <div class="form-group">
-                  <label for="documentDescription">Açıklama</label>
-                  <textarea 
-                    id="documentDescription"
-                    v-model="newDocument.description" 
-                    placeholder="Doküman açıklaması (opsiyonel)"
-                    rows="3"
-                  ></textarea>
-                </div>
-                
-                <div class="form-row">
+          </div>
+
+          <!-- Upload Document Modal -->
+          <div v-if="showUploadModal" class="document-preview-modal" @click="closeUploadModal">
+            <div class="modal-content upload-modal" @click.stop>
+              <div class="modal-header">
+                <h3>Yeni Doküman Ekle</h3>
+                <button class="close-btn" @click="closeUploadModal">
+                  <i class="ri-close-line"></i>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form @submit.prevent="uploadDocument" class="upload-form">
                   <div class="form-group">
-                    <label for="documentCourse">Ders *</label>
-                    <select 
-                      id="documentCourse"
-                      v-model="newDocument.course" 
+                    <label for="documentTitle">Doküman Başlığı *</label>
+                    <input 
+                      id="documentTitle"
+                      v-model="newDocument.title" 
+                      type="text" 
+                      placeholder="Doküman başlığını girin"
                       required
-                    >
-                      <option value="">Ders seçin</option>
-                      <option v-for="course in courses" :key="course" :value="course">
-                        {{ course }}
-                      </option>
-                    </select>
+                    />
                   </div>
                   
                   <div class="form-group">
-                    <label for="documentCategory">Kategori *</label>
-                    <select 
-                      id="documentCategory"
-                      v-model="newDocument.category" 
-                      required
-                    >
-                      <option value="">Kategori seçin</option>
-                      <option v-for="category in categories" :key="category" :value="category">
-                        {{ category }}
-                      </option>
-                    </select>
+                    <label for="documentDescription">Açıklama</label>
+                    <textarea 
+                      id="documentDescription"
+                      v-model="newDocument.description" 
+                      placeholder="Doküman açıklaması (opsiyonel)"
+                      rows="3"
+                    ></textarea>
                   </div>
-                </div>
-                
-                <div class="form-group">
-                  <label for="documentFile">Dosya Seç *</label>
-                  <div class="file-upload-area" @click="triggerFileInput">
-                    <input 
-                      ref="fileInput"
-                      id="documentFile"
-                      type="file" 
-                      @change="handleFileSelect"
-                      accept=".pdf,.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx"
-                      style="display: none;"
-                    />
-                    <div v-if="!selectedFile" class="upload-placeholder">
-                      <svg class="upload-icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="documentCourse">Ders *</label>
+                      <select 
+                        id="documentCourse"
+                        v-model="newDocument.course" 
+                        required
+                      >
+                        <option value="">Ders seçin</option>
+                        <option v-for="course in courses" :key="course" :value="course">
+                          {{ course }}
+                        </option>
+                      </select>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="documentCategory">Kategori *</label>
+                      <select 
+                        id="documentCategory"
+                        v-model="newDocument.category" 
+                        required
+                      >
+                        <option value="">Kategori seçin</option>
+                        <option v-for="category in categories" :key="category" :value="category">
+                          {{ category }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="documentFile">Dosya Seç *</label>
+                    <div class="file-upload-area" @click="triggerFileInput">
+                      <input 
+                        ref="fileInput"
+                        id="documentFile"
+                        type="file" 
+                        @change="handleFileSelect"
+                        accept=".pdf,.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx"
+                        style="display: none;"
+                      />
+                      <div v-if="!selectedFile" class="upload-placeholder">
+                        <svg class="upload-icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                          <polyline points="17,8 12,3 7,8"/>
+                          <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p>Dosya seçmek için tıklayın veya sürükleyin</p>
+                        <span class="file-types">PDF, DOC, DOCX, TXT, PPT, PPTX, XLS, XLSX</span>
+                      </div>
+                      <div v-else class="selected-file">
+                        <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                          <polyline points="14,2 14,8 20,8"/>
+                          <line x1="16" y1="13" x2="8" y2="13"/>
+                          <line x1="16" y1="17" x2="8" y2="17"/>
+                          <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                        <div class="file-info">
+                          <p class="file-name">{{ selectedFile.name }}</p>
+                          <p class="file-size">{{ formatFileSize(selectedFile.size) }}</p>
+                        </div>
+                        <button type="button" class="remove-file-btn" @click="removeFile">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-actions">
+                    <button type="button" class="secondary-btn" @click="closeUploadModal">
+                      İptal
+                    </button>
+                    <button type="submit" class="primary-btn" :disabled="!isFormValid">
+                      <svg class="upload-icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         <polyline points="17,8 12,3 7,8"/>
                         <line x1="12" y1="3" x2="12" y2="15"/>
                       </svg>
-                      <p>Dosya seçmek için tıklayın veya sürükleyin</p>
-                      <span class="file-types">PDF, DOC, DOCX, TXT, PPT, PPTX, XLS, XLSX</span>
-                    </div>
-                    <div v-else class="selected-file">
-                      <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14,2 14,8 20,8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                        <polyline points="10,9 9,9 8,9"/>
-                      </svg>
-                      <div class="file-info">
-                        <p class="file-name">{{ selectedFile.name }}</p>
-                        <p class="file-size">{{ formatFileSize(selectedFile.size) }}</p>
-                      </div>
-                      <button type="button" class="remove-file-btn" @click="removeFile">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <line x1="18" y1="6" x2="6" y2="18"/>
-                          <line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                      </button>
-                    </div>
+                      Dokümanı Yükle
+                    </button>
                   </div>
-                </div>
-                
-                <div class="form-actions">
-                  <button type="button" class="secondary-btn" @click="closeUploadModal">
-                    İptal
-                  </button>
-                  <button type="submit" class="primary-btn" :disabled="!isFormValid">
-                    <svg class="upload-icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="17,8 12,3 7,8"/>
-                      <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
-                    Dokümanı Yükle
-                  </button>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -560,22 +611,16 @@ const navItems = ref([
     icon: 'ri-book-line'
   },
   {
-    id: 'assignments',
+    id: 'quizzes',
     label: 'Quizler',
-    path: '/student/assignments',
+    path: '/student/quizzes',
     icon: 'ri-task-line'
   },
   {
     id: 'documents',
-    label: 'Dokümanlarım',
+    label: 'Dökümanlar',
     path: '/student/documents',
     icon: 'ri-file-text-line'
-  },
-  {
-    id: 'calendar',
-    label: 'Takvim',
-    path: '/student/calendar',
-    icon: 'ri-calendar-line'
   },
   {
     id: 'profile',
@@ -613,7 +658,10 @@ const documents = ref([
     course: 'Matematik', 
     category: 'Notlar',
     date: '2024-05-01', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/4caf50/ffffff?text=Matematik+Notları\\nPDF',
+    fileType: 'pdf',
+    fileName: 'matematik-notlari.pdf'
   },
   { 
     id: 2, 
@@ -623,7 +671,10 @@ const documents = ref([
     course: 'Fizik', 
     category: 'Sunumlar',
     date: '2024-05-03', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/2196f3/ffffff?text=Fizik+Sunumu\\nPPT',
+    fileType: 'ppt',
+    fileName: 'fizik-sunumu.ppt'
   },
   { 
     id: 3, 
@@ -633,7 +684,10 @@ const documents = ref([
     course: 'Kimya', 
     category: 'Deneyler',
     date: '2024-05-05', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/ff9800/ffffff?text=Kimya+Deney+Föyü\\nPDF',
+    fileType: 'pdf',
+    fileName: 'kimya-deney-foyu.pdf'
   },
   { 
     id: 4, 
@@ -643,7 +697,10 @@ const documents = ref([
     course: 'Tarih', 
     category: 'Ödevler',
     date: '2024-05-02', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/9c27b0/ffffff?text=Tarih+Ödevi\\nDOC',
+    fileType: 'doc',
+    fileName: 'tarih-odevi.doc'
   },
   { 
     id: 5, 
@@ -653,7 +710,10 @@ const documents = ref([
     course: 'Coğrafya', 
     category: 'Haritalar',
     date: '2024-05-04', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/795548/ffffff?text=Coğrafya+Haritası\\nPDF',
+    fileType: 'pdf',
+    fileName: 'cografya-haritasi.pdf'
   },
   { 
     id: 6, 
@@ -663,7 +723,10 @@ const documents = ref([
     course: 'Biyoloji', 
     category: 'Raporlar',
     date: '2024-05-06', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/607d8b/ffffff?text=Biyoloji+Raporu\\nPDF',
+    fileType: 'pdf',
+    fileName: 'biyoloji-raporu.pdf'
   }
 ])
 
@@ -812,39 +875,147 @@ const closeUploadModal = () => {
   }
 }
 
-const uploadDocument = () => {
-  if (!isFormValid.value) return
+const generatePreviewUrl = (file, title) => {
+  // Get file extension
+  const extension = file.name.split('.').pop().toLowerCase()
   
-  // Create new document object
+  // Generate a color based on file type
+  const colorMap = {
+    'pdf': '4caf50',
+    'doc': '2196f3',
+    'docx': '2196f3',
+    'ppt': 'ff9800',
+    'pptx': 'ff9800',
+    'xls': '9c27b0',
+    'xlsx': '9c27b0',
+    'txt': '607d8b'
+  }
+  
+  const color = colorMap[extension] || '666666'
+  
+  // Create a more realistic document preview with better styling
+  const previewText = title.length > 15 ? title.substring(0, 15) + '...' : title
+  const fileTypeText = extension.toUpperCase()
+  
+  // Create a more sophisticated preview with file type indicator
+  return `https://via.placeholder.com/300x400/${color}/ffffff?text=${encodeURIComponent(previewText + '\\n' + fileTypeText)}`
+}
+
+const uploadDocument = async () => {
+  if (!isFormValid.value) return
+
+  let fileType = selectedFile.value.name.split('.').pop().toLowerCase()
+  
+  // Generate preview URL for all file types
+  const previewUrl = generatePreviewUrl(selectedFile.value, newDocument.value.title)
+  console.log('Generated previewUrl:', previewUrl)
+
   const documentData = {
-    id: Date.now(), // Simple ID generation
+    id: Date.now(),
     title: newDocument.value.title,
     description: newDocument.value.description,
-    teacher: 'John Doe', // Current user
+    teacher: 'John Doe',
     course: newDocument.value.course,
     category: newDocument.value.category,
     date: new Date().toISOString().split('T')[0],
     url: '#',
     fileName: selectedFile.value.name,
-    fileSize: selectedFile.value.size
+    fileSize: selectedFile.value.size,
+    previewUrl: previewUrl,
+    fileType: fileType
   }
   
-  // Add to documents array
+  console.log('Document data:', documentData)
   documents.value.unshift(documentData)
-  
-  // Close modal and reset form
   closeUploadModal()
-  
-  // Show success message (you can implement a toast notification here)
-  console.log('Document uploaded successfully:', documentData.title)
+}
+
+// Sınıflar dropdown state ve fonksiyonları
+const classrooms = [
+  { id: 1, name: 'Matematik Sınıfı' },
+  { id: 2, name: 'Fizik Sınıfı' },
+  { id: 3, name: 'Kimya Sınıfı' },
+  { id: 4, name: 'Biyoloji Sınıfı' },
+  { id: 5, name: 'Tarih Sınıfı' }
+]
+const selectedClassroom = ref(classrooms[0])
+const dropdownOpen = ref(false)
+const classroomSearch = ref('')
+
+const filteredClassrooms = computed(() => {
+  if (!classroomSearch.value) return classrooms
+  return classrooms.filter(c => c.name.toLowerCase().includes(classroomSearch.value.toLowerCase()))
+})
+
+function selectClassroom(classroom) {
+  selectedClassroom.value = classroom
+  dropdownOpen.value = false
+}
+
+function joinNewClass() {
+  // Yeni sınıfa katılma işlemi burada gerçekleştirilecek
+  console.log('Yeni sınıfa katılma modalı açılacak')
+  dropdownOpen.value = false
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/assets/scss/custom/_variable.scss';
+
 .student-documents {
   padding: 32px;
-  background: #f8f9fa;
+  background: $black;
   min-height: 100vh;
+  .documents-header-block {
+    background: $orange;
+    border-radius: $space-s;
+    padding: $space-m $space-l;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: 0 4px 16px rgba($orange, 0.10);
+    margin-bottom: $space-xs;
+    h1 {
+      color: $white;
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      font-family: $font-family-primary-bold;
+      margin: 0 0 $space-3xs 0;
+    }
+    .document-count {
+      color: $white;
+      font-size: $font-size-s;
+      font-weight: $font-weight-semi-bold;
+      margin: 0;
+    }
+  }
+  .documents-content-wrapper {
+    background: $white;
+    border-radius: $space-s;
+    box-shadow: 0 4px 16px rgba($black, 0.06);
+    padding: $space-xl;
+    margin-top: 0;
+    @media (max-width: 700px) {
+      padding: $space-m $space-s;
+    }
+  }
+  .documents-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-m;
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: $grey;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+    }
+  }
 }
 
 /* Header Styles */
@@ -885,7 +1056,7 @@ const uploadDocument = () => {
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  background: #e91e63;
+  background: $orange;
   color: white;
   border: none;
   border-radius: 8px;
@@ -893,13 +1064,13 @@ const uploadDocument = () => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.3);
+  box-shadow: 0 2px 8px rgba($orange, 0.3);
 }
 
 .upload-btn:hover {
-  background: #ad1457;
+  background: darken($orange, 10%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.4);
+  box-shadow: 0 4px 12px rgba($orange, 0.4);
 }
 
 .upload-icon {
@@ -1301,7 +1472,7 @@ const uploadDocument = () => {
 }
 
 .document-preview {
-  height: 120px;
+  height: 160px;
   background: #f8f9fa;
   border-radius: 12px;
   display: flex;
@@ -1309,11 +1480,114 @@ const uploadDocument = () => {
   justify-content: center;
   margin-bottom: 16px;
   border: 2px dashed #ddd;
+  overflow: hidden;
+  position: relative;
 }
 
-.document-preview i {
-  font-size: 3rem;
+.preview-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.document-card:hover .preview-image img {
+  transform: scale(1.05);
+}
+
+.file-type-overlay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+}
+
+.file-type-badge {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+.preview-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-placeholder i {
+  font-size: 2.5rem;
   color: #666;
+}
+
+.preview-text {
+  font-size: 0.8rem;
+  color: #666;
+  text-align: center;
+}
+
+.preview-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #e91e63;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 0.8rem;
+  color: #666;
+  text-align: center;
+}
+
+.generate-preview-text {
+  font-size: 0.7rem;
+  color: #e91e63;
+  text-align: center;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.preview-placeholder {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.preview-placeholder:hover {
+  background: #f0f0f0;
+  border-color: #e91e63;
 }
 
 .icon-svg {
@@ -1643,12 +1917,12 @@ const uploadDocument = () => {
 }
 
 .primary-btn {
-  background: #e91e63;
+  background: $orange;
   color: white;
 }
 
 .primary-btn:hover {
-  background: #ad1457;
+  background: darken($orange, 10%);
 }
 
 .secondary-btn {
@@ -1698,7 +1972,7 @@ const uploadDocument = () => {
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #e91e63;
+  border-color: $orange;
 }
 
 .form-group textarea {
@@ -1723,7 +1997,7 @@ const uploadDocument = () => {
 }
 
 .file-upload-area:hover {
-  border-color: #e91e63;
+  border-color: $orange;
   background: #f0f0f0;
 }
 
@@ -1882,4 +2156,151 @@ const uploadDocument = () => {
     width: 100%;
   }
 }
+
+.sidebar-classroom-dropdown {
+  position: relative;
+  margin-bottom: 18px;
+  padding: 0 16px;
+  font-family: inherit;
+  &.modern-dropdown {
+    .dropdown-selected {
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: #232323;
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 10px;
+      width: 100%;
+      min-width: 180px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1.5px solid $orange;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      transition: border 0.2s;
+    }
+    .dropdown-selected:hover, .dropdown-selected:focus {
+      border: 1.5px solid darken($orange, 10%);
+    }
+    .dropdown-selected-title {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dropdown-arrow {
+      margin-left: 10px;
+      font-size: 1.1rem;
+      transition: transform 0.2s;
+      color: #fff;
+      &.open {
+        transform: rotate(180deg);
+      }
+    }
+    .dropdown-list {
+      position: absolute;
+      top: 110%;
+      left: 0;
+      right: 0;
+      background: #232323;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+      z-index: 20;
+      width: 100%;
+      min-width: 180px;
+      padding-bottom: 8px;
+      border: 1.5px solid $orange;
+      animation: fadeIn 0.18s;
+    }
+    .dropdown-header {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      padding: 14px 18px 6px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      background: #232323;
+    }
+    .dropdown-search-wrapper {
+      padding: 8px 18px 0 18px;
+    }
+    .dropdown-search {
+      width: 100%;
+      padding: 7px 12px;
+      border-radius: 7px;
+      border: 1.2px solid rgba(255,255,255,0.1);
+      background: #232323;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .dropdown-search:focus {
+      border: 1.2px solid rgba(255,255,255,0.2);
+    }
+    .dropdown-items {
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 4px;
+    }
+    .dropdown-item {
+      padding: 12px 18px;
+      font-size: 1rem;
+      color: #fff;
+      cursor: pointer;
+      text-align: left;
+      border-radius: 7px;
+      margin: 2px 8px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .dropdown-item.selected, .dropdown-item:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    .dropdown-footer {
+      padding: 8px 18px 12px 18px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 4px;
+      display: flex;
+      justify-content: flex-end;
+      background: #232323;
+      border-radius: 0 0 12px 12px;
+    }
+    .join-class-btn {
+      width: 100%;
+      padding: 10px 16px;
+      background: $orange;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      &:hover {
+        background: darken($orange, 10%);
+        transform: translateY(-1px);
+      }
+      &:active {
+        transform: translateY(0);
+      }
+    }
+    .dropdown-empty {
+      padding: 16px 18px;
+      color: #888;
+      font-size: 1rem;
+      text-align: center;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+}
+
 </style>

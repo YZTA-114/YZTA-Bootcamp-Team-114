@@ -411,22 +411,16 @@ const navItems = ref([
     icon: 'ri-book-line'
   },
   {
-    id: 'assignments',
+    id: 'quizzes',
     label: 'Quizler',
-    path: '/student/assignments',
+    path: '/student/quizzes',
     icon: 'ri-task-line'
   },
   {
     id: 'documents',
-    label: 'Dokümanlarım',
+    label: 'Dökümanlar',
     path: '/student/documents',
     icon: 'ri-file-text-line'
-  },
-  {
-    id: 'calendar',
-    label: 'Takvim',
-    path: '/student/calendar',
-    icon: 'ri-calendar-line'
   },
   {
     id: 'profile',
@@ -1470,7 +1464,7 @@ onMounted(() => {
 .event-date-box {
   width: 40px;
   height: 40px;
-  background: $yellow;
+  background: $orange;
   border-radius: 6px;
   display: flex;
   flex-direction: column;
