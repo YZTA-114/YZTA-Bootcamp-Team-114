@@ -1,6 +1,6 @@
 <template>
   <DashboardLayout
-    user-name="Muhammet"
+    :user-name="profile.fullName"
     :user-role="userRole"
     :user-avatar="userAvatar"
     :current-page="currentPage"
@@ -41,134 +41,77 @@
         </div>
       </div>
     </template>
-    
     <template #sidebar-nav>
       <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
     </template>
-    
     <template #content>
-      <div class="student-profile">
-        <!-- Welcome Section with Orange Background -->
-        <div class="welcome-section">
-          <div class="welcome-content">
-            <h1 class="welcome-title">Öğrenci Profili</h1>
-            <p class="welcome-subtitle">Kişisel bilgilerinizi görüntüleyin ve düzenleyin</p>
-          </div>
-
+      <div class="profile-root-bg">
+        <!-- Turuncu bilgi bloğu -->
+        <div class="profile-info-banner">
+          <div class="profile-info-banner-title">Öğrenci Profili</div>
+          <div class="profile-info-banner-desc">Kişisel bilgilerinizi görüntüleyin ve düzenleyin</div>
         </div>
-
-        <div class="container">
-          
-          <div class="profile-container">
-            <div class="profile-card">
-              <div class="profile-avatar">
-                <img 
-                  :src="profile.avatar || '/src/assets/images/default-avatar.png'" 
-                  :alt="profile.fullName"
-                  class="avatar-img"
-                />
-                <button class="change-avatar-btn">
-                  <i class="fas fa-camera"></i>
-                </button>
-              </div>
-              <div class="profile-info">
-                <h3>{{ profile.fullName }}</h3>
-                <p class="student-id">Öğrenci No: {{ profile.studentId }}</p>
-                <p class="email">{{ profile.email }}</p>
-              </div>
-            </div>
-            
-            <div class="profile-details">
-              <div class="detail-section">
-                <h4>Kişisel Bilgiler</h4>
-                <div class="form-group">
-                  <label>Ad Soyad</label>
-                  <input 
-                    type="text" 
-                    v-model="profile.fullName" 
-                    class="form-control"
-                    :disabled="!isEditing"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>E-posta</label>
-                  <input 
-                    type="email" 
-                    v-model="profile.email" 
-                    class="form-control"
-                    :disabled="!isEditing"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>Telefon</label>
-                  <input 
-                    type="tel" 
-                    v-model="profile.phone" 
-                    class="form-control"
-                    :disabled="!isEditing"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>Doğum Tarihi</label>
-                  <input 
-                    type="date" 
-                    v-model="profile.birthDate" 
-                    class="form-control"
-                    :disabled="!isEditing"
-                  />
-                </div>
-              </div>
-              
-              <div class="detail-section">
-                <h4>Eğitim Bilgileri</h4>
-                <div class="form-group">
-                  <label>Sınıf</label>
-                  <input 
-                    type="text" 
-                    v-model="profile.grade" 
-                    class="form-control"
-                    :disabled="!isEditing"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>Bölüm</label>
-                  <input 
-                    type="text" 
-                    v-model="profile.department" 
-                    class="form-control"
-                    :disabled="!isEditing"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>Öğrenci Numarası</label>
-                  <input 
-                    type="text" 
-                    v-model="profile.studentId" 
-                    class="form-control"
-                    :disabled="!isEditing"
-                  />
-                </div>
-              </div>
-              
-              <div class="profile-actions">
-                <button 
-                  v-if="!isEditing" 
-                  @click="startEditing" 
-                  class="btn btn-primary"
-                >
-                  <i class="fas fa-edit"></i> Düzenle
-                </button>
-                <div v-else class="action-buttons">
-                  <button @click="saveProfile" class="btn btn-success">
-                    <i class="fas fa-save"></i> Kaydet
-                  </button>
-                  <button @click="cancelEditing" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> İptal
-                  </button>
-                </div>
-              </div>
+        <!-- Profil headerı -->
+        <div class="profile-header-card-centered">
+          <div class="profile-avatar-edit-wrapper">
+            <div class="avatar-circle-wrapper">
+              <template v-if="profile.avatar">
+                <img :src="profile.avatar" class="profile-avatar-pink" />
+              </template>
+              <template v-else>
+                <div class="avatar-initials">{{ profile.fullName ? profile.fullName.charAt(0).toUpperCase() : '?' }}</div>
+              </template>
+              <button class="avatar-fab-btn" @click.prevent="triggerAvatarInput" title="Fotoğrafı değiştir">
+                <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke="#222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M3 7h2l2-3h6l2 3h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/>
+                  <circle cx="12" cy="13" r="3.5" stroke="#222" stroke-width="1.5"/>
+                </svg>
+              </button>
+              <input ref="avatarInput" type="file" accept="image/*" style="display:none" @change="onAvatarChange" />
             </div>
           </div>
+          <div class="profile-header-centered-name">{{ profile.fullName }} <span v-if="profile.verified" class="verified-badge">✔️</span></div>
+          <div class="profile-header-centered-email">{{ profile.email }}</div>
+        </div>
+        <!-- Form kutusu -->
+        <div class="profile-form-card orange-bordered-block">
+          <form class="profile-form-grid" @submit.prevent="saveProfile">
+            <div class="form-group">
+              <label>Ad</label>
+              <input type="text" v-model="profile.firstName" :disabled="!isEditing" />
+            </div>
+            <div class="form-group">
+              <label>Soyad</label>
+              <input type="text" v-model="profile.lastName" :disabled="!isEditing" />
+            </div>
+            <div class="form-group">
+              <label>E-posta</label>
+              <input type="email" v-model="profile.email" :disabled="!isEditing" />
+            </div>
+            <div class="form-group">
+              <label>Telefon</label>
+              <input type="text" v-model="profile.phone" :disabled="!isEditing" />
+            </div>
+            <div class="form-group">
+              <label>Şehir/İl</label>
+              <input type="text" v-model="profile.city" :disabled="!isEditing" />
+            </div>
+            <div class="form-group">
+              <label>Ülke</label>
+              <input type="text" v-model="profile.country" :disabled="!isEditing" />
+            </div>
+            <div class="form-group form-group-bio" style="grid-column: 1 / -1;">
+              <label>Biyografi</label>
+              <textarea v-model="profile.bio" rows="3" :disabled="!isEditing"></textarea>
+            </div>
+            <div class="form-actions" style="grid-column: 1 / -1;">
+              <button v-if="!isEditing" type="button" class="btn-edit" @click="startEditing">Düzenle</button>
+              <template v-else>
+                <button type="button" class="btn-cancel" @click="cancelEditing">Vazgeç</button>
+                <button type="submit" class="btn-save">Kaydet</button>
+              </template>
+            </div>
+          </form>
         </div>
       </div>
     </template>
@@ -197,7 +140,13 @@ export default {
         studentId: '2024001',
         grade: '4. Sınıf',
         department: 'Bilgisayar Mühendisliği',
-        avatar: null
+        avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+        firstName: 'Muhammet',
+        lastName: '',
+        city: '',
+        country: '',
+        bio: '',
+        verified: false
       },
       // Dashboard layout props
       userRole: 'Student',
@@ -321,6 +270,22 @@ export default {
     joinNewClass() {
       console.log('Yeni sınıfa katılma...')
       this.dropdownOpen = false
+    },
+    triggerAvatarInput() {
+      this.$refs.avatarInput.click();
+    },
+    onAvatarChange(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          this.profile.avatar = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    deleteAvatar() {
+      this.profile.avatar = null;
     }
   }
 }
@@ -329,263 +294,293 @@ export default {
 <style lang="scss" scoped>
 @import '@/assets/scss/custom/_variable.scss';
 
-.student-profile {
-  padding: 2rem 0;
-  
-  // Welcome Section with Orange Background
-  .welcome-section {
-    background: $orange;
-    color: $white;
-    padding: $space-m;
-    border-radius: 8px;
-    margin-bottom: $space-m;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .welcome-content {
-      .welcome-title {
-        font-size: $font-size-l;
-        font-weight: $font-weight-bold;
-        font-family: $font-family-primary-medium;
-        margin: 0 0 $space-xs 0;
-      }
-
-      .welcome-subtitle {
-        font-size: $font-size-s;
-        font-family: $font-family-primary-regular;
-        opacity: 0.9;
-        margin: 0;
-      }
-    }
-
-    .welcome-actions {
-      .btn {
-        background-color: rgba($white, 0.2);
-        border: 1px solid rgba($white, 0.3);
-        color: $white;
-        padding: $space-xs $space-m;
-        border-radius: 6px;
-        font-weight: $font-weight-semi-bold;
-        font-family: $font-family-primary-medium;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        font-size: $font-size-xs;
-
-        &:hover {
-          background-color: rgba($white, 0.3);
-          transform: translateY(-2px);
-        }
-
-        i {
-          margin-right: $space-xs;
-        }
-      }
-
-      .action-buttons {
-        display: flex;
-        gap: $space-xs;
-      }
-    }
-  }
-  
-  .profile-header {
-    text-align: center;
-    margin-bottom: 3rem;
-    
-    h1 {
-      color: #2c3e50;
-      margin-bottom: 0.5rem;
-    }
-    
-    p {
-      color: #7f8c8d;
-      font-size: 1.1rem;
-    }
-  }
-  
-  .profile-container {
-    display: flex;
-    gap: $space-l;
-    margin-top: $space-m;
-    
-    @media (max-width: 768px) {
-      flex-direction: column;
-    }
-  }
-  
-  .profile-card {
-    background: white;
-    border-radius: 12px;
-    padding: $space-l;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    flex-shrink: 0;
-    width: 300px;
-    
-    @media (max-width: 768px) {
-      width: 100%;
-    }
-    
-    .profile-avatar {
-      position: relative;
-      display: inline-block;
-      margin-bottom: 1.5rem;
-      
-      .avatar-img {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid #e9ecef;
-      }
-      
-      .change-avatar-btn {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #007bff;
-        color: white;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.3s;
-        
-        &:hover {
-          background: #0056b3;
-        }
-      }
-    }
-    
-    .profile-info {
-      h3 {
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-      }
-      
-      .student-id {
-        color: #007bff;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-      }
-      
-      .email {
-        color: #6c757d;
-        margin-bottom: 0;
-      }
-    }
-  }
-  
-  .profile-details {
-    background: white;
-    border-radius: 12px;
-    padding: $space-l;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    flex: 1;
-    
-    .detail-section {
-      margin-bottom: 2rem;
-      
-      h4 {
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e9ecef;
-      }
-      
-      .form-group {
-        margin-bottom: 1.5rem;
-        
-        label {
-          display: block;
-          margin-bottom: 0.5rem;
-          color: #495057;
-          font-weight: 600;
-        }
-        
-        .form-control {
-          width: 100%;
-          padding: 0.75rem;
-          border: 1px solid #ced4da;
-          border-radius: 6px;
-          font-size: 1rem;
-          transition: border-color 0.3s;
-          
-          &:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-          }
-          
-          &:disabled {
-            background-color: #f8f9fa;
-            color: #6c757d;
-            cursor: not-allowed;
-          }
-        }
-      }
-    }
-    
-    .profile-actions {
-      text-align: center;
-      padding-top: 1rem;
-      border-top: 1px solid #e9ecef;
-      
-      .btn {
-        padding: 0.75rem 2rem;
-        border-radius: 6px;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: all 0.3s;
-        border: none;
-        cursor: pointer;
-        
-        &.btn-primary {
-          background: #007bff;
-          color: white;
-          
-          &:hover {
-            background: #0056b3;
-          }
-        }
-        
-        &.btn-success {
-          background: #28a745;
-          color: white;
-          
-          &:hover {
-            background: #1e7e34;
-          }
-        }
-        
-        &.btn-secondary {
-          background: #6c757d;
-          color: white;
-          
-          &:hover {
-            background: #545b62;
-          }
-        }
-      }
-      
-      .action-buttons {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-      }
-    }
-  }
+.profile-root-bg {
+  min-height: 100vh;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $space-s 0 $space-l 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
-
-// Classroom dropdown styles
+.profile-info-banner {
+  background: $orange;
+  color: $white;
+  border-radius: 16px;
+  text-align: center;
+  padding: $space-l 2vw $space-m 2vw;
+  margin-bottom: $space-l;
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  box-shadow: 0 2px 12px rgba($black,0.06);
+}
+.profile-info-banner-title {
+  font-size: $font-size-l;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.01em;
+  margin-bottom: 4px;
+}
+.profile-info-banner-desc {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-regular;
+  opacity: 0.97;
+}
+.profile-header-card-centered {
+  background: $white;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba($black,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: none;
+  padding: $space-xl 0 $space-l 0;
+  margin-bottom: $space-l;
+}
+.profile-header-centered-name {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $grey;
+  margin-top: $space-m;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+.profile-header-centered-email {
+  color: $grey;
+  font-size: $font-size-xs;
+  margin-bottom: 0;
+}
+.profile-form-card.orange-bordered-block {
+  border: 2.5px solid $orange;
+  border-radius: 18px;
+  background: $white;
+  padding: $space-l $space-m $space-m $space-m !important;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin-bottom: $space-l;
+}
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-m $space-l;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.form-group label {
+  font-weight: $font-weight-bold;
+  color: $grey;
+  font-size: $font-size-xs;
+}
+.form-group input,
+.form-group textarea {
+  border: 1.2px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: $font-size-xs;
+  background: #fafbfc;
+  transition: border 0.2s;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: $orange;
+  background: $white;
+}
+.form-group-bio textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-m;
+  margin-top: 8px;
+}
+.btn-cancel {
+  background: #f3f3f3;
+  color: #555;
+  border: none;
+  border-radius: 8px;
+  padding: $space-s $space-xl;
+  font-weight: $font-weight-semi-bold;
+  font-size: $font-size-xs;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-cancel:hover {
+  background: #e0e0e0;
+}
+.btn-save {
+  background: $orange;
+  color: $white;
+  border: none;
+  font-weight: $font-weight-semi-bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-radius: 8px;
+  padding: $space-s $space-xl;
+  font-size: $font-size-xs;
+}
+.btn-save:hover {
+  background: darken($orange, 10%);
+}
+.btn-edit {
+  background: $orange;
+  color: $white;
+  border: none;
+  font-weight: $font-weight-semi-bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-radius: 8px;
+  padding: $space-s $space-xl;
+  font-size: $font-size-xs;
+}
+.btn-edit:hover {
+  background: darken($orange, 10%);
+}
+.profile-avatar-pink {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid $pink;
+  background: $white;
+}
+.profile-avatar-edit-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  margin-bottom: 18px;
+}
+.avatar-edit-btn {
+  background: #fff;
+  border: 2px solid #e91e63;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+  box-shadow: 0 2px 8px rgba(233,30,99,0.08);
+  position: relative;
+}
+.avatar-edit-btn:hover {
+  background: #ffe3f0;
+  border-color: #ad1457;
+}
+.avatar-edit-btn svg {
+  width: 22px;
+  height: 22px;
+  color: #e91e63;
+}
+.avatar-btn-group {
+  display: flex;
+  gap: 12px;
+  position: absolute;
+  right: 0;
+  bottom: -38px;
+}
+.avatar-btn-change {
+  background: #6c47ff;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(108,71,255,0.08);
+}
+.avatar-btn-change:hover {
+  background: #4b2bb5;
+}
+.avatar-btn-delete {
+  background: #fff0f0;
+  color: #e53935;
+  border: 1.5px solid #ffcdd2;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+}
+.avatar-btn-delete:hover {
+  background: #ffcdd2;
+  border-color: #e53935;
+}
+.avatar-circle-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.profile-avatar-pink {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid $pink;
+  background: $white;
+}
+.avatar-initials {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: $grey;
+  color: $white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  border: 4px solid $pink;
+  user-select: none;
+}
+.avatar-fab-btn {
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+  background: $white;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba($pink, 0.10);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  padding: 0;
+}
+.avatar-fab-btn:hover {
+  background: lighten($pink, 40%);
+  box-shadow: 0 4px 16px rgba($pink, 0.18);
+}
+.avatar-fab-btn svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
 .sidebar-classroom-dropdown {
   position: relative;
   margin-bottom: 18px;
@@ -687,59 +682,76 @@ export default {
       background: rgba(255,255,255,0.1);
       color: #fff;
     }
-    
-    .dropdown-footer {
-      padding: 8px 18px 12px 18px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      margin-top: 4px;
+    .dropdown-empty {
+      padding: 16px 18px;
+      color: #bbb;
+      text-align: center;
+      font-size: 1rem;
     }
-    
+    .dropdown-footer {
+      padding: 10px 18px 0 18px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-top: 8px;
+      text-align: right;
+    }
     .join-class-btn {
-      width: 100%;
-      padding: 10px 16px;
       background: $orange;
       color: #fff;
       border: none;
       border-radius: 8px;
-      font-size: 0.95rem;
+      padding: 10px 22px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 8px;
-      transition: all 0.2s ease;
-      
-      &:hover {
-        background: darken($orange, 10%);
-        transform: translateY(-1px);
-      }
-      
-      &:active {
-        transform: translateY(0);
-      }
+      transition: background 0.2s;
     }
-    .dropdown-empty {
-      padding: 16px 18px;
-      color: #888;
-      font-size: 1rem;
-      text-align: center;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .join-class-btn:hover {
+      background: darken($orange, 10%);
     }
   }
 }
-
-@media (max-width: 768px) {
-  .student-profile {
-    .profile-actions {
-      .action-buttons {
-        flex-direction: column;
-        align-items: center;
-      }
-    }
+@media (max-width: 1200px) {
+  .profile-root-bg,
+  .profile-info-banner,
+  .profile-header-card-centered,
+  .profile-form-card.orange-bordered-block {
+    max-width: 100vw;
+    width: 100%;
+    padding-left: 2vw;
+    padding-right: 2vw;
+  }
+  .profile-info-banner {
+    max-width: 100vw;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+@media (max-width: 900px) {
+  .profile-info-banner,
+  .profile-header-card-centered,
+  .profile-form-card.orange-bordered-block {
+    max-width: 99vw;
+    padding: 10px 2vw 10px 2vw !important;
+    margin-bottom: 18px;
+  }
+  .profile-header-card-centered {
+    padding: 18px 0 18px 0;
+  }
+  .profile-header-centered-name {
+    font-size: 1.2rem;
+    margin-top: 10px;
+  }
+  .profile-avatar-pink {
+    width: 70px;
+    height: 70px;
+  }
+  .profile-form-grid {
+    grid-template-columns: 1fr;
+    gap: 12px 0;
   }
 }
 </style> 

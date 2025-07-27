@@ -249,7 +249,19 @@
                 </button>
               </div>
               <div class="document-preview">
-                <i class="ri-file-text-line"></i>
+                <div class="preview-image">
+                  <img 
+                    :src="doc.fileType === 'pdf' ? 'https://via.placeholder.com/300x400/4caf50/ffffff?text=PDF+Dokümanı' : 
+                         doc.fileType === 'doc' || doc.fileType === 'docx' ? 'https://via.placeholder.com/300x400/2196f3/ffffff?text=Word+Dokümanı' :
+                         doc.fileType === 'ppt' || doc.fileType === 'pptx' ? 'https://via.placeholder.com/300x400/ff9800/ffffff?text=PowerPoint+Sunumu' :
+                         doc.fileType === 'xls' || doc.fileType === 'xlsx' ? 'https://via.placeholder.com/300x400/9c27b0/ffffff?text=Excel+Tablosu' :
+                         'https://via.placeholder.com/300x400/666666/ffffff?text=Doküman'" 
+                    :alt="doc.title" 
+                  />
+                  <div class="file-type-overlay">
+                    <span class="file-type-badge">{{ doc.fileType ? doc.fileType.toUpperCase() : 'PDF' }}</span>
+                  </div>
+                </div>
               </div>
               <div class="card-content">
                 <h4 class="document-title">{{ doc.title }}</h4>
@@ -613,7 +625,10 @@ const documents = ref([
     course: 'Matematik', 
     category: 'Notlar',
     date: '2024-05-01', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/4caf50/ffffff?text=Matematik+Notları\\nPDF',
+    fileType: 'pdf',
+    fileName: 'matematik-notlari.pdf'
   },
   { 
     id: 2, 
@@ -623,7 +638,10 @@ const documents = ref([
     course: 'Fizik', 
     category: 'Sunumlar',
     date: '2024-05-03', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/2196f3/ffffff?text=Fizik+Sunumu\\nPPT',
+    fileType: 'ppt',
+    fileName: 'fizik-sunumu.ppt'
   },
   { 
     id: 3, 
@@ -633,7 +651,10 @@ const documents = ref([
     course: 'Kimya', 
     category: 'Deneyler',
     date: '2024-05-05', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/ff9800/ffffff?text=Kimya+Deney+Föyü\\nPDF',
+    fileType: 'pdf',
+    fileName: 'kimya-deney-foyu.pdf'
   },
   { 
     id: 4, 
@@ -643,7 +664,10 @@ const documents = ref([
     course: 'Tarih', 
     category: 'Ödevler',
     date: '2024-05-02', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/9c27b0/ffffff?text=Tarih+Ödevi\\nDOC',
+    fileType: 'doc',
+    fileName: 'tarih-odevi.doc'
   },
   { 
     id: 5, 
@@ -653,7 +677,10 @@ const documents = ref([
     course: 'Coğrafya', 
     category: 'Haritalar',
     date: '2024-05-04', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/795548/ffffff?text=Coğrafya+Haritası\\nPDF',
+    fileType: 'pdf',
+    fileName: 'cografya-haritasi.pdf'
   },
   { 
     id: 6, 
@@ -663,7 +690,10 @@ const documents = ref([
     course: 'Biyoloji', 
     category: 'Raporlar',
     date: '2024-05-06', 
-    url: '#' 
+    url: '#',
+    previewUrl: 'https://via.placeholder.com/300x400/607d8b/ffffff?text=Biyoloji+Raporu\\nPDF',
+    fileType: 'pdf',
+    fileName: 'biyoloji-raporu.pdf'
   }
 ])
 
@@ -812,31 +842,59 @@ const closeUploadModal = () => {
   }
 }
 
-const uploadDocument = () => {
-  if (!isFormValid.value) return
+const generatePreviewUrl = (file, title) => {
+  // Get file extension
+  const extension = file.name.split('.').pop().toLowerCase()
   
-  // Create new document object
+  // Generate a color based on file type
+  const colorMap = {
+    'pdf': '4caf50',
+    'doc': '2196f3',
+    'docx': '2196f3',
+    'ppt': 'ff9800',
+    'pptx': 'ff9800',
+    'xls': '9c27b0',
+    'xlsx': '9c27b0',
+    'txt': '607d8b'
+  }
+  
+  const color = colorMap[extension] || '666666'
+  
+  // Create a more realistic document preview with better styling
+  const previewText = title.length > 15 ? title.substring(0, 15) + '...' : title
+  const fileTypeText = extension.toUpperCase()
+  
+  // Create a more sophisticated preview with file type indicator
+  return `https://via.placeholder.com/300x400/${color}/ffffff?text=${encodeURIComponent(previewText + '\\n' + fileTypeText)}`
+}
+
+const uploadDocument = async () => {
+  if (!isFormValid.value) return
+
+  let fileType = selectedFile.value.name.split('.').pop().toLowerCase()
+  
+  // Generate preview URL for all file types
+  const previewUrl = generatePreviewUrl(selectedFile.value, newDocument.value.title)
+  console.log('Generated previewUrl:', previewUrl)
+
   const documentData = {
-    id: Date.now(), // Simple ID generation
+    id: Date.now(),
     title: newDocument.value.title,
     description: newDocument.value.description,
-    teacher: 'John Doe', // Current user
+    teacher: 'John Doe',
     course: newDocument.value.course,
     category: newDocument.value.category,
     date: new Date().toISOString().split('T')[0],
     url: '#',
     fileName: selectedFile.value.name,
-    fileSize: selectedFile.value.size
+    fileSize: selectedFile.value.size,
+    previewUrl: previewUrl,
+    fileType: fileType
   }
   
-  // Add to documents array
+  console.log('Document data:', documentData)
   documents.value.unshift(documentData)
-  
-  // Close modal and reset form
   closeUploadModal()
-  
-  // Show success message (you can implement a toast notification here)
-  console.log('Document uploaded successfully:', documentData.title)
 }
 </script>
 
@@ -1301,7 +1359,7 @@ const uploadDocument = () => {
 }
 
 .document-preview {
-  height: 120px;
+  height: 160px;
   background: #f8f9fa;
   border-radius: 12px;
   display: flex;
@@ -1309,11 +1367,114 @@ const uploadDocument = () => {
   justify-content: center;
   margin-bottom: 16px;
   border: 2px dashed #ddd;
+  overflow: hidden;
+  position: relative;
 }
 
-.document-preview i {
-  font-size: 3rem;
+.preview-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.document-card:hover .preview-image img {
+  transform: scale(1.05);
+}
+
+.file-type-overlay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+}
+
+.file-type-badge {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+.preview-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-placeholder i {
+  font-size: 2.5rem;
   color: #666;
+}
+
+.preview-text {
+  font-size: 0.8rem;
+  color: #666;
+  text-align: center;
+}
+
+.preview-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #e91e63;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 0.8rem;
+  color: #666;
+  text-align: center;
+}
+
+.generate-preview-text {
+  font-size: 0.7rem;
+  color: #e91e63;
+  text-align: center;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.preview-placeholder {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.preview-placeholder:hover {
+  background: #f0f0f0;
+  border-color: #e91e63;
 }
 
 .icon-svg {
