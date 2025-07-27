@@ -12,7 +12,7 @@ const {
 } = require('../../controllers/classroom/lessonController');
 
 const resourceRouter = require('./resourceRoute');
-
+const quizRouter = require('../quiz/quiz');
 const router = express.Router({ mergeParams: true });
 
 const { protect, authorize } = require('../../middleware/auth');
@@ -22,6 +22,7 @@ router.use(protect);
 
 // Re-route into other resource routers
 router.use('/:lessonId/resources', resourceRouter);
+router.use('/:lessonId/quizzes', quizRouter);
 
 router
     .route('/')
