@@ -18,79 +18,93 @@
             <p class="document-count">Toplam {{ documents.length }} dokümanınız var</p>
           </div>
           <div class="header-right">
-            <div class="view-controls">
-              <div class="view-mode-dropdown">
-                <button 
-                  @click="toggleViewModeDropdown"
-                  class="view-mode-toggle-btn"
-                  title="Görünüm Modunu Değiştir"
-                >
-                  <span>Görünüm Modu</span>
-                  <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 4v6h6"/>
-                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
-                  </svg>
-                </button>
-                
-                <div v-if="showViewModeDropdown" class="view-mode-options">
-                  <div class="view-mode-header">
-                    <h4>Görünüm Seçenekleri</h4>
-                    <button class="close-view-mode-btn" @click="toggleViewModeDropdown">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                      </svg>
-                    </button>
-                  </div>
-                  <div class="view-mode-buttons">
-                    <button 
-                      @click="selectViewMode('grid')" 
-                      :class="{ active: viewMode === 'grid' }"
-                      class="view-option-btn"
-                    >
-                      <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="7"/>
-                        <rect x="14" y="3" width="7" height="7"/>
-                        <rect x="14" y="14" width="7" height="7"/>
-                        <rect x="3" y="14" width="7" height="7"/>
-                      </svg>
-                      <span>Grid Görünümü</span>
-                    </button>
-                    <button 
-                      @click="selectViewMode('list')" 
-                      :class="{ active: viewMode === 'list' }"
-                      class="view-option-btn"
-                    >
-                      <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="8" y1="6" x2="21" y2="6"/>
-                        <line x1="8" y1="12" x2="21" y2="12"/>
-                        <line x1="8" y1="18" x2="21" y2="18"/>
-                        <line x1="3" y1="6" x2="3.01" y2="6"/>
-                        <line x1="3" y1="12" x2="3.01" y2="12"/>
-                        <line x1="3" y1="18" x2="3.01" y2="18"/>
-                      </svg>
-                      <span>Liste Görünümü</span>
-                    </button>
-                    <button 
-                      @click="selectViewMode('compact')" 
-                      :class="{ active: viewMode === 'compact' }"
-                      class="view-option-btn"
-                    >
-                      <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="8" y1="6" x2="21" y2="6"/>
-                        <line x1="8" y1="12" x2="21" y2="12"/>
-                        <line x1="8" y1="18" x2="21" y2="18"/>
-                        <line x1="3" y1="6" x2="3.01" y2="6"/>
-                        <line x1="3" y1="12" x2="3.01" y2="12"/>
-                        <line x1="3" y1="18" x2="3.01" y2="18"/>
-                      </svg>
-                      <span>Kompakt Görünümü</span>
-                    </button>
+            <div class="header-actions">
+              <button 
+                @click="showUploadModal = true"
+                class="upload-btn"
+                title="Doküman Ekle"
+              >
+                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17,8 12,3 7,8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <span>Doküman Ekle</span>
+              </button>
+              
+              <div class="view-controls">
+                <div class="view-mode-dropdown">
+                  <button 
+                    @click="toggleViewModeDropdown"
+                    class="view-mode-toggle-btn"
+                    title="Görünüm Modunu Değiştir"
+                  >
+                    <span>Görünüm Modu</span>
+                    <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 4v6h6"/>
+                      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                    </svg>
+                  </button>
+                  
+                  <div v-if="showViewModeDropdown" class="view-mode-options">
+                    <div class="view-mode-header">
+                      <h4>Görünüm Seçenekleri</h4>
+                      <button class="close-view-mode-btn" @click="toggleViewModeDropdown">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="18" y1="6" x2="6" y2="18"/>
+                          <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="view-mode-buttons">
+                      <button 
+                        @click="selectViewMode('grid')" 
+                        :class="{ active: viewMode === 'grid' }"
+                        class="view-option-btn"
+                      >
+                        <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="3" y="3" width="7" height="7"/>
+                          <rect x="14" y="3" width="7" height="7"/>
+                          <rect x="14" y="14" width="7" height="7"/>
+                          <rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        <span>Grid Görünümü</span>
+                      </button>
+                      <button 
+                        @click="selectViewMode('list')" 
+                        :class="{ active: viewMode === 'list' }"
+                        class="view-option-btn"
+                      >
+                        <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="8" y1="6" x2="21" y2="6"/>
+                          <line x1="8" y1="12" x2="21" y2="12"/>
+                          <line x1="8" y1="18" x2="21" y2="18"/>
+                          <line x1="3" y1="6" x2="3.01" y2="6"/>
+                          <line x1="3" y1="12" x2="3.01" y2="12"/>
+                          <line x1="3" y1="18" x2="3.01" y2="18"/>
+                        </svg>
+                        <span>Liste Görünümü</span>
+                      </button>
+                      <button 
+                        @click="selectViewMode('compact')" 
+                        :class="{ active: viewMode === 'compact' }"
+                        class="view-option-btn"
+                      >
+                        <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="8" y1="6" x2="21" y2="6"/>
+                          <line x1="8" y1="12" x2="21" y2="12"/>
+                          <line x1="8" y1="18" x2="21" y2="18"/>
+                          <line x1="3" y1="6" x2="3.01" y2="6"/>
+                          <line x1="3" y1="12" x2="3.01" y2="12"/>
+                          <line x1="3" y1="18" x2="3.01" y2="18"/>
+                        </svg>
+                        <span>Kompakt Görünümü</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -395,6 +409,128 @@
             </div>
           </div>
         </div>
+
+        <!-- Upload Document Modal -->
+        <div v-if="showUploadModal" class="document-preview-modal" @click="closeUploadModal">
+          <div class="modal-content upload-modal" @click.stop>
+            <div class="modal-header">
+              <h3>Yeni Doküman Ekle</h3>
+              <button class="close-btn" @click="closeUploadModal">
+                <i class="ri-close-line"></i>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form @submit.prevent="uploadDocument" class="upload-form">
+                <div class="form-group">
+                  <label for="documentTitle">Doküman Başlığı *</label>
+                  <input 
+                    id="documentTitle"
+                    v-model="newDocument.title" 
+                    type="text" 
+                    placeholder="Doküman başlığını girin"
+                    required
+                  />
+                </div>
+                
+                <div class="form-group">
+                  <label for="documentDescription">Açıklama</label>
+                  <textarea 
+                    id="documentDescription"
+                    v-model="newDocument.description" 
+                    placeholder="Doküman açıklaması (opsiyonel)"
+                    rows="3"
+                  ></textarea>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="documentCourse">Ders *</label>
+                    <select 
+                      id="documentCourse"
+                      v-model="newDocument.course" 
+                      required
+                    >
+                      <option value="">Ders seçin</option>
+                      <option v-for="course in courses" :key="course" :value="course">
+                        {{ course }}
+                      </option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="documentCategory">Kategori *</label>
+                    <select 
+                      id="documentCategory"
+                      v-model="newDocument.category" 
+                      required
+                    >
+                      <option value="">Kategori seçin</option>
+                      <option v-for="category in categories" :key="category" :value="category">
+                        {{ category }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="documentFile">Dosya Seç *</label>
+                  <div class="file-upload-area" @click="triggerFileInput">
+                    <input 
+                      ref="fileInput"
+                      id="documentFile"
+                      type="file" 
+                      @change="handleFileSelect"
+                      accept=".pdf,.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx"
+                      style="display: none;"
+                    />
+                    <div v-if="!selectedFile" class="upload-placeholder">
+                      <svg class="upload-icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17,8 12,3 7,8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                      </svg>
+                      <p>Dosya seçmek için tıklayın veya sürükleyin</p>
+                      <span class="file-types">PDF, DOC, DOCX, TXT, PPT, PPTX, XLS, XLSX</span>
+                    </div>
+                    <div v-else class="selected-file">
+                      <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10,9 9,9 8,9"/>
+                      </svg>
+                      <div class="file-info">
+                        <p class="file-name">{{ selectedFile.name }}</p>
+                        <p class="file-size">{{ formatFileSize(selectedFile.size) }}</p>
+                      </div>
+                      <button type="button" class="remove-file-btn" @click="removeFile">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="18" y1="6" x2="6" y2="18"/>
+                          <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="form-actions">
+                  <button type="button" class="secondary-btn" @click="closeUploadModal">
+                    İptal
+                  </button>
+                  <button type="submit" class="primary-btn" :disabled="!isFormValid">
+                    <svg class="upload-icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="17,8 12,3 7,8"/>
+                      <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Dokümanı Yükle
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </template>
   </DashboardLayout>
@@ -457,6 +593,16 @@ const selectedDoc = ref(null)
 const showCourseDropdown = ref(false)
 const showCategoryDropdown = ref(false)
 const showViewModeDropdown = ref(false)
+const showUploadModal = ref(false)
+const selectedFile = ref(null)
+const fileInput = ref(null)
+
+const newDocument = ref({
+  title: '',
+  description: '',
+  course: '',
+  category: ''
+})
 
 const documents = ref([
   { 
@@ -617,6 +763,81 @@ const selectViewMode = (mode) => {
   viewMode.value = mode
   showViewModeDropdown.value = false
 }
+
+const isFormValid = computed(() => {
+  return newDocument.value.title.trim() !== '' && 
+         newDocument.value.course !== '' && 
+         newDocument.value.category !== '' && 
+         selectedFile.value !== null
+})
+
+const triggerFileInput = () => {
+  fileInput.value.click()
+}
+
+const handleFileSelect = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    selectedFile.value = file
+  }
+}
+
+const removeFile = () => {
+  selectedFile.value = null
+  if (fileInput.value) {
+    fileInput.value.value = ''
+  }
+}
+
+const formatFileSize = (bytes) => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+const closeUploadModal = () => {
+  showUploadModal.value = false
+  // Reset form
+  newDocument.value = {
+    title: '',
+    description: '',
+    course: '',
+    category: ''
+  }
+  selectedFile.value = null
+  if (fileInput.value) {
+    fileInput.value.value = ''
+  }
+}
+
+const uploadDocument = () => {
+  if (!isFormValid.value) return
+  
+  // Create new document object
+  const documentData = {
+    id: Date.now(), // Simple ID generation
+    title: newDocument.value.title,
+    description: newDocument.value.description,
+    teacher: 'John Doe', // Current user
+    course: newDocument.value.course,
+    category: newDocument.value.category,
+    date: new Date().toISOString().split('T')[0],
+    url: '#',
+    fileName: selectedFile.value.name,
+    fileSize: selectedFile.value.size
+  }
+  
+  // Add to documents array
+  documents.value.unshift(documentData)
+  
+  // Close modal and reset form
+  closeUploadModal()
+  
+  // Show success message (you can implement a toast notification here)
+  console.log('Document uploaded successfully:', documentData.title)
+}
 </script>
 
 <style scoped>
@@ -651,6 +872,39 @@ const selectViewMode = (mode) => {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #e91e63;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.3);
+}
+
+.upload-btn:hover {
+  background: #ad1457;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.4);
+}
+
+.upload-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .view-controls {
@@ -1406,11 +1660,191 @@ const selectViewMode = (mode) => {
   background: #e0e0e0;
 }
 
+/* Upload Modal Styles */
+.upload-modal {
+  max-width: 600px;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #e91e63;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.file-upload-area {
+  border: 2px dashed #e0e0e0;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.file-upload-area:hover {
+  border-color: #e91e63;
+  background: #f0f0f0;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.upload-icon-large {
+  width: 48px;
+  height: 48px;
+  color: #666;
+}
+
+.upload-placeholder p {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+.file-types {
+  font-size: 12px;
+  color: #666;
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.file-icon {
+  width: 32px;
+  height: 32px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.file-info {
+  flex: 1;
+  text-align: left;
+}
+
+.file-name {
+  margin: 0 0 4px 0;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.file-size {
+  margin: 0;
+  color: #666;
+  font-size: 12px;
+}
+
+.remove-file-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.remove-file-btn:hover {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.remove-file-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.upload-icon-small {
+  width: 16px;
+  height: 16px;
+}
+
+.primary-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.primary-btn:disabled:hover {
+  background: #ccc;
+  transform: none;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .documents-header {
     flex-direction: column;
     gap: 16px;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .upload-btn {
+    width: 100%;
+    justify-content: center;
   }
   
   .documents-search-bar {
@@ -1434,6 +1868,18 @@ const selectViewMode = (mode) => {
   .compact-actions {
     width: 100%;
     justify-content: space-between;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
   }
 }
 </style>
