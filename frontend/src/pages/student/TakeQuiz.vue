@@ -1,30 +1,16 @@
 <template>
   <div class="take-quiz-container">
-    <div class="quiz-topbar">
-      <div class="topbar-left">
-        <img src="@/assets/images/logo.png" alt="Logo" class="topbar-logo" />
-      </div>
-      <div class="topbar-right">
-        <button class="notification-btn">
-          <ri-notification-line />
-          <span class="notification-badge">3</span>
-        </button>
-        <div class="user-menu">
-          <img src="/default-avatar.png" alt="Kullanıcı" class="user-avatar" />
-        </div>
-      </div>
-    </div>
     <div class="main-content">
       <div class="question-sidebar">
 
         <div class="timer-container">
           <div class="timer-circle">
-            <div class="timer-label">Kalan Süre</div>
+            <div class="timer-label">Remaining Time</div>
             <div class="timer-display">{{ timerDisplay }}</div>
             <div class="timer-units">
-              <span>Saat</span>
-              <span>Dakika</span>
-              <span>Saniye</span>
+              <span>Hours</span>
+              <span>Min</span>
+              <span>Sec</span>
             </div>
           </div>
         </div>
@@ -52,7 +38,7 @@
           </div>
           <div class="profile-info">
             <div class="user-name">Muhammet</div>
-            <div class="user-role">Öğrenci</div>
+            <div class="user-role">Student</div>
           </div>
         </div>
       </div>
@@ -441,85 +427,12 @@ const selectAnswer = (optionIndex) => {
 <style lang="scss" scoped>
 @import '@/assets/scss/custom/_variable.scss';
 
-.quiz-topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 56px;
-  background: $black;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 100;
-  padding: 0 32px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-.topbar-left {
-  flex: 1;
-}
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.notification-btn {
-  position: relative;
-  background: none;
-  border: none;
-  color: $white;
-  font-size: 22px;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  &:hover {
-    background: rgba(255,255,255,0.08);
-  }
-}
-.notification-badge {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 16px;
-  height: 16px;
-  background: $orange;
-  color: $white;
-  border-radius: 50%;
-  font-size: 10px;
-  font-weight: $font-weight-bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.user-menu {
-  display: flex;
-  align-items: center;
-}
-.user-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid $white;
-}
-
 .take-quiz-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
   background: $black;
   font-family: $font-family-primary-regular;
-  padding-top: 56px; // üst bar için boşluk bırak
-}
-
-.topbar-logo {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
-  display: block;
 }
 
 .main-content {
@@ -532,7 +445,7 @@ const selectAnswer = (optionIndex) => {
 }
 
 .question-sidebar {
-  width: 250px;
+  width: 350px;
   background: $black;
   border-radius: 12px;
   padding: $space-l;
@@ -650,7 +563,7 @@ const selectAnswer = (optionIndex) => {
 
 .question-grid {
   display: grid;
-  gap: 4px; // $space-xs yerine daha küçük bir değer
+  gap: $space-xs;
   margin-bottom: $space-m;
 }
 .question-grid.cols-5 {
@@ -664,10 +577,9 @@ const selectAnswer = (optionIndex) => {
 }
 
 .question-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  font-size: 0.95rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   border: none;
   background: #f8f9fa;
   color: $black;
