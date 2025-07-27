@@ -1,32 +1,16 @@
 <template>
   <div class="take-quiz-container">
-    <div class="header-section">
-      <div class="dark-sidebar">
-        <div class="logo-section">
-          <div class="logo-icon">
-            <img src="@/assets/images/logo.png" alt="Logo" />
-          </div>
-        </div>
+    <div class="quiz-topbar">
+      <div class="topbar-left">
+        <img src="@/assets/images/logo.png" alt="Logo" class="topbar-logo" />
       </div>
-      <div class="top-bar">
-        <div class="header-left">
-          <div class="breadcrumb">
-            <span>Take Quiz</span>
-          </div>
-        </div>
-        <div class="header-right">
-          <div class="header-actions">
-            <button class="notification-btn">
-              <ri-notification-line />
-              <span class="notification-badge">3</span>
-            </button>
-            <div class="user-menu">
-              <button class="user-menu-toggle">
-                <img src="/default-avatar.png" alt="User" />
-                <ri-arrow-down-s-line />
-              </button>
-            </div>
-          </div>
+      <div class="topbar-right">
+        <button class="notification-btn">
+          <ri-notification-line />
+          <span class="notification-badge">3</span>
+        </button>
+        <div class="user-menu">
+          <img src="/default-avatar.png" alt="Kullanıcı" class="user-avatar" />
         </div>
       </div>
     </div>
@@ -35,12 +19,12 @@
 
         <div class="timer-container">
           <div class="timer-circle">
-            <div class="timer-label">Remaining Time</div>
+            <div class="timer-label">Kalan Süre</div>
             <div class="timer-display">{{ timerDisplay }}</div>
             <div class="timer-units">
-              <span>Hours</span>
-              <span>Min</span>
-              <span>Sec</span>
+              <span>Saat</span>
+              <span>Dakika</span>
+              <span>Saniye</span>
             </div>
           </div>
         </div>
@@ -68,7 +52,7 @@
           </div>
           <div class="profile-info">
             <div class="user-name">Muhammet</div>
-            <div class="user-role">Student</div>
+            <div class="user-role">Öğrenci</div>
           </div>
         </div>
       </div>
@@ -457,114 +441,48 @@ const selectAnswer = (optionIndex) => {
 <style lang="scss" scoped>
 @import '@/assets/scss/custom/_variable.scss';
 
-.take-quiz-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: $black;
-}
-
-.header-section {
-  display: flex;
-  height: 80px;
-  flex-shrink: 0;
-}
-
-.dark-sidebar {
-  width: 280px;
-  background: #2c2c2c;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 $space-m;
-}
-
-.logo-section {
-  display: flex;
-  align-items: center;
-}
-
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-icon img {
+.quiz-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.sidebar-toggle {
-  background: none;
-  border: none;
-  color: $white;
-  font-size: 20px;
-  cursor: pointer;
-  padding: $space-xs;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-}
-
-.top-bar {
-  flex: 1;
-  background: $white;
+  height: 56px;
+  background: $black;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 $space-l;
-  border-bottom: 1px solid #e5e5e5;
+  z-index: 100;
+  padding: 0 32px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-
-.header-left {
+.topbar-left {
+  flex: 1;
+}
+.topbar-right {
   display: flex;
   align-items: center;
+  gap: 20px;
 }
-
-.breadcrumb {
-  font-size: $font-size-m;
-  font-weight: $font-weight-bold;
-  color: $black;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: $space-m;
-}
-
 .notification-btn {
   position: relative;
   background: none;
   border: none;
-  font-size: 20px;
-  color: $black;
+  color: $white;
+  font-size: 22px;
   cursor: pointer;
-  padding: $space-xs;
+  padding: 8px;
   border-radius: 4px;
-  transition: background-color 0.2s ease;
-
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
   &:hover {
-    background: #f5f5f5;
+    background: rgba(255,255,255,0.08);
   }
 }
-
 .notification-badge {
   position: absolute;
-  top: -5px;
-  right: -5px;
+  top: 2px;
+  right: 2px;
   width: 16px;
   height: 16px;
   background: $orange;
@@ -576,32 +494,32 @@ const selectAnswer = (optionIndex) => {
   align-items: center;
   justify-content: center;
 }
-
 .user-menu {
-  position: relative;
-}
-
-.user-menu-toggle {
   display: flex;
   align-items: center;
-  gap: $space-xs;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: $space-xs;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
+}
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid $white;
+}
 
-  &:hover {
-    background: #f5f5f5;
-  }
+.take-quiz-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: $black;
+  font-family: $font-family-primary-regular;
+  padding-top: 56px; // üst bar için boşluk bırak
+}
 
-  img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
+.topbar-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .main-content {
@@ -614,7 +532,7 @@ const selectAnswer = (optionIndex) => {
 }
 
 .question-sidebar {
-  width: 350px;
+  width: 250px;
   background: $black;
   border-radius: 12px;
   padding: $space-l;
@@ -732,7 +650,7 @@ const selectAnswer = (optionIndex) => {
 
 .question-grid {
   display: grid;
-  gap: $space-xs;
+  gap: 4px; // $space-xs yerine daha küçük bir değer
   margin-bottom: $space-m;
 }
 .question-grid.cols-5 {
@@ -746,9 +664,10 @@ const selectAnswer = (optionIndex) => {
 }
 
 .question-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 0.95rem;
   border: none;
   background: #f8f9fa;
   color: $black;
@@ -855,10 +774,6 @@ const selectAnswer = (optionIndex) => {
   line-height: 1.5;
   color: $black;
   margin-bottom: $space-s;
-  background: #f8f9fa;
-  padding: $space-m;
-  border-radius: 8px;
-  border-left: 4px solid $pink;
   flex-shrink: 0;
   max-height: 220px;
   overflow-y: auto;

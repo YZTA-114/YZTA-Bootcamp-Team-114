@@ -16,8 +16,19 @@
     <template #content>
       <div class="student-courses">
         <div class="page-header">
-          <h1 class="page-title">My Courses</h1>
-          <p class="page-subtitle">Manage and view your enrolled courses</p>
+          <div class="header-left">
+            <h1 class="page-title">
+              <span class="title-icon">🎓📚</span>
+              Tüm Dersler
+            </h1>
+          </div>
+          <div class="header-right">
+            <button class="filter-btn">
+              <i class="ri-filter-3-line"></i>
+              Filtrele
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+          </div>
         </div>
 
         <div class="courses-grid">
@@ -27,36 +38,19 @@
             class="course-card"
             @click="viewCourse(course)"
           >
-            <div class="course-header">
+            <div class="course-icon-wrapper" :class="course.colorClass">
               <div class="course-icon">
                 <component :is="course.icon" />
-              </div>
-              <div class="course-status" :class="course.status">
-                {{ course.status }}
               </div>
             </div>
             
             <div class="course-content">
               <h3 class="course-title">{{ course.title }}</h3>
-              <p class="course-instructor">{{ course.instructor }}</p>
-              <p class="course-description">{{ course.description }}</p>
+              <p class="course-instructor">Eğitmen: {{ course.instructor }}</p>
               
-              <div class="course-stats">
-                <div class="stat">
-                  <span class="stat-label">Progress</span>
-                  <span class="stat-value">{{ course.progress }}%</span>
-                </div>
-                <div class="stat">
-                  <span class="stat-label">Grade</span>
-                  <span class="stat-value">{{ course.grade }}%</span>
-                </div>
+              <div class="course-arrow">
+                <i class="ri-arrow-right-line"></i>
               </div>
-            </div>
-            
-            <div class="course-footer">
-              <button class="btn btn-primary" @click.stop="continueCourse(course)">
-                Continue
-              </button>
             </div>
           </div>
         </div>
@@ -74,14 +68,14 @@ import DashboardNav from '@/components/dashboard/DashboardNav.vue'
 // Router
 const router = useRouter()
 
-// User data
+// Kullanıcı bilgileri
 const userName = ref('Muhammet')
-const userRole = ref('Student')
-const userAvatar = ref('/default-avatar.png')
-const currentPage = ref('My Courses')
+const userRole = ref('Öğrenci')
+const userAvatar = ref('/default.png')
+const currentPage = ref('Derslerim')
 const notificationCount = ref(3)
 
-// Navigation items
+// Navigation items (StudentDashboard.vue ile aynı ve Türkçe)
 const navItems = ref([
   {
     id: 'dashboard',
@@ -91,89 +85,79 @@ const navItems = ref([
   },
   {
     id: 'courses',
-    label: 'My Courses',
+    label: 'Dersler',
     path: '/student/courses',
     icon: 'ri-book-line'
   },
   {
-    id: 'quizzes',
-    label: 'My Quizzes',
-    path: '/student/quizzes',
-    icon: 'ri-question-answer-line'
-  },
-  {
     id: 'assignments',
-    label: 'Assignments',
+    label: 'Quizler',
     path: '/student/assignments',
     icon: 'ri-task-line'
   },
   {
-    id: 'grades',
-    label: 'Grades',
-    path: '/student/grades',
-    icon: 'ri-bar-chart-line'
+    id: 'documents',
+    label: 'Dokümanlarım',
+    path: '/student/documents',
+    icon: 'ri-file-text-line'
   },
   {
     id: 'calendar',
-    label: 'Calendar',
+    label: 'Takvim',
     path: '/student/calendar',
     icon: 'ri-calendar-line'
   },
   {
-    id: 'resources',
-    label: 'Resources',
-    path: '/student/resources',
-    icon: 'ri-folder-line'
-  },
-  {
     id: 'profile',
-    label: 'Profile',
+    label: 'Profil',
     path: '/student/profile',
     icon: 'ri-user-line'
   }
 ])
 
-// Sample courses data
+// Örnek ders verisi (Tasarım ilhamına göre güncellendi)
 const courses = ref([
   {
     id: 1,
-    title: 'Introduction to Computer Science',
-    instructor: 'Dr. Sarah Johnson',
-    description: 'Learn the fundamentals of programming and computer science concepts.',
-    icon: 'ri-code-line',
-    status: 'active',
-    progress: 75,
-    grade: 87
+    title: 'Video Düzenleme',
+    instructor: 'Andy J. Pizza',
+    icon: 'ri-video-line',
+    colorClass: 'blue-bg'
   },
   {
     id: 2,
-    title: 'Advanced Mathematics',
-    instructor: 'Prof. Michael Chen',
-    description: 'Advanced mathematical concepts including calculus and linear algebra.',
-    icon: 'ri-function-line',
-    status: 'active',
-    progress: 60,
-    grade: 92
+    title: '3D Render',
+    instructor: 'Saidul Islam',
+    icon: 'ri-cube-line',
+    colorClass: 'gray-bg'
   },
   {
     id: 3,
-    title: 'English Literature',
-    instructor: 'Dr. Emily Davis',
-    description: 'Explore classic and contemporary literature from around the world.',
-    icon: 'ri-book-line',
-    status: 'completed',
-    progress: 100,
-    grade: 89
+    title: 'Dijital Pazarlama',
+    instructor: 'Wahab K.',
+    icon: 'ri-line-chart-line',
+    colorClass: 'blue-bg'
   },
   {
     id: 4,
-    title: 'Physics Fundamentals',
-    instructor: 'Prof. Robert Wilson',
-    description: 'Understanding the basic principles of physics and their applications.',
-    icon: 'ri-atom-line',
-    status: 'active',
-    progress: 45,
-    grade: 78
+    title: 'VR Eğitimi',
+    instructor: 'Moni Islam',
+    icon: 'ri-vr-line',
+    colorClass: 'pink-bg'
+  },
+  {
+    id: 5,
+    title: 'PS4 Oyun',
+    instructor: 'W. Sheikh',
+    icon: 'ri-gamepad-line',
+    colorClass: 'blue-bg'
+  },
+  {
+    id: 6,
+    title: 'Fotoğrafçılık',
+    instructor: 'S.J. Kabir',
+    icon: 'ri-camera-line',
+    colorClass: 'purple-bg'
   }
 ])
 
@@ -194,9 +178,7 @@ const viewCourse = (course) => {
   router.push(`/student/courses/${course.id}`)
 }
 
-const continueCourse = (course) => {
-  router.push(`/student/courses/${course.id}/continue`)
-}
+
 </script>
 
 <style lang="scss" scoped>
@@ -204,157 +186,163 @@ const continueCourse = (course) => {
 
 .student-courses {
   .page-header {
-    margin-bottom: $space-l;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-xl;
+    padding: $space-l 0;
 
-    .page-title {
-      font-size: $font-size-xxl;
-      font-weight: $font-weight-bold;
-      color: $black;
-      margin: 0 0 $space-s 0;
+    .header-left {
+      .page-title {
+        font-size: $font-size-xxl;
+        font-weight: $font-weight-bold;
+        color: $black;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: $space-s;
+
+        .title-icon {
+          font-size: $font-size-xl;
+        }
+      }
     }
 
-    .page-subtitle {
-      font-size: $font-size-m;
-      color: rgba($black, 0.7);
-      margin: 0;
+    .header-right {
+      .filter-btn {
+        display: flex;
+        align-items: center;
+        gap: $space-xs;
+        padding: $space-s $space-m;
+        background: $white;
+        border: 1px solid rgba($black, 0.1);
+        border-radius: 8px;
+        font-size: $font-size-s;
+        font-weight: $font-weight-semi-bold;
+        color: $black;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba($black, 0.05);
+          border-color: rgba($black, 0.2);
+        }
+
+        i {
+          font-size: $font-size-s;
+        }
+      }
     }
   }
 
   .courses-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: $space-l;
 
     @media (max-width: 768px) {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: $space-m;
+    }
+
+    @media (max-width: 480px) {
       grid-template-columns: 1fr;
     }
   }
 
   .course-card {
     background-color: $white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba($black, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba($black, 0.08);
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    border: 1px solid rgba($black, 0.05);
 
     &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 16px rgba($black, 0.15);
+      transform: translateY(-6px);
+      box-shadow: 0 8px 24px rgba($black, 0.12);
+      border-color: rgba($black, 0.1);
     }
 
-    .course-header {
-      padding: $space-l;
+    .course-icon-wrapper {
+      padding: $space-xl;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, $pink, darken($pink, 10%));
-      color: $white;
+      min-height: 120px;
 
-      .course-icon {
-        font-size: $font-size-xl;
+      &.blue-bg {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
       }
 
-      .course-status {
-        padding: $space-xs $space-s;
-        border-radius: 20px;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-semi-bold;
-        text-transform: uppercase;
+      &.gray-bg {
+        background: linear-gradient(135deg, #f5f5f5, #eeeeee);
+      }
 
-        &.active {
-          background-color: rgba($white, 0.2);
-        }
+      &.pink-bg {
+        background: linear-gradient(135deg, #fce4ec, #f8bbd9);
+      }
 
-        &.completed {
-          background-color: rgba($white, 0.2);
-        }
+      &.purple-bg {
+        background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+      }
+
+      .course-icon {
+        font-size: 48px;
+        color: $black;
+        opacity: 0.8;
       }
     }
 
     .course-content {
       padding: $space-l;
+      position: relative;
 
       .course-title {
         font-size: $font-size-l;
-        font-weight: $font-weight-semi-bold;
+        font-weight: $font-weight-bold;
         color: $black;
         margin: 0 0 $space-s 0;
+        line-height: 1.3;
       }
 
       .course-instructor {
         font-size: $font-size-s;
-        color: $pink;
-        font-weight: $font-weight-semi-bold;
-        margin: 0 0 $space-s 0;
-      }
-
-      .course-description {
-        font-size: $font-size-s;
         color: rgba($black, 0.7);
-        margin: 0 0 $space-m 0;
-        line-height: 1.4;
+        margin: 0;
+        font-weight: $font-weight-semi-bold;
       }
 
-      .course-stats {
+      .course-arrow {
+        position: absolute;
+        top: $space-l;
+        right: $space-l;
+        width: 32px;
+        height: 32px;
+        background: rgba($black, 0.05);
+        border-radius: 50%;
         display: flex;
-        gap: $space-m;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
 
-        .stat {
-          flex: 1;
-          text-align: center;
+        i {
+          font-size: $font-size-s;
+          color: rgba($black, 0.6);
+        }
+      }
 
-          .stat-label {
-            display: block;
-            font-size: $font-size-xs;
-            color: rgba($black, 0.6);
-            margin-bottom: $space-xs;
-          }
-
-          .stat-value {
-            display: block;
-            font-size: $font-size-m;
-            font-weight: $font-weight-semi-bold;
-            color: $black;
-          }
+      &:hover .course-arrow {
+        background: rgba($black, 0.1);
+        
+        i {
+          color: $black;
         }
       }
     }
-
-    .course-footer {
-      padding: $space-l;
-      border-top: 1px solid rgba($black, 0.1);
-
-      .btn {
-        width: 100%;
-        justify-content: center;
-      }
-    }
   }
 }
 
-// Button styles
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: $space-xs;
-  padding: $space-s $space-m;
-  border: none;
-  border-radius: 8px;
-  font-size: $font-size-s;
-  font-weight: $font-weight-semi-bold;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
 
-  &.btn-primary {
-    background-color: $pink;
-    color: $white;
-
-    &:hover {
-      background-color: darken($pink, 10%);
-    }
-  }
-}
 </style> 

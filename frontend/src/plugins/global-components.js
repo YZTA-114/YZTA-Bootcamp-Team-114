@@ -84,7 +84,8 @@ import {
   // Additional icons for courses
   RiCodeLine,
   RiFunctionLine,
-  RiAtomLine
+  RiAtomLine,
+  RiMicLine
 } from "@remixicon/vue";
 
 
@@ -174,7 +175,8 @@ const remixIcons = [
   // Additional icons for courses
   { name: "ri-code-line", component: RiCodeLine },
   { name: "ri-function-line", component: RiFunctionLine },
-  { name: "ri-atom-line", component: RiAtomLine }
+  { name: "ri-atom-line", component: RiAtomLine },
+  { name: "ri-mic-line", component: RiMicLine }
 ];
 
 export default {

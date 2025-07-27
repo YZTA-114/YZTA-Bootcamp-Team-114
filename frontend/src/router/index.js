@@ -57,6 +57,11 @@ const routes = [
         name: 'take-quiz',
         component: () => import('@/pages/student/TakeQuiz.vue')
       },
+      {
+        path: 'profile',
+        name: 'student-profile',
+        component: () => import('@/pages/student/StudentProfile.vue')
+      },
     ]
   },
   // Teacher Dashboard Routes

@@ -4,8 +4,10 @@
       <router-link 
         :to="item.path" 
         class="nav-link"
-        :class="{ 'active': isActive(item.path) }"
+        :class="{ 'active': isActive(item.path), 'collapsed': collapsed }"
         v-if="!item.children"
+        @mouseenter="showTooltip($event, item.label)"
+        @mouseleave="hideTooltip"
       >
         <component :is="item.icon" class="nav-icon" />
         <span class="nav-text" v-if="!collapsed">{{ item.label }}</span>
@@ -15,8 +17,10 @@
       <div v-else class="nav-group">
         <button 
           class="nav-link nav-toggle"
-          :class="{ 'active': isGroupActive(item.children) }"
+          :class="{ 'active': isGroupActive(item.children), 'collapsed': collapsed }"
           @click="toggleGroup(item.id)"
+          @mouseenter="showTooltip($event, item.label)"
+          @mouseleave="hideTooltip"
         >
           <component :is="item.icon" class="nav-icon" />
           <span class="nav-text" v-if="!collapsed">{{ item.label }}</span>
@@ -50,7 +54,7 @@ import { ref, defineProps } from 'vue'
 import { useRoute } from 'vue-router'
 
 // Props
-defineProps({
+const props = defineProps({
   navItems: {
     type: Array,
     required: true
@@ -85,6 +89,40 @@ const toggleGroup = (groupId) => {
     openGroups.value.push(groupId)
   }
 }
+
+const showTooltip = (event, label) => {
+  if (!props.collapsed) return
+  
+  const tooltip = document.createElement('div')
+  tooltip.className = 'nav-tooltip-global'
+  tooltip.textContent = label
+  tooltip.style.cssText = `
+    position: fixed;
+    left: 80px;
+    top: ${event.clientY}px;
+    transform: translateY(-50%);
+    background: #232323;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10000;
+    margin-left: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+  `
+  
+  document.body.appendChild(tooltip)
+  event.target._tooltip = tooltip
+}
+
+const hideTooltip = (event) => {
+  if (event.target._tooltip) {
+    document.body.removeChild(event.target._tooltip)
+    delete event.target._tooltip
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -94,9 +132,11 @@ const toggleGroup = (groupId) => {
   list-style: none;
   margin: 0;
   padding: 0;
+  overflow: visible;
 
   .nav-item {
     margin: 0;
+    overflow: visible;
   }
 
   .nav-link {
@@ -116,6 +156,7 @@ const toggleGroup = (groupId) => {
     background: none;
     border: none;
     cursor: pointer;
+    overflow: visible;
 
     &:hover {
       color: $white;
@@ -226,9 +267,14 @@ const toggleGroup = (groupId) => {
     &.collapsed {
       justify-content: center;
       padding: $space-s;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      position: relative;
 
       .nav-icon {
         margin: 0;
+        font-size: 20px;
       }
 
       .nav-text,
@@ -236,6 +282,8 @@ const toggleGroup = (groupId) => {
       .nav-arrow {
         display: none;
       }
+
+
     }
   }
 }

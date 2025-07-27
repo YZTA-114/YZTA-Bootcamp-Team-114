@@ -11,22 +11,388 @@
     </template>
     <template #content>
       <div class="student-documents">
+        <!-- Header Section -->
+        <div class="documents-header">
+          <div class="header-left">
         <h1>Dokümanlar</h1>
-        <div class="documents-search-bar">
-          <input v-model="search" placeholder="Döküman ara..." />
-          <select v-model="selectedCourse">
-            <option value="">Tüm Dersler</option>
-            <option v-for="c in courses" :key="c" :value="c">{{ c }}</option>
-          </select>
+            <p class="document-count">Toplam {{ documents.length }} dokümanınız var</p>
+          </div>
+          <div class="header-right">
+            <div class="view-controls">
+              <div class="view-mode-dropdown">
+                <button 
+                  @click="toggleViewModeDropdown"
+                  class="view-mode-toggle-btn"
+                  title="Görünüm Modunu Değiştir"
+                >
+                  <span>Görünüm Modu</span>
+                  <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 4v6h6"/>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                  </svg>
+                </button>
+                
+                <div v-if="showViewModeDropdown" class="view-mode-options">
+                  <div class="view-mode-header">
+                    <h4>Görünüm Seçenekleri</h4>
+                    <button class="close-view-mode-btn" @click="toggleViewModeDropdown">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="view-mode-buttons">
+                    <button 
+                      @click="selectViewMode('grid')" 
+                      :class="{ active: viewMode === 'grid' }"
+                      class="view-option-btn"
+                    >
+                      <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                      </svg>
+                      <span>Grid Görünümü</span>
+                    </button>
+                    <button 
+                      @click="selectViewMode('list')" 
+                      :class="{ active: viewMode === 'list' }"
+                      class="view-option-btn"
+                    >
+                      <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="8" y1="6" x2="21" y2="6"/>
+                        <line x1="8" y1="12" x2="21" y2="12"/>
+                        <line x1="8" y1="18" x2="21" y2="18"/>
+                        <line x1="3" y1="6" x2="3.01" y2="6"/>
+                        <line x1="3" y1="12" x2="3.01" y2="12"/>
+                        <line x1="3" y1="18" x2="3.01" y2="18"/>
+                      </svg>
+                      <span>Liste Görünümü</span>
+                    </button>
+                    <button 
+                      @click="selectViewMode('compact')" 
+                      :class="{ active: viewMode === 'compact' }"
+                      class="view-option-btn"
+                    >
+                      <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="8" y1="6" x2="21" y2="6"/>
+                        <line x1="8" y1="12" x2="21" y2="12"/>
+                        <line x1="8" y1="18" x2="21" y2="18"/>
+                        <line x1="3" y1="6" x2="3.01" y2="6"/>
+                        <line x1="3" y1="12" x2="3.01" y2="12"/>
+                        <line x1="3" y1="18" x2="3.01" y2="18"/>
+                      </svg>
+                      <span>Kompakt Görünümü</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
-        <div class="documents-list">
-          <div v-for="doc in filteredDocuments" :key="doc.id" class="document-item">
-            <h3>{{ doc.title }}</h3>
-            <p>{{ doc.description }}</p>
-            <span>Ders: {{ doc.course }}</span>
-            <span>Öğretmen: {{ doc.teacher }}</span>
-            <span>Tarih: {{ doc.date }}</span>
-            <a :href="doc.url" target="_blank">İndir</a>
+
+        <!-- Search and Filter Bar -->
+        <div class="documents-search-bar">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input v-model="search" placeholder="Doküman ara..." />
+          </div>
+          
+          <!-- Course Dropdown -->
+          <div class="filter-dropdown">
+            <button 
+              @click="toggleCourseDropdown"
+              class="filter-dropdown-btn"
+              :class="{ active: showCourseDropdown }"
+            >
+              <div class="filter-btn-content">
+                <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22,4 12,14.01 9,11.01"/>
+                </svg>
+                <span class="filter-text">{{ selectedCourse || 'Tüm Dersler' }}</span>
+              </div>
+              <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </button>
+            
+            <div v-if="showCourseDropdown" class="filter-dropdown-menu">
+              <div class="dropdown-header">
+                <h4>Ders Seçin</h4>
+                <button class="close-dropdown-btn" @click="toggleCourseDropdown">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="dropdown-options">
+                <button 
+                  @click="selectCourse('')"
+                  class="dropdown-option"
+                  :class="{ selected: selectedCourse === '' }"
+                >
+                  <span>Tüm Dersler</span>
+                  <svg v-if="selectedCourse === ''" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </button>
+                <button 
+                  v-for="c in courses" 
+                  :key="c"
+                  @click="selectCourse(c)"
+                  class="dropdown-option"
+                  :class="{ selected: selectedCourse === c }"
+                >
+                  <span>{{ c }}</span>
+                  <svg v-if="selectedCourse === c" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Dropdown -->
+          <div class="filter-dropdown">
+            <button 
+              @click="toggleCategoryDropdown"
+              class="filter-dropdown-btn"
+              :class="{ active: showCategoryDropdown }"
+            >
+              <div class="filter-btn-content">
+                <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"/>
+                </svg>
+                <span class="filter-text">{{ selectedCategory || 'Tüm Kategoriler' }}</span>
+              </div>
+              <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </button>
+            
+            <div v-if="showCategoryDropdown" class="filter-dropdown-menu">
+              <div class="dropdown-header">
+                <h4>Kategori Seçin</h4>
+                <button class="close-dropdown-btn" @click="toggleCategoryDropdown">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="dropdown-options">
+                <button 
+                  @click="selectCategory('')"
+                  class="dropdown-option"
+                  :class="{ selected: selectedCategory === '' }"
+                >
+                  <span>Tüm Kategoriler</span>
+                  <svg v-if="selectedCategory === ''" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </button>
+                <button 
+                  v-for="cat in categories" 
+                  :key="cat"
+                  @click="selectCategory(cat)"
+                  class="dropdown-option"
+                  :class="{ selected: selectedCategory === cat }"
+                >
+                  <span>{{ cat }}</span>
+                  <svg v-if="selectedCategory === cat" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+
+        <!-- Documents Content -->
+        <div class="documents-content">
+          <!-- Grid View -->
+          <div v-if="viewMode === 'grid'" class="documents-grid">
+            <div 
+              v-for="doc in filteredDocuments" 
+              :key="doc.id" 
+              class="document-card"
+              @click="selectDocument(doc)"
+            >
+              <div class="card-header">
+                <span class="category-tag" :class="getCategoryClass(doc.category)">{{ doc.category }}</span>
+                <button class="more-options">
+                  <i class="ri-more-2-fill"></i>
+                </button>
+              </div>
+              <div class="document-preview">
+                <i class="ri-file-text-line"></i>
+              </div>
+              <div class="card-content">
+                <h4 class="document-title">{{ doc.title }}</h4>
+                <p class="document-author">{{ doc.teacher }}</p>
+                <p class="document-date">{{ formatDate(doc.date) }}</p>
+              </div>
+              <div class="card-actions">
+                <div class="action-icons">
+                  <button class="action-icon-btn" @click.stop="previewDocument(doc)" title="Görüntüle">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                  <button class="action-icon-btn" @click.stop="downloadDocument(doc)" title="İndir">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7,10 12,15 17,10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                  </button>
+                  <button class="action-icon-btn delete-btn" @click.stop="deleteDocument(doc)" title="Sil">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3,6 5,6 21,6"/>
+                      <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
+                      <line x1="10" y1="11" x2="10" y2="17"/>
+                      <line x1="14" y1="11" x2="14" y2="17"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- List View -->
+          <div v-else-if="viewMode === 'list'" class="documents-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Doküman Adı</th>
+                  <th>Kategori</th>
+                  <th>Öğretmen</th>
+                  <th>Ders</th>
+                  <th>Tarih</th>
+                  <th>İşlemler</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="doc in filteredDocuments" :key="doc.id">
+                  <td>
+                    <div class="document-info">
+                      <i class="ri-file-text-line"></i>
+                      <span>{{ doc.title }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="category-badge" :class="getCategoryClass(doc.category)">{{ doc.category }}</span>
+                  </td>
+                  <td>{{ doc.teacher }}</td>
+                  <td>{{ doc.course }}</td>
+                  <td>{{ formatDate(doc.date) }}</td>
+                                     <td>
+                     <div class="action-buttons">
+                       <button class="action-btn" @click="previewDocument(doc)" title="Görüntüle">
+                         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                           <circle cx="12" cy="12" r="3"/>
+                         </svg>
+                       </button>
+                       <button class="action-btn" @click="downloadDocument(doc)" title="İndir">
+                         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                           <polyline points="7,10 12,15 17,10"/>
+                           <line x1="12" y1="15" x2="12" y2="3"/>
+                         </svg>
+                       </button>
+                       <button class="action-btn delete-btn" @click="deleteDocument(doc)" title="Sil">
+                         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                           <polyline points="3,6 5,6 21,6"/>
+                           <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
+                           <line x1="10" y1="11" x2="10" y2="17"/>
+                           <line x1="14" y1="11" x2="14" y2="17"/>
+                         </svg>
+                       </button>
+                     </div>
+                   </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Compact View -->
+          <div v-else class="documents-compact">
+            <div v-for="doc in filteredDocuments" :key="doc.id" class="compact-item">
+              <div class="compact-info">
+                <i class="ri-file-text-line"></i>
+                <div class="info-text">
+                  <h4>{{ doc.title }}</h4>
+                  <p>{{ doc.teacher }} • {{ doc.course }} • {{ formatDate(doc.date) }}</p>
+                </div>
+              </div>
+                             <div class="compact-actions">
+                 <span class="category-tag" :class="getCategoryClass(doc.category)">{{ doc.category }}</span>
+                 <div class="compact-action-icons">
+                   <button class="action-icon-btn-small" @click="previewDocument(doc)" title="Görüntüle">
+                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                       <circle cx="12" cy="12" r="3"/>
+                     </svg>
+                   </button>
+                   <button class="action-icon-btn-small" @click="downloadDocument(doc)" title="İndir">
+                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                       <polyline points="7,10 12,15 17,10"/>
+                       <line x1="12" y1="15" x2="12" y2="3"/>
+                     </svg>
+                   </button>
+                   <button class="action-icon-btn-small delete-btn" @click="deleteDocument(doc)" title="Sil">
+                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                       <polyline points="3,6 5,6 21,6"/>
+                       <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
+                       <line x1="10" y1="11" x2="10" y2="17"/>
+                       <line x1="14" y1="11" x2="14" y2="17"/>
+                     </svg>
+                   </button>
+                 </div>
+               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Document Preview Modal -->
+        <div v-if="selectedDoc" class="document-preview-modal" @click="closePreview">
+          <div class="modal-content" @click.stop>
+            <div class="modal-header">
+              <h3>{{ selectedDoc.title }}</h3>
+              <button class="close-btn" @click="closePreview">
+                <i class="ri-close-line"></i>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="document-details">
+                <p><strong>Öğretmen:</strong> {{ selectedDoc.teacher }}</p>
+                <p><strong>Ders:</strong> {{ selectedDoc.course }}</p>
+                <p><strong>Kategori:</strong> {{ selectedDoc.category }}</p>
+                <p><strong>Tarih:</strong> {{ formatDate(selectedDoc.date) }}</p>
+              </div>
+              <div class="document-actions">
+                <button class="primary-btn" @click="downloadDocument(selectedDoc)">
+                  <i class="ri-download-line"></i>
+                  İndir
+                </button>
+                <button class="secondary-btn" @click="closePreview">
+                  Kapat
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -64,22 +430,16 @@ const navItems = ref([
     icon: 'ri-task-line'
   },
   {
-    id: 'grades',
-    label: 'Dokümanlar',
+    id: 'documents',
+    label: 'Dokümanlarım',
     path: '/student/documents',
-    icon: 'ri-bar-chart-line'
+    icon: 'ri-file-text-line'
   },
   {
     id: 'calendar',
     label: 'Takvim',
     path: '/student/calendar',
     icon: 'ri-calendar-line'
-  },
-  {
-    id: 'resources',
-    label: 'Kaynaklarım',
-    path: '/student/resources',
-    icon: 'ri-folder-line'
   },
   {
     id: 'profile',
@@ -91,88 +451,989 @@ const navItems = ref([
 
 const search = ref('')
 const selectedCourse = ref('')
+const selectedCategory = ref('')
+const viewMode = ref('grid')
+const selectedDoc = ref(null)
+const showCourseDropdown = ref(false)
+const showCategoryDropdown = ref(false)
+const showViewModeDropdown = ref(false)
+
 const documents = ref([
-  { id: 1, title: 'Matematik Notları', description: '1. Ünite özet', teacher: 'Ahmet Yılmaz', course: 'Matematik', date: '2024-05-01', url: '#' },
-  { id: 2, title: 'Fizik Sunumu', description: 'Kuvvet ve Hareket', teacher: 'Ayşe Demir', course: 'Fizik', date: '2024-05-03', url: '#' },
-  { id: 3, title: 'Kimya Deney Föyü', description: 'Asit-Baz Deneyi', teacher: 'Mehmet Kaya', course: 'Kimya', date: '2024-05-05', url: '#' },
+  { 
+    id: 1, 
+    title: 'Matematik Notları', 
+    description: '1. Ünite özet', 
+    teacher: 'Ahmet Yılmaz', 
+    course: 'Matematik', 
+    category: 'Notlar',
+    date: '2024-05-01', 
+    url: '#' 
+  },
+  { 
+    id: 2, 
+    title: 'Fizik Sunumu', 
+    description: 'Kuvvet ve Hareket', 
+    teacher: 'Ayşe Demir', 
+    course: 'Fizik', 
+    category: 'Sunumlar',
+    date: '2024-05-03', 
+    url: '#' 
+  },
+  { 
+    id: 3, 
+    title: 'Kimya Deney Föyü', 
+    description: 'Asit-Baz Deneyi', 
+    teacher: 'Mehmet Kaya', 
+    course: 'Kimya', 
+    category: 'Deneyler',
+    date: '2024-05-05', 
+    url: '#' 
+  },
+  { 
+    id: 4, 
+    title: 'Tarih Ödevi', 
+    description: 'Osmanlı İmparatorluğu', 
+    teacher: 'Fatma Özkan', 
+    course: 'Tarih', 
+    category: 'Ödevler',
+    date: '2024-05-02', 
+    url: '#' 
+  },
+  { 
+    id: 5, 
+    title: 'Coğrafya Haritası', 
+    description: 'Türkiye Fiziki Haritası', 
+    teacher: 'Ali Yıldız', 
+    course: 'Coğrafya', 
+    category: 'Haritalar',
+    date: '2024-05-04', 
+    url: '#' 
+  },
+  { 
+    id: 6, 
+    title: 'Biyoloji Laboratuvar Raporu', 
+    description: 'Hücre İncelemesi', 
+    teacher: 'Zeynep Arslan', 
+    course: 'Biyoloji', 
+    category: 'Raporlar',
+    date: '2024-05-06', 
+    url: '#' 
+  }
 ])
 
 const courses = computed(() => [...new Set(documents.value.map(d => d.course))])
+const categories = computed(() => [...new Set(documents.value.map(d => d.category))])
 
 const filteredDocuments = computed(() =>
   documents.value.filter(doc =>
     (doc.title.toLowerCase().includes(search.value.toLowerCase()) ||
      doc.description.toLowerCase().includes(search.value.toLowerCase())) &&
-    (selectedCourse.value === '' || doc.course === selectedCourse.value)
-  )
+    (selectedCourse.value === '' || doc.course === selectedCourse.value) &&
+    (selectedCategory.value === '' || doc.category === selectedCategory.value)
 )
+)
+
+const getCategoryClass = (category) => {
+  const categoryClasses = {
+    'Notlar': 'category-notes',
+    'Sunumlar': 'category-presentations',
+    'Deneyler': 'category-experiments',
+    'Ödevler': 'category-assignments',
+    'Haritalar': 'category-maps',
+    'Raporlar': 'category-reports'
+  }
+  return categoryClasses[category] || 'category-default'
+}
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffTime = Math.abs(now - date)
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  
+  if (diffDays === 1) return '1 gün önce'
+  if (diffDays < 7) return `${diffDays} gün önce`
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} hafta önce`
+  return date.toLocaleDateString('tr-TR')
+}
+
+const selectDocument = (doc) => {
+  selectedDoc.value = doc
+}
+
+const closePreview = () => {
+  selectedDoc.value = null
+}
+
+const downloadDocument = (doc) => {
+  // Simulate download
+  console.log('Downloading:', doc.title)
+  // In real implementation, this would trigger actual download
+}
+
+const previewDocument = (doc) => {
+  selectDocument(doc)
+}
+
+const deleteDocument = (doc) => {
+  // Silme işlemi için onay al
+  if (confirm(`${doc.title} dokümanını silmek istediğinizden emin misiniz?`)) {
+    // Dokümanı listeden kaldır
+    const index = documents.value.findIndex(d => d.id === doc.id)
+    if (index > -1) {
+      documents.value.splice(index, 1)
+    }
+    console.log('Document deleted:', doc.title)
+  }
+}
+
+const toggleCourseDropdown = () => {
+  showCourseDropdown.value = !showCourseDropdown.value
+  showCategoryDropdown.value = false
+}
+
+const toggleCategoryDropdown = () => {
+  showCategoryDropdown.value = !showCategoryDropdown.value
+  showCourseDropdown.value = false
+}
+
+const selectCourse = (course) => {
+  selectedCourse.value = course
+  showCourseDropdown.value = false
+}
+
+const selectCategory = (category) => {
+  selectedCategory.value = category
+  showCategoryDropdown.value = false
+}
+
+const toggleViewModeDropdown = () => {
+  showViewModeDropdown.value = !showViewModeDropdown.value
+  showCourseDropdown.value = false
+  showCategoryDropdown.value = false
+}
+
+const selectViewMode = (mode) => {
+  viewMode.value = mode
+  showViewModeDropdown.value = false
+}
 </script>
 
 <style scoped>
 .student-documents {
   padding: 32px;
+  background: #f8f9fa;
+  min-height: 100vh;
 }
+
+/* Header Styles */
+.documents-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.header-left h1 {
+  margin: 0 0 8px 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.document-count {
+  margin: 0;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.view-controls {
+  display: flex;
+  align-items: center;
+}
+
+.view-mode-dropdown {
+  position: relative;
+}
+
+.view-mode-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: white;
+  border: 2px solid #e91e63;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.view-mode-toggle-btn:hover {
+  background: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.toggle-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.view-mode-toggle-btn:hover .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.view-mode-options {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  border: 1px solid #eee;
+  min-width: 200px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.view-mode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.view-mode-header h4 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.close-view-mode-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.close-view-mode-btn:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.close-view-mode-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.view-mode-buttons {
+  padding: 12px;
+}
+
+.view-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.view-option-btn:hover {
+  background: #f8f9fa;
+}
+
+.view-option-btn.active {
+  background: #e91e63;
+  color: white;
+}
+
+.view-option-btn.active:hover {
+  background: #ad1457;
+}
+
+.view-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+
+
+/* Search Bar Styles */
 .documents-search-bar {
   display: flex;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
-.documents-search-bar input {
+
+.search-input-wrapper {
+  position: relative;
   flex: 1;
-  padding: 14px 18px;
-  border: 1.5px solid #bbb;
-  border-radius: 8px;
-  font-size: 1.15em;
-  min-height: 48px;
-  outline: none;
 }
-.documents-search-bar select {
-  padding: 14px 18px;
-  border: 1.5px solid #bbb;
-  border-radius: 8px;
-  font-size: 1.15em;
-  min-height: 48px;
-  outline: none;
-}
-.documents-list {
-  margin-top: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.document-item {
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
-.document-item h3 {
-  margin: 0 0 8px 0;
-}
-.document-item span {
-  display: inline-block;
-  margin-right: 16px;
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
   color: #666;
-  font-size: 0.95em;
+  width: 20px;
+  height: 20px;
 }
-.document-item a {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 10px 28px;
-  color: #fff;
-  background: #e91e63;
-  border-radius: 6px;
-  font-size: 1.08em;
+
+.documents-search-bar input {
+  width: 100%;
+  padding: 16px 16px 16px 48px;
+  border: 2px solid #e91e63;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: white;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.documents-search-bar input:focus {
+  border-color: #e91e63;
+}
+
+/* Filter Dropdown Styles */
+.filter-dropdown {
+  position: relative;
+  min-width: 180px;
+}
+
+.filter-dropdown-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 16px;
+  background: white;
+  border: 2px solid #e91e63;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.filter-dropdown-btn:hover {
+  background: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.filter-dropdown-btn.active {
+  border-color: #ad1457;
+  box-shadow: 0 4px 16px rgba(233, 30, 99, 0.2);
+}
+
+.filter-btn-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-icon {
+  width: 18px;
+  height: 18px;
+  color: #e91e63;
+  flex-shrink: 0;
+}
+
+.filter-text {
+  font-weight: 500;
+}
+
+.dropdown-arrow {
+  width: 16px;
+  height: 16px;
+  color: #666;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.filter-dropdown-btn.active .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.filter-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  border: 1px solid #eee;
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownSlide 0.3s ease;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.dropdown-header h4 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
   font-weight: 600;
-  text-decoration: none;
-  box-shadow: 0 2px 8px rgba(233,30,99,0.10);
-  transition: background 0.2s, transform 0.2s;
+}
+
+.close-dropdown-btn {
+  background: none;
   border: none;
   cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  color: #666;
+  transition: all 0.2s;
 }
-.document-item a:hover {
+
+.close-dropdown-btn:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.close-dropdown-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.dropdown-options {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.dropdown-option:hover {
+  background: #f8f9fa;
+}
+
+.dropdown-option.selected {
+  background: #e91e63;
+  color: white;
+}
+
+.dropdown-option.selected:hover {
   background: #ad1457;
-  transform: translateY(-2px) scale(1.04);
+}
+
+.check-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Grid View Styles */
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.document-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid #f0f0f0;
+}
+
+.document-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.category-tag {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+.category-notes { background: #4caf50; }
+.category-presentations { background: #2196f3; }
+.category-experiments { background: #ff9800; }
+.category-assignments { background: #9c27b0; }
+.category-maps { background: #795548; }
+.category-reports { background: #607d8b; }
+.category-default { background: #666; }
+
+.more-options {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.more-options:hover {
+  background: #f5f5f5;
+}
+
+.document-preview {
+  height: 120px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  border: 2px dashed #ddd;
+}
+
+.document-preview i {
+  font-size: 3rem;
+  color: #666;
+}
+
+.icon-svg {
+  width: 16px;
+  height: 16px;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.action-icon-btn:hover .icon-svg {
+  color: #333;
+}
+
+.action-icon-btn.delete-btn:hover .icon-svg {
+  color: #d32f2f;
+}
+
+.card-content {
+  margin-bottom: 16px;
+}
+
+.document-title {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.document-author {
+  margin: 0 0 4px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.document-date {
+  margin: 0;
+  color: #999;
+  font-size: 0.8rem;
+}
+
+.card-actions {
+  margin-top: 16px;
+}
+
+.action-icons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.action-icon-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: #f5f5f5;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.action-icon-btn:hover {
+  background: #e0e0e0;
+  color: #000;
+  transform: translateY(-1px);
+}
+
+.action-icon-btn.delete-btn:hover {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+/* Table View Styles */
+.documents-table {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.documents-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.documents-table th {
+  background: #f8f9fa;
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #1a1a1a;
+  border-bottom: 1px solid #eee;
+}
+
+.documents-table td {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.document-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.document-info i {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.document-info .icon-text {
+  font-size: 1.2rem;
+}
+
+.category-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 8px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn .icon-svg {
+  width: 14px;
+  height: 14px;
+}
+
+.action-btn:hover {
+  background: #f5f5f5;
+  color: #e91e63;
+}
+
+.action-btn.delete-btn {
+  color: #666;
+}
+
+.action-btn.delete-btn:hover {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+/* Compact View Styles */
+.documents-compact {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.compact-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.compact-item:last-child {
+  border-bottom: none;
+}
+
+.compact-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.compact-info i {
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.compact-info .icon-text {
+  font-size: 1.5rem;
+}
+
+.info-text h4 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  color: #1a1a1a;
+}
+
+.info-text p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.compact-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.compact-action-icons {
+  display: flex;
+  gap: 6px;
+}
+
+.action-icon-btn-small {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: #f5f5f5;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-icon-btn-small .icon-svg {
+  width: 14px;
+  height: 14px;
+}
+
+.action-icon-btn-small:hover {
+  background: #e0e0e0;
+  color: #000;
+  transform: translateY(-1px);
+}
+
+.action-icon-btn-small.delete-btn:hover {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+/* Modal Styles */
+.document-preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.close-btn:hover {
+  background: #f5f5f5;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.document-details p {
+  margin: 0 0 12px 0;
+  color: #666;
+}
+
+.document-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.primary-btn, .secondary-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.primary-btn {
+  background: #e91e63;
+  color: white;
+}
+
+.primary-btn:hover {
+  background: #ad1457;
+}
+
+.secondary-btn {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.secondary-btn:hover {
+  background: #e0e0e0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .documents-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .documents-search-bar {
+    flex-direction: column;
+  }
+  
+  .documents-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .documents-table {
+    overflow-x: auto;
+  }
+  
+  .compact-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .compact-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 </style>
