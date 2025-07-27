@@ -6,11 +6,11 @@ const errorHandler = (err, req, res, next) => {
     error.message = err.message;
 
     // Log to console for dev
-    console.error(err);
+    console.error('Error details:', err);
 
     // Mongoose bad ObjectId
     if(err.name === 'CastError') {
-        const message = `${err.model.modelName} not found with id of ${err.value}`;
+        const message = `${err.model && err.model.modelName ? err.model.modelName : 'Resource'} not found with id of ${err.value || 'unknown'}`;
         error = new ErrorResponse(message, 404);
     }
 
@@ -23,13 +23,17 @@ const errorHandler = (err, req, res, next) => {
     // Mongoose validation error
     if(err.name === 'ValidationError') {
         // get errors objects from error and combine all messages of validation errors like (description field is required, name field is required etc.)
-        const message = Object.values(err.errors).map(val => val.message);
+        const message = Object.values(err.errors || {}).map(val => val.message).join(', ');
         error = new ErrorResponse(message, 400);
     }
 
-    res.status(error.statusCode || 500).json({
+    // Ensure we have a valid status code and message
+    const statusCode = error.statusCode || 500;
+    const errorMessage = error.message || 'Server Error';
+
+    res.status(statusCode).json({
         success: false,
-        error: error.message || 'Server Error'
+        error: errorMessage
     });
 }
 

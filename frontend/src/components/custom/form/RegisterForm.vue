@@ -38,6 +38,14 @@
         id="register-last-name"
         required
       />
+      <FormInput
+        v-model="form.phone"
+        type="tel"
+        label="Telefon"
+        placeholder="Telefon numaranızı girin"
+        id="register-phone"
+        required
+      />
       <button type="submit" class="register-form__submit">Devam Et</button>
     </form>
 
@@ -103,8 +111,8 @@
         />
       </template>
       <div class="register-form__buttons">
-        <button type="button" class="register-form__back-btn" @click="prevStep">Geri</button>
         <button type="submit" class="register-form__submit">Devam Et</button>
+        <button type="button" class="register-form__back-btn" @click="prevStep">Geri</button>
       </div>
     </form>
 
@@ -135,8 +143,10 @@
         required
       />
       <div class="register-form__buttons">
+        <button type="submit" class="register-form__submit" :disabled="isLoading">
+          {{ isLoading ? 'Kaydediliyor...' : 'Kaydı Tamamla' }}
+        </button>
         <button type="button" class="register-form__back-btn" @click="prevStep">Geri</button>
-        <button type="submit" class="register-form__submit">Kaydı Tamamla</button>
       </div>
     </form>
 
@@ -148,6 +158,7 @@
 
 <script setup>
 import { ref, defineProps } from 'vue'
+import { useStore } from 'vuex'
 import FormInput from '@/components/custom/form/FormInput.vue'
 
 const props = defineProps({
@@ -157,10 +168,14 @@ const props = defineProps({
   }
 })
 
+const store = useStore()
+
 const currentStep = ref(1)
+const isLoading = ref(false)
 const form = ref({
   firstName: '',
   lastName: '',
+  phone: '',
   tc: '',
   level: '',
   class: '',
@@ -178,9 +193,80 @@ const nextStep = () => {
 const prevStep = () => {
   if (currentStep.value > 1) currentStep.value--
 }
-const handleSubmit = () => {
-  // Validasyon ve submit işlemleri burada
-  console.log('Kayıt formu gönderildi:', form.value)
+const handleSubmit = async () => {
+  // Şifre kontrolü
+  if (form.value.password !== form.value.confirmPassword) {
+    alert('Şifreler eşleşmiyor!')
+    return
+  }
+
+  // Form validasyonu
+  if (!form.value.email || !form.value.password || !form.value.firstName || !form.value.lastName) {
+    alert('Lütfen tüm zorunlu alanları doldurun!')
+    return
+  }
+
+  try {
+    isLoading.value = true
+    
+    // Kayıt verilerini hazırla - Backend formatına uygun
+    const registerData = {
+      user: {
+        email: form.value.email,
+        password: form.value.password,
+        role: props.userType
+      },
+      userProfile: {
+        firstName: form.value.firstName,
+        lastName: form.value.lastName,
+        phone: form.value.phone || '',
+        bio: '',
+        type: props.userType === 'student' ? 'StudentProfile' : 'TeacherProfile'
+      },
+      locale: {
+        country: 'TR',
+        language: 'tr'
+      }
+    }
+
+    // Öğrenci için ek alanlar
+    if (props.userType === 'student') {
+      registerData.userProfile.tc = form.value.tc
+      registerData.userProfile.level = form.value.level
+      registerData.userProfile.class = form.value.class
+    }
+
+    // Öğretmen için ek alanlar
+    if (props.userType === 'teacher') {
+      registerData.userProfile.branch = form.value.branch
+      registerData.userProfile.class = form.value.class
+      registerData.userProfile.school = form.value.school
+      registerData.userProfile.experience = form.value.experience
+    }
+
+    // Debug için log
+    console.log('Gönderilen kayıt verisi:', registerData)
+    
+    // Auth store'dan kayıt işlemini çağır
+    await store.dispatch('auth/userRegister', registerData)
+    
+    
+  } catch (error) {
+    console.error('Kayıt hatası:', error)
+    
+    // Hata mesajını daha detaylı göster
+    let errorMessage = 'Kayıt işlemi başarısız oldu!'
+    
+    if (error.response && error.response.data && error.response.data.error) {
+      errorMessage = error.response.data.error
+    } else if (error.message) {
+      errorMessage = error.message
+    }
+    
+    alert(errorMessage)
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -204,7 +290,7 @@ const handleSubmit = () => {
 .register-form__title {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $black;
+  color: $white;
   margin: 0 0 $space-xs 0;
   font-family: $font-family-primary-bold;
   line-height: 1.2;
@@ -212,7 +298,7 @@ const handleSubmit = () => {
 
 .register-form__subtitle {
   font-size: $font-size-s;
-  color: #666;
+  color: $white;
   margin: 0;
   font-family: $font-family-primary-regular;
   line-height: 1.5;
@@ -257,7 +343,7 @@ const handleSubmit = () => {
 }
 
 .register-form__progress-step.active {
-  color: $black;
+  color: $white;
   font-weight: $font-weight-bold;
   font-family: $font-family-primary-bold;
 }
@@ -292,14 +378,14 @@ const handleSubmit = () => {
 
 .register-form__progress-number {
   font-size: $font-size-xs;
-  color: #666;
+  color: $white;
   font-family: $font-family-primary-regular;
   white-space: nowrap;
 }
 
 .register-form__progress-text {
   font-size: $font-size-xs;
-  color: #666;
+  color: $white;
   font-family: $font-family-primary-regular;
   white-space: nowrap;
   margin-top: 4px;
@@ -328,7 +414,7 @@ const handleSubmit = () => {
 
 .register-form__divider-text {
   font-size: $font-size-xs;
-  color: #666;
+  color: $white;
   font-family: $font-family-primary-regular;
   white-space: nowrap;
 }
@@ -349,6 +435,30 @@ const handleSubmit = () => {
 }
 
 .register-form__submit {
+  width: 100%;
+  padding: $space-s 0;
+  background: $white;
+  color: $black;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: $font-size-s;
+  font-weight: $font-weight-bold;
+  font-family: $font-family-primary-bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.register-form__back-btn {
   width: 100%;
   padding: $space-s 0;
   background: $black;
@@ -372,45 +482,21 @@ const handleSubmit = () => {
   }
 }
 
-.register-form__back-btn {
-  width: 100%;
-  padding: $space-s 0;
-  background: #f0f0f0;
-  color: $black;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: $font-size-s;
-  font-weight: $font-weight-bold;
-  font-family: $font-family-primary-bold;
-  cursor: pointer;
-  transition: background 0.2s;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-
-  &:hover {
-    background: #e0e0e0;
-  }
-
-  &:active {
-    transform: translateY(1px);
-  }
-}
-
 .register-form__login {
   text-align: center;
   font-size: $font-size-xs;
-  color: #666;
+  color: $white;
   font-family: $font-family-primary-regular;
 
   a {
-    color: $black;
+    color: $white;
     text-decoration: none;
     font-weight: $font-weight-semi-bold;
     font-family: $font-family-primary-medium;
     transition: color 0.2s;
 
     &:hover {
-      color: #333;
+      color: #efefef;
     }
   }
 }

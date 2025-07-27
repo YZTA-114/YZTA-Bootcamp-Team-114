@@ -46,12 +46,32 @@
       align-items: flex-start;
       justify-content: flex-end;
       gap: 1rem;
-      background-color: $pink;
+      background-color: $orange;
       padding: 1rem;
       border-radius: 1rem;
       width: auto;
       height: 100%;
       padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid rgba(234, 128, 20, 0.3);
+      box-shadow: 0 0 0 1px rgba(234, 128, 20, 0.2), 0 4px 12px rgba(0,0,0,0.1);
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+        pointer-events: none;
+      }
+
+      &:hover {
+        border-color: rgba(234, 128, 20, 0.6);
+        box-shadow: 0 0 0 2px rgba(234, 128, 20, 0.4), 0 8px 24px rgba(0,0,0,0.15);
+      }
 
       &.sm {
         height: 15rem;
@@ -62,18 +82,56 @@
       }
     }
 
+    .card-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+      overflow: hidden;
+      border-radius: 1rem;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.7) contrast(1.2);
+        transition: transform 0.3s ease;
+      }
+    }
+
+    .card:hover .card-image img {
+      transform: scale(1.05);
+    }
+
+    .card-icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
     .card .card-title {
       font-size: $font-size-s;
       font-weight: 700;
-      color: $black;
+      color: $white;
       font-family: $font-family-primary-regular;
+      position: relative;
+      z-index: 2;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.7);
     }
 
     .card .card-description {
       font-size: $font-size-s;
       font-weight: 700;
-      color: $black;
+      color: $white;
       font-family: $font-family-primary-regular;
+      position: relative;
+      z-index: 2;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.7);
     }
   }
 }

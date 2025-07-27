@@ -102,7 +102,7 @@ export default {
 .footer-logo-text {
   font-size: 2rem;
   font-weight: 700;
-  color: #197D81;
+  color: $orange;
   letter-spacing: 1px;
   font-family: $font-family-primary-regular;
 }
@@ -117,7 +117,7 @@ export default {
   align-items: flex-start;
   gap: 8px;
   font-size: 1rem;
-  color: #197D81;
+  color: $white;
   font-family: $font-family-primary-regular;
 }
 .footer-icon {
@@ -136,7 +136,7 @@ export default {
 }
 .footer-links-title {
   font-weight: 700;
-  color: #0a2a2a;
+  color: $orange;
   margin-bottom: 8px;
   display: block;
   font-family: $font-family-primary-regular;
@@ -152,14 +152,14 @@ export default {
   font-family: $font-family-primary-regular;
 }
 .footer-links-group a {
-  color: #197D81;
+  color: $white;
   text-decoration: none;
   font-size: 1rem;
   transition: color 0.2s;
   font-family: $font-family-primary-regular;
 }
 .footer-links-group a:hover {
-  color: #0a2a2a;
+  color: $orange;
 }
 .footer-subscribe {
   display: flex;
@@ -172,7 +172,7 @@ export default {
   background: #fff;
   border-radius: 22px;
   overflow: hidden;
-  box-shadow: 0 2px 8px 0 rgba(25,125,129,0.08);
+  box-shadow: 0 2px 8px 0 rgba(234, 128, 20, 0.08);
   font-family: $font-family-primary-regular;
 }
 .footer-input {
@@ -185,7 +185,7 @@ export default {
   font-family: $font-family-primary-regular;
 }
 .footer-btn {
-  background: #197D81;
+  background: $orange;
   color: #fff;
   border: none;
   border-radius: 0 22px 22px 0;
@@ -197,7 +197,7 @@ export default {
   font-family: $font-family-primary-regular;
 }
 .footer-btn:hover {
-  background: #0a2a2a;
+  background: #d2691e;
 }
 @media (max-width: 900px) {
   .footer-content {

@@ -154,7 +154,7 @@ onUnmounted(() => {
   flex-direction: column;
   justify-content: space-between;
   padding: $space-m;
-  background: $pink;
+  background: $orange;
   border-radius: 0 $space-xl $space-xl 0;
   overflow: hidden;
 }
