@@ -103,6 +103,14 @@
               <label>Ülke</label>
               <input type="text" v-model="profile.country" :disabled="!isEditing" />
             </div>
+            <div class="form-group">
+              <label>Okul</label>
+              <input type="text" v-model="profile.school" :disabled="!isEditing" />
+            </div>
+            <div class="form-group">
+              <label>Sınıf</label>
+              <input type="text" v-model="profile.grade" :disabled="!isEditing" />
+            </div>
             <div class="form-group form-group-bio" style="grid-column: 1 / -1;">
               <label>Biyografi</label>
               <textarea v-model="profile.bio" rows="3" :disabled="!isEditing"></textarea>
@@ -142,6 +150,7 @@ export default {
         birthDate: '2000-01-01',
         studentId: '2024001',
         grade: '4. Sınıf',
+        school: '',
         department: 'Bilgisayar Mühendisliği',
         avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
         firstName: 'Muhammet',
@@ -763,5 +772,51 @@ export default {
     grid-template-columns: 1fr;
     gap: 12px 0;
   }
+}
+// KOYU TEMA OVERRIDES
+.profile-root-bg,
+.profile-header-card-centered,
+.profile-form-card,
+.profile-form-card.orange-bordered-block {
+  background: #000 !important;
+  color: #fff !important;
+}
+.profile-info-banner {
+  background: #e67e22 !important;
+  color: #fff !important;
+}
+.profile-header-centered-name,
+.profile-header-centered-email,
+.profile-info-banner-title,
+.profile-info-banner-desc {
+  color: #fff !important;
+}
+.profile-form-card.orange-bordered-block {
+  border: 2.5px solid #e67e22 !important;
+}
+.form-group label {
+  color: #fff !important;
+}
+.form-group input,
+.form-group textarea {
+  background: #181818 !important;
+  color: #fff !important;
+  border: 1.2px solid #444 !important;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #e67e22 !important;
+  background: #111 !important;
+}
+.btn-edit, .btn-save {
+  background: #e67e22 !important;
+  color: #fff !important;
+}
+.btn-cancel {
+  background: #232323 !important;
+  color: #fff !important;
+}
+.btn-cancel:hover {
+  background: #333 !important;
 }
 </style> 

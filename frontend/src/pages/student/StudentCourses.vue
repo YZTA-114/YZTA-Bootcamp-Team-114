@@ -49,57 +49,41 @@
     </template>
 
     <template #content>
-      <div class="student-courses-redesign">
-        <!-- Sol: Sekmeler ve Ders Kartları -->
-        <div class="courses-main">
-          <div class="courses-header-block">
-            <h1 class="page-title">Derslerim</h1>
+      <div>
+        <div class="welcome-section">
+          <div class="welcome-content">
+            <h1 class="welcome-title">Derslerim</h1>
+            <p class="welcome-subtitle">Kayıtlı olduğun dersleri ve detaylarını burada görebilirsin.</p>
           </div>
-          <div class="tabs">
-            <button v-for="tab in tabs" :key="tab" :class="['tab', { active: activeTab === tab }]" @click="activeTab = tab">
-              {{ tab }}
-            </button>
-          </div>
-          <div class="courses-list">
-            <div v-for="course in filteredCourses" :key="course.id" class="course-card">
-              <div class="course-card-img">
-                <img :src="course.image" alt="course image" />
-              </div>
-              <div class="course-card-content">
-                <div class="course-card-header">
-                  <h3>{{ course.title }}</h3>
-                  <div class="course-rating">
-                    <span>{{ course.rating }}</span>
-                    <i class="ri-star-fill"></i>
-                  </div>
-                </div>
-                <p class="course-desc">{{ course.desc }}</p>
-                <div class="course-tags">
-                  <span v-for="tag in course.tags" :key="tag" class="course-tag">{{ tag }}</span>
-                </div>
-                <div class="course-footer">
-                  <span class="course-date">Başlangıç: {{ course.start }}</span>
-                  <button class="view-more">Detay</button>
-                </div>
-              </div>
-            </div>
+          <div class="welcome-actions">
+            <!-- İsterseniz buraya buton ekleyebilirsiniz -->
           </div>
         </div>
-        <!-- Sağ: Takvim ve Program -->
-        <div class="courses-sidebar">
-          <div class="calendar-box">
-            <div class="calendar-header">
-              <span>Temmuz 2021</span>
-              <div class="calendar-arrows">
-                <i class="ri-arrow-left-s-line"></i>
-                <i class="ri-arrow-right-s-line"></i>
-              </div>
+        <div class="tabs">
+          <button v-for="tab in tabs" :key="tab" :class="['tab', { active: activeTab === tab }]" @click="activeTab = tab">
+            {{ tab }}
+          </button>
+        </div>
+        <div class="courses-list">
+          <div v-for="course in filteredCourses" :key="course.id" class="course-card">
+            <div class="course-card-img">
+              <img :src="course.image" alt="course image" />
             </div>
-            <div class="calendar-days">
-              <div v-for="day in weekDays" :key="day.label" :class="['calendar-day', { today: day.today }]">
-                <span class="day-label">{{ day.label }}</span>
-                <span class="day-num">{{ day.num }}</span>
-                <span v-if="day.today" class="dot"></span>
+            <div class="course-card-content">
+              <div class="course-card-header">
+                <h3>{{ course.title }}</h3>
+                <div class="course-rating">
+                  <span>{{ course.rating }}</span>
+                  <i class="ri-star-fill"></i>
+                </div>
+              </div>
+              <p class="course-desc">{{ course.desc }}</p>
+              <div class="course-tags">
+                <span v-for="tag in course.tags" :key="tag" class="course-tag">{{ tag }}</span>
+              </div>
+              <div class="course-footer">
+                <span class="course-date">Başlangıç: {{ course.start }}</span>
+                <button class="view-more">Detay</button>
               </div>
             </div>
           </div>
@@ -111,11 +95,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import DashboardLayout from '@/layout/dashboard/DashboardLayout.vue'
 import DashboardNav from '@/components/dashboard/DashboardNav.vue'
 
-const router = useRouter()
 const userName = ref('Muhammet')
 const userRole = ref('Öğrenci')
 const userAvatar = ref('/default.png')
@@ -171,20 +153,6 @@ const filteredCourses = computed(() => {
   return courses.value
 })
 
-const weekDays = [
-  { label: 'Pzt', num: 4 },
-  { label: 'Sal', num: 5 },
-  { label: 'Çar', num: 6, today: true },
-  { label: 'Per', num: 7 },
-  { label: 'Cum', num: 8 },
-  { label: 'Cmt', num: 9 },
-  { label: 'Paz', num: 10 }
-]
-
-const handleLogout = () => router.push('/auth/login')
-const handleProfile = () => router.push('/student/profile')
-const handleSettings = () => router.push('/student/settings')
-
 // Sınıflar dropdown state ve fonksiyonları
 const classrooms = [
   { id: 1, name: 'Matematik Sınıfı' },
@@ -216,6 +184,63 @@ function joinNewClass() {
 
 <style lang="scss" scoped>
 @import '@/assets/scss/custom/_variable.scss';
+// KOYU TEMA OVERRIDES
+body, .student-courses-page, .welcome-section, .courses-list, .course-card, .course-card-img, .course-card-content {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+.welcome-section {
+  background: #181818 !important;
+  color: #fff !important;
+}
+
+.welcome-title, .welcome-subtitle {
+  color: #fff !important;
+}
+
+.tabs {
+  background: transparent !important;
+  .tab {
+    color: #e67e22 !important;
+    background: none !important;
+    &.active {
+      color: #fff !important;
+      border-bottom: 2.5px solid #e67e22 !important;
+    }
+  }
+}
+
+.courses-list {
+  .course-card {
+    background: #111 !important;
+    color: #fff !important;
+    border: 1px solid #222 !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
+    .course-card-img {
+      background: #111 !important;
+    }
+    .course-card-content {
+      background: #111 !important;
+      color: #fff !important;
+      h3, .course-desc, .course-date {
+        color: #fff !important;
+      }
+      .course-tag {
+        background: #222 !important;
+        color: #fff !important;
+        border: 1px solid #e67e22 !important;
+      }
+      .view-more {
+        background: #e67e22 !important;
+        color: #fff !important;
+      }
+      .view-more:hover {
+        background: #ca6f1e !important;
+      }
+    }
+  }
+}
 .sidebar-classroom-dropdown {
   position: relative;
   margin-bottom: 18px;
@@ -362,237 +387,178 @@ function joinNewClass() {
   }
 }
 
-.student-courses-redesign {
+.welcome-section {
+  background: $orange;
+  color: $white;
+  padding: $space-xl;
+  border-radius: 12px;
+  margin-bottom: $space-l;
   display: flex;
-  gap: $space-l;
-  align-items: flex-start;
-  @media (max-width: 1100px) {
-    flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-family: $font-family-primary-regular;
+  .welcome-content {
+    .welcome-title {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      font-family: $font-family-primary-medium;
+      margin: 0 0 $space-xs 0;
+    }
+    .welcome-subtitle {
+      font-size: $font-size-m;
+      font-family: $font-family-primary-regular;
+      opacity: 0.9;
+      margin: 0;
+    }
   }
+  .welcome-actions {
+    .btn {
+      background-color: rgba($white, 0.2);
+      border: 1px solid rgba($white, 0.3);
+      color: $white;
+      padding: $space-s $space-l;
+      border-radius: 8px;
+      font-weight: $font-weight-semi-bold;
+      font-family: $font-family-primary-medium;
+      transition: all 0.2s ease;
+      &:hover {
+        background-color: rgba($white, 0.3);
+        transform: translateY(-2px);
+      }
+      i {
+        margin-right: $space-xs;
+      }
+    }
+  }
+}
 
-  .courses-main {
-    flex: 2;
-    min-width: 0;
-    
-    .courses-header-block {
-      background: $orange;
-      border-radius: $space-s;
-      padding: $space-xl $space-xl $space-m $space-xl;
-      margin-bottom: $space-xs;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      box-shadow: 0 4px 16px rgba($orange, 0.10);
-      @media (max-width: 600px) {
-        padding: $space-m $space-s $space-xs $space-s;
-      }
-      .page-title {
-        color: $grey;
-        font-size: $font-size-xxl;
-        font-weight: $font-weight-bold;
-        font-family: $font-family-primary-bold;
-        margin-bottom: 0;
-      }
-    }
-    .tabs {
-      display: flex;
-      gap: $space-m;
-      margin-bottom: $space-l;
-      .tab {
-        background: none;
-        border: none;
-        font-size: $font-size-m;
-        font-weight: $font-weight-semi-bold;
-        color: $orange;
-        padding: 0 0 $space-3xs 0;
-        border-bottom: 2px solid transparent;
-        cursor: pointer;
-        transition: color 0.2s, border-color 0.2s;
-        font-family: $font-family-primary-medium;
-        &.active {
-          color: $grey;
-          border-bottom: 2.5px solid $orange;
-          font-weight: $font-weight-bold;
-        }
-      }
-    }
-    .courses-list {
-      display: flex;
-      flex-direction: column;
-      gap: $space-m;
-      .course-card {
-        display: flex;
-        background: $white;
-        border-radius: $space-s;
-        box-shadow: 0 4px 16px rgba($black, 0.06);
-        overflow: hidden;
-        transition: box-shadow 0.2s, transform 0.2s;
-        cursor: pointer;
-        border: 1px solid rgba($black, 0.04);
-        &:hover {
-          box-shadow: 0 8px 32px rgba($black, 0.10);
-          transform: translateY(-2px) scale(1.01);
-          border-color: rgba($orange, 0.18);
-        }
-        .course-card-img {
-          width: 110px;
-          min-width: 110px;
-          height: 110px;
-          background: $white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: $space-xs;
-          }
-        }
-        .course-card-content {
-          flex: 1;
-          padding: $space-m $space-l $space-m $space-m;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          .course-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            h3 {
-              font-size: $font-size-l;
-              font-weight: $font-weight-bold;
-              margin: 0;
-              color: $grey;
-              font-family: $font-family-primary-bold;
-            }
-            .course-rating {
-              display: flex;
-              align-items: center;
-              gap: $space-3xs;
-              font-size: $font-size-m;
-              color: $orange;
-              i {
-                font-size: $font-size-m;
-              }
-            }
-          }
-          .course-desc {
-            color: $grey;
-            opacity: 0.7;
-            font-size: $font-size-s;
-            margin: $space-3xs 0 $space-2xs 0;
-            font-family: $font-family-primary-regular;
-          }
-          .course-tags {
-            display: flex;
-            gap: $space-2xs;
-            margin-bottom: $space-2xs;
-            .course-tag {
-              background: $white;
-              color: $grey;
-              font-size: $font-size-xs;
-              border-radius: $space-3xs;
-              padding: 2px 10px;
-              font-weight: $font-weight-semi-bold;
-              border: 1px solid $orange;
-            }
-          }
-          .course-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            .course-date {
-              color: $grey;
-              opacity: 0.6;
-              font-size: $font-size-xs;
-            }
-            .view-more {
-              background: $orange;
-              color: $white;
-              border: none;
-              border-radius: $space-xs;
-              padding: $space-2xs $space-m;
-              font-size: $font-size-s;
-              font-weight: $font-weight-bold;
-              cursor: pointer;
-              transition: background 0.2s;
-              font-family: $font-family-primary-medium;
-              &:hover {
-                background: $orange;
-              }
-            }
-          }
-        }
-      }
+.tabs {
+  display: flex;
+  gap: $space-m;
+  margin-bottom: $space-l;
+  .tab {
+    background: none;
+    border: none;
+    font-size: $font-size-m;
+    font-weight: $font-weight-semi-bold;
+    color: $orange;
+    padding: 0 0 $space-3xs 0;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    font-family: $font-family-primary-medium;
+    &.active {
+      color: $grey;
+      border-bottom: 2.5px solid $orange;
+      font-weight: $font-weight-bold;
     }
   }
-  .courses-sidebar {
-    flex: 1;
-    min-width: 320px;
+}
+
+.courses-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-m;
+  .course-card {
     display: flex;
-    flex-direction: column;
-    gap: $space-l;
-    @media (max-width: 1100px) {
-      min-width: 0;
-      width: 100%;
-      flex-direction: row;
-      gap: $space-m;
+    background: $white;
+    border-radius: $space-s;
+    box-shadow: 0 4px 16px rgba($black, 0.06);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+    cursor: pointer;
+    border: 1px solid rgba($black, 0.04);
+    &:hover {
+      box-shadow: 0 8px 32px rgba($black, 0.10);
+      transform: translateY(-2px) scale(1.01);
+      border-color: rgba($orange, 0.18);
     }
-    .calendar-box {
+    .course-card-img {
+      width: 110px;
+      min-width: 110px;
+      height: 110px;
       background: $white;
-      border-radius: $space-s;
-      box-shadow: 0 2px 10px rgba($black, 0.05);
-      padding: $space-l $space-m $space-m $space-m;
-      .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: $space-xs;
+      }
+    }
+    .course-card-content {
+      flex: 1;
+      padding: $space-m $space-l $space-m $space-m;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      .course-card-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-weight: $font-weight-bold;
-        font-size: $font-size-m;
-        margin-bottom: $space-2xs;
-        .calendar-arrows {
+        h3 {
+          font-size: $font-size-l;
+          font-weight: $font-weight-bold;
+          margin: 0;
+          color: $grey;
+          font-family: $font-family-primary-bold;
+        }
+        .course-rating {
           display: flex;
+          align-items: center;
           gap: $space-3xs;
+          font-size: $font-size-m;
+          color: $orange;
           i {
             font-size: $font-size-m;
-            color: $grey;
-            cursor: pointer;
-            transition: color 0.2s;
-            &:hover {
-              color: $orange;
-            }
           }
         }
       }
-      .calendar-days {
+      .course-desc {
+        color: $grey;
+        opacity: 0.7;
+        font-size: $font-size-s;
+        margin: $space-3xs 0 $space-2xs 0;
+        font-family: $font-family-primary-regular;
+      }
+      .course-tags {
         display: flex;
-        justify-content: space-between;
-        .calendar-day {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          font-size: $font-size-xs;
+        gap: $space-2xs;
+        margin-bottom: $space-2xs;
+        .course-tag {
+          background: $white;
           color: $grey;
-          .day-label {
-            font-weight: $font-weight-semi-bold;
-          }
-          .day-num {
-            font-size: $font-size-s;
-            font-weight: $font-weight-bold;
-            color: $grey;
-          }
-          &.today {
-            .day-num {
-              color: $orange;
-            }
-            .dot {
-              width: 6px;
-              height: 6px;
-              background: $orange;
-              border-radius: 50%;
-              margin-top: 2px;
-            }
+          font-size: $font-size-xs;
+          border-radius: $space-3xs;
+          padding: 2px 10px;
+          font-weight: $font-weight-semi-bold;
+          border: 1px solid $orange;
+        }
+      }
+      .course-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .course-date {
+          color: $grey;
+          opacity: 0.6;
+          font-size: $font-size-xs;
+        }
+        .view-more {
+          background: $orange;
+          color: $white;
+          border: none;
+          border-radius: $space-xs;
+          padding: $space-2xs $space-m;
+          font-size: $font-size-s;
+          font-weight: $font-weight-bold;
+          cursor: pointer;
+          transition: background 0.2s;
+          font-family: $font-family-primary-medium;
+          &:hover {
+            background: $orange;
           }
         }
       }

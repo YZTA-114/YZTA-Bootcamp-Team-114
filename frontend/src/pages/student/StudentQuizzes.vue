@@ -50,7 +50,55 @@
     <template #content>
       <div class="student-quizzes-page">
         <h1>Quizlerim</h1>
-        <!-- Buraya quiz içeriği eklenecek -->
+        <div class="quiz-table-controls" style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center;">
+          <input v-model="search" placeholder="Quiz adı ile arayın..." class="quiz-search-input" />
+          <select v-model="selectedCourse" class="quiz-filter-select">
+            <option value="">Tüm Dersler</option>
+            <option v-for="course in courses" :key="course">{{ course }}</option>
+          </select>
+          <select v-model="selectedStatus" class="quiz-filter-select">
+            <option value="">Tüm Durumlar</option>
+            <option value="completed">Tamamlandı</option>
+            <option value="in_progress">Devam Ediyor</option>
+            <option value="not_started">Başlamadı</option>
+          </select>
+          <button class="quiz-add-btn">+ Yeni Quiz</button>
+        </div>
+        <div class="quiz-table-wrapper">
+          <table class="quiz-table">
+            <thead>
+              <tr>
+                <th>Quiz Adı</th>
+                <th>Ders</th>
+                <th>Soru Sayısı</th>
+                <th>Durum</th>
+                <th>Sonuç</th>
+                <th>Başlangıç</th>
+                <th>Bitiş</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="quiz in filteredQuizzes" :key="quiz.id">
+                <td>{{ quiz.name }}</td>
+                <td>{{ quiz.course }}</td>
+                <td>{{ quiz.questionCount }}</td>
+                <td>
+                  <span :class="['quiz-status', quiz.status]">
+                    {{ statusText(quiz.status) }}
+                  </span>
+                </td>
+                <td>{{ quiz.result }}</td>
+                <td>{{ quiz.startDate }}</td>
+                <td>{{ quiz.endDate }}</td>
+                <td>
+                  <button class="quiz-action-btn">Detay</button>
+                  <button v-if="quiz.status === 'not_started' || quiz.status === 'in_progress'" class="quiz-action-btn">Başla</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </template>
   </DashboardLayout>
@@ -109,6 +157,33 @@ function joinNewClass() {
 const handleLogout = () => router.push('/auth/login')
 const handleProfile = () => router.push('/student/profile')
 const handleSettings = () => router.push('/student/settings')
+
+const search = ref("");
+const selectedCourse = ref("");
+const selectedStatus = ref("");
+const quizzes = ref([
+  { id: 1, name: "Matematik 1. Dönem", course: "Matematik", questionCount: 20, status: "completed", result: "85/100", startDate: "01.05.2024", endDate: "01.05.2024" },
+  { id: 2, name: "Fizik Kuvvet Testi", course: "Fizik", questionCount: 15, status: "in_progress", result: "-", startDate: "10.05.2024", endDate: "-" },
+  { id: 3, name: "Kimya Asit-Baz", course: "Kimya", questionCount: 10, status: "not_started", result: "-", startDate: "15.05.2024", endDate: "-" },
+  { id: 4, name: "Tarih Osmanlı", course: "Tarih", questionCount: 12, status: "completed", result: "92/100", startDate: "20.05.2024", endDate: "20.05.2024" },
+  { id: 5, name: "Biyoloji Hücre", course: "Biyoloji", questionCount: 18, status: "completed", result: "78/100", startDate: "25.05.2024", endDate: "25.05.2024" },
+]);
+
+const courses = computed(() => [...new Set(quizzes.value.map(q => q.course))]);
+const filteredQuizzes = computed(() =>
+  quizzes.value.filter(q =>
+    (q.name.toLowerCase().includes(search.value.toLowerCase())) &&
+    (selectedCourse.value === '' || q.course === selectedCourse.value) &&
+    (selectedStatus.value === '' || q.status === selectedStatus.value)
+  )
+);
+
+function statusText(status) {
+  if (status === 'completed') return 'Tamamlandı';
+  if (status === 'in_progress') return 'Devam Ediyor';
+  if (status === 'not_started') return 'Başlamadı';
+  return '';
+}
 </script>
 
 <style lang="scss" scoped>
@@ -257,5 +332,93 @@ const handleSettings = () => router.push('/student/settings')
       to { opacity: 1; transform: translateY(0); }
     }
   }
+}
+.student-quizzes-page {
+  background: #000;
+  color: #fff;
+  min-height: 100vh;
+  padding: 32px;
+}
+.quiz-table-wrapper {
+  background: #111;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  padding: 24px;
+}
+.quiz-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #fff;
+}
+.quiz-table th, .quiz-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #222;
+  text-align: left;
+}
+.quiz-table th {
+  background: #181818;
+  color: #fff;
+  font-weight: 700;
+}
+.quiz-table tr:last-child td {
+  border-bottom: none;
+}
+.quiz-search-input, .quiz-filter-select {
+  background: #181818;
+  color: #fff;
+  border: 1.5px solid #333;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 1rem;
+}
+.quiz-search-input::placeholder {
+  color: #aaa;
+}
+.quiz-add-btn {
+  background: #e67e22;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.quiz-add-btn:hover {
+  background: #ca6f1e;
+}
+.quiz-status {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.95em;
+  font-weight: 600;
+}
+.quiz-status.completed {
+  background: #27ae60;
+  color: #fff;
+}
+.quiz-status.in_progress {
+  background: #f1c40f;
+  color: #222;
+}
+.quiz-status.not_started {
+  background: #7f8c8d;
+  color: #fff;
+}
+.quiz-action-btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 14px;
+  margin-right: 6px;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.quiz-action-btn:hover {
+  background: #e67e22;
+  color: #fff;
 }
 </style>

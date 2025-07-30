@@ -46,31 +46,7 @@
     </template>
     <template #content>
       <div class="student-documents">
-        <div class="documents-header-block">
-          <h1>Dokümanlar</h1>
-          <p class="document-count">Toplam {{ documents.length }} dokümanınız var</p>
-        </div>
-        <div class="documents-content-wrapper">
-          <div class="documents-header">
-            <div class="header-left">
-              <!-- <p class="document-count">Toplam {{ documents.length }} dokümanınız var</p> -->
-            </div>
-            <div class="header-right">
-              <div class="header-actions">
-                <button 
-                  @click="showUploadModal = true"
-                  class="upload-btn"
-                  title="Doküman Ekle"
-                >
-                  <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17,8 12,3 7,8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                  <span>Doküman Ekle</span>
-                </button>
-                
-                <div class="view-controls">
+        <div class="view-controls" style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
                   <div class="view-mode-dropdown">
                     <button 
                       @click="toggleViewModeDropdown"
@@ -83,7 +59,6 @@
                         <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
                       </svg>
                     </button>
-                    
                     <div v-if="showViewModeDropdown" class="view-mode-options">
                       <div class="view-mode-header">
                         <h4>Görünüm Seçenekleri</h4>
@@ -142,6 +117,29 @@
                     </div>
                   </div>
                 </div>
+        <div class="documents-header-block">
+          <h1>Dokümanlar</h1>
+          <p class="document-count">Toplam {{ documents.length }} dokümanınız var</p>
+              </div>
+        <div class="documents-content-wrapper">
+          <div class="documents-header">
+            <div class="header-left">
+              <!-- <p class="document-count">Toplam {{ documents.length }} dokümanınız var</p> -->
+            </div>
+            <div class="header-right">
+              <div class="header-actions">
+                <button 
+                  @click="showUploadModal = true"
+                  class="upload-btn"
+                  title="Doküman Ekle"
+                >
+                  <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17,8 12,3 7,8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  <span>Doküman Ekle</span>
+                </button>
               </div>
             </div>
           </div>
@@ -961,6 +959,176 @@ function joinNewClass() {
 
 <style lang="scss" scoped>
 @import '@/assets/scss/custom/_variable.scss';
+
+// KOYU TEMA OVERRIDES
+.student-documents,
+.documents-content-wrapper,
+.documents-table,
+.documents-compact,
+.document-card,
+.modal-content,
+.upload-modal,
+.selected-file,
+.file-upload-area {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+.documents-header-block {
+  background: $orange;
+  color: #fff;
+}
+
+.documents-header h1,
+.document-title,
+.info-text h4,
+.modal-header h3,
+.form-group label {
+  color: #fff !important;
+}
+
+.documents-header .document-count,
+.document-author,
+.document-date,
+.info-text p,
+.document-details p,
+.file-size {
+  color: #ccc !important;
+}
+
+.documents-table th,
+.documents-table td {
+  background: #222 !important;
+  color: #fff !important;
+  border-color: #333 !important;
+}
+
+.documents-table th {
+  border-bottom: 1px solid #333 !important;
+}
+
+.documents-table td {
+  border-bottom: 1px solid #222 !important;
+}
+
+.documents-search-bar input,
+.form-group input,
+.form-group textarea,
+.form-group select {
+  background: #222 !important;
+  color: #fff !important;
+  border: 1.5px solid #444 !important;
+}
+
+.documents-search-bar input:focus,
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: $orange !important;
+}
+
+.filter-dropdown-btn,
+.view-mode-toggle-btn {
+  background: #222 !important;
+  color: #fff !important;
+  border: 2px solid $orange !important;
+}
+
+.filter-dropdown-menu,
+.view-mode-options {
+  background: #181818 !important;
+  color: #fff !important;
+  border: 1px solid #333 !important;
+}
+
+.dropdown-header,
+.view-mode-header {
+  background: #232323 !important;
+  color: #fff !important;
+  border-bottom: 1px solid #333 !important;
+}
+
+.dropdown-option,
+.view-option-btn {
+  background: transparent !important;
+  color: #fff !important;
+}
+
+.dropdown-option.selected,
+.view-option-btn.active {
+  background: $orange !important;
+  color: #fff !important;
+}
+
+.dropdown-option:hover,
+.view-option-btn:hover {
+  background: #333 !important;
+  color: #fff !important;
+}
+
+.card-header,
+.card-actions,
+.compact-actions {
+  color: #fff !important;
+}
+
+.action-icon-btn,
+.action-btn,
+.action-icon-btn-small {
+  background: #232323 !important;
+  color: #fff !important;
+}
+
+.action-icon-btn:hover,
+.action-btn:hover,
+.action-icon-btn-small:hover {
+  background: $orange !important;
+  color: #fff !important;
+}
+
+.action-icon-btn.delete-btn:hover,
+.action-btn.delete-btn:hover,
+.action-icon-btn-small.delete-btn:hover {
+  background: #d32f2f !important;
+  color: #fff !important;
+}
+
+.primary-btn {
+  background: $orange !important;
+  color: #fff !important;
+}
+.secondary-btn {
+  background: #232323 !important;
+  color: #fff !important;
+}
+.secondary-btn:hover {
+  background: #333 !important;
+}
+
+.file-upload-area {
+  border: 2px dashed #444 !important;
+  background: #232323 !important;
+  color: #fff !important;
+}
+.upload-placeholder p,
+.file-types {
+  color: #fff !important;
+}
+.selected-file {
+  background: #232323 !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+}
+.file-icon {
+  color: #fff !important;
+}
+.remove-file-btn {
+  color: #fff !important;
+}
+.remove-file-btn:hover {
+  background: #d32f2f !important;
+  color: #fff !important;
+}
 
 .student-documents {
   padding: 32px;

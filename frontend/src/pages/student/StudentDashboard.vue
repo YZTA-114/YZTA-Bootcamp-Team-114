@@ -62,7 +62,7 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="stats-gradient-box">
+        <div class="stats-gradient-box" style="border: 2px solid #e67e22;">
           <div class="stat-col">
             <div class="stat-header-row">
               <div class="stat-bigicon stat-orange"><ri-check-line /></div>
@@ -107,12 +107,11 @@
         <!-- Upcoming Events and Solved Quizzes -->
         <div class="events-and-solved-container">
           <!-- Upcoming Events -->
-          <div class="upcoming-events-card">
+          <div class="upcoming-events-card" style="border: 2px solid #e67e22;">
             <h2 class="events-title">Yaklaşan Quizler</h2>
             <div class="events-list">
               <div class="event-item">
                 <div class="event-status-badge">Bugün</div>
-                <div class="event-day">Salı</div>
                 <div class="event-date-box">
                   <span class="event-day-num">6</span>
                   <span class="event-month">Şub</span>
@@ -132,7 +131,6 @@
               
               <div class="event-item">
                 <div class="event-status-badge">3 gün sonra</div>
-                <div class="event-day">Cuma</div>
                 <div class="event-date-box">
                   <span class="event-day-num">9</span>
                   <span class="event-month">Şub</span>
@@ -152,7 +150,6 @@
               
               <div class="event-item">
                 <div class="event-status-badge">3 gün sonra</div>
-                <div class="event-day">Cuma</div>
                 <div class="event-date-box">
                   <span class="event-day-num">9</span>
                   <span class="event-month">Şub</span>
@@ -179,7 +176,7 @@
           </div>
 
           <!-- Solved Quizzes Table -->
-          <div class="solved-quizzes-card">
+          <div class="solved-quizzes-card" style="border: 2px solid #e67e22;">
             <h2 class="solved-title">Sonuçlarım</h2>
             <div class="solved-list-table">
               <div class="solved-list-header">
@@ -238,113 +235,6 @@
 
         <!-- Recent Activity & Upcoming Deadlines -->
         <div class="dashboard-grid">
-          <!-- Recent Activity -->
-          <div class="dashboard-card quiz-card">
-            <div class="card-header">
-              <h2 class="card-title">Öğretmen Quiz</h2>
-              <!-- <button class="btn btn-primary" @click="solveQuiz">ÇÖZ</button> -->
-            </div>
-            <div class="card-content">
-              <div class="quiz-list">
-                <div v-for="quiz in quizzes" :key="quiz.id" class="quiz-item">
-                  <div class="quiz-info">
-                    <div class="quiz-row"><strong>Quiz Adı:</strong> {{ quiz.name }}</div>
-                    <div class="quiz-row"><strong>Süre:</strong> {{ quiz.duration }} dk</div>
-                    <div class="quiz-row"><strong>Ders:</strong> {{ quiz.course }}</div>
-                  </div>
-                  <div class="quiz-actions">
-                    <button class="btn btn-sm btn-solve" @click="solveQuiz(quiz)">Çöz</button>
-                    <button class="btn btn-sm btn-danger" @click="deleteQuiz(quiz)">Sil</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Upcoming Deadlines -->
-          <div class="dashboard-card quiz-card">
-            <div class="card-header">
-              <h2 class="card-title">Benim Quiz'im</h2>
-            </div>
-            <div class="card-content">
-              <div class="quiz-list">
-                <div v-for="quiz in myQuizzes" :key="quiz.id" class="quiz-item">
-                  <div class="quiz-info">
-                    <div class="quiz-row"><strong>Quiz Adı:</strong> {{ quiz.name }}</div>
-                    <div class="quiz-row"><strong>Süre:</strong> {{ quiz.duration }} dk</div>
-                    <div class="quiz-row"><strong>Ders:</strong> {{ quiz.course }}</div>
-                  </div>
-                  <div class="quiz-actions">
-                    <button class="btn btn-sm btn-solve" @click="solveMyQuiz(quiz)">Çöz</button>
-                    <button class="btn btn-sm btn-danger" @click="deleteMyQuiz(quiz)">Sil</button>
-                  </div>
-                </div>
-              </div>
-              <div class="myquiz-bottom-actions">
-                <button class="btn btn-primary" @click="createQuiz">Yeni Quiz Oluştur</button>
-              </div>
-            </div>
-          </div>
-          <!-- Sonuçlarım -->
-          <div class="dashboard-card solved-card">
-            <div class="card-header">
-              <h2 class="card-title">Sonuçlarım</h2>
-            </div>
-            <div class="card-content">
-              <div class="solved-list-table">
-                <div class="solved-list-header">
-                  <div class="solved-col">DERS ADI</div>
-                  <div class="solved-col">SÜRE (dk)</div>
-                  <div class="solved-col">Doğru</div>
-                  <div class="solved-col">Yanlış</div>
-                  <div class="solved-col">Puan</div>
-                  <div class="solved-col"></div>
-                </div>
-                <div
-                  class="solved-list-row"
-                  v-for="item in pagedSolvedList"
-                  :key="item.id"
-                >
-                  <div class="solved-col">{{ item.course }}</div>
-                  <div class="solved-col">{{ item.duration }}</div>
-                  <div class="solved-col">{{ item.correct }}</div>
-                  <div class="solved-col">{{ item.total - item.correct }}</div>
-                  <div class="solved-col"
-                    :class="{
-                      'high-score': Math.round((item.correct / item.total) * 100) >= 85,
-                      'mid-score': Math.round((item.correct / item.total) * 100) >= 60 && Math.round((item.correct / item.total) * 100) < 85,
-                      'low-score': Math.round((item.correct / item.total) * 100) < 60
-                    }"
-                  >
-                    {{ Math.round((item.correct / item.total) * 100) }}
-                  </div>
-                  <div class="solved-col" style="display: flex; justify-content: flex-end; gap: 8px;">
-                    <div class="report-icon-wrapper" @click="showReport(item)">
-                      <svg class="report-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20" fill="none">
-                        <rect x="8" y="8" width="48" height="48" rx="6" stroke="#666" stroke-width="4" fill="none"/>
-                        <polyline points="18,44 28,32 38,38 46,22" fill="none" stroke="#666" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="18" cy="44" r="3" fill="#666"/>
-                        <circle cx="28" cy="32" r="3" fill="#666"/>
-                        <circle cx="38" cy="38" r="3" fill="#666"/>
-                        <circle cx="46" cy="22" r="3" fill="#666"/>
-                        <polyline points="40,8 56,8 56,24" fill="none" stroke="#666" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      <div class="report-tooltip">Raporu görüntüle</div>
-                    </div>
-                    <div class="delete-icon-wrapper" @click="deleteSolvedItem(item)">
-                      <svg class="delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
-                        <rect x="3" y="6" width="18" height="15" rx="2" stroke="#999" stroke-width="2" fill="none"/>
-                        <path d="M8 10v6M12 10v6M16 10v6" stroke="#999" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M5 6V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2" stroke="#999" stroke-width="2"/>
-                      </svg>
-                      <div class="delete-tooltip">Sil</div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </template>
@@ -430,23 +320,6 @@ const navItems = ref([
   }
 ])
 
-// Benim Quiz'im verisi
-const myQuizzes = ref([
-  { id: 1, name: 'Tarih Quiz 1', duration: 10, course: 'Tarih' },
-  { id: 2, name: 'Biyoloji Quiz 2', duration: 18, course: 'Biyoloji' },
-  { id: 3, name: 'Coğrafya Quiz 3', duration: 12, course: 'Coğrafya' }
-])
-
-function createQuiz() {
-  alert('Yeni quiz oluşturma sayfasına yönlendirilecek!')
-}
-function solveMyQuiz(quiz) {
-  alert(quiz.name + ' quizini çözme sayfasına yönlendirilecek!')
-}
-function deleteMyQuiz(quiz) {
-  alert('Sil: ' + quiz.name)
-}
-
 // Classroom dropdown için veri
 const classrooms = [
   { id: 1, name: 'Matematik Sınıfı' },
@@ -491,17 +364,6 @@ const handleSettings = () => {
 
 const goToCourses = () => {
   router.push('/student/courses')
-}
-
-// Quiz verisi
-const quizzes = ref([
-  { id: 1, name: 'Matematik Quiz 1', duration: 20, course: 'Matematik' },
-  { id: 2, name: 'Fizik Quiz 2', duration: 15, course: 'Fizik' },
-  { id: 3, name: 'Kimya Quiz 3', duration: 25, course: 'Kimya' }
-])
-
-function deleteQuiz(quiz) {
-  alert('Sil: ' + quiz.name)
 }
 
 // Sonuçlarım verisi
@@ -562,6 +424,73 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @import '@/assets/scss/custom/_variable.scss';
+// KOYU TEMA OVERRIDES
+body, .student-dashboard, .welcome-section, .stats-gradient-box, .dashboard-card, .solved-quizzes-card, .upcoming-events-card, .solved-list-table, .quiz-item, .event-item {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+.welcome-section {
+  background: #e67e22 !important;
+  color: #fff !important;
+}
+
+.welcome-title, .welcome-subtitle, .motivation-quote {
+  color: #fff !important;
+}
+
+.stats-gradient-box, .solved-quizzes-card, .upcoming-events-card {
+  background: #111 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important;
+}
+
+.stat-title, .stat-score, .stat-desc, .stat-percent, .stat-outof {
+  color: #fff !important;
+}
+
+.dashboard-card, .quiz-card, .solved-card {
+  background: #111 !important;
+  color: #fff !important;
+}
+
+.card-title, .events-title, .solved-title {
+  color: #fff !important;
+}
+
+.solved-list-table, .solved-list-header, .solved-list-row {
+  background: #111 !important;
+  color: #fff !important;
+}
+.solved-list-header, .solved-list-row {
+  border-bottom: 1.5px solid #888 !important;
+}
+.solved-list-header .solved-col, .solved-list-row .solved-col {
+  color: #fff !important;
+}
+.solved-list-row:hover {
+  background: #181818 !important;
+}
+
+.quiz-item, .event-item {
+  background: #181818 !important;
+  color: #fff !important;
+  border: 1px solid #222 !important;
+}
+
+.quiz-row, .event-title, .event-course, .event-time, .event-day, .event-month, .event-day-num {
+  color: #fff !important;
+}
+
+.btn, .btn-primary, .btn-solve, .event-solve-btn, .view-more-btn {
+  background: #e67e22 !important;
+  color: #fff !important;
+  border: none !important;
+}
+.btn:hover, .btn-primary:hover, .btn-solve:hover, .event-solve-btn:hover, .view-more-btn:hover {
+  background: #ca6f1e !important;
+  color: #fff !important;
+}
 
 .student-dashboard {
   min-height: 100vh;
@@ -599,19 +528,19 @@ onMounted(() => {
 
     .welcome-actions {
       .btn {
-        background-color: rgba($white, 0.2);
-        border: 1px solid rgba($white, 0.3);
-        color: $white;
+        background-color: rgba(255,255,255,0.18) !important;
+        border: 1.5px solid rgba(255,255,255,0.28) !important;
+        color: #fff !important;
         padding: $space-s $space-l;
         border-radius: 8px;
         font-weight: $font-weight-semi-bold;
+        font-family: $font-family-primary-medium;
         transition: all 0.2s ease;
-
         &:hover {
-          background-color: rgba($white, 0.3);
+          background-color: rgba(255,255,255,0.28) !important;
+          color: #fff !important;
           transform: translateY(-2px);
         }
-
         i {
           margin-right: $space-xs;
         }
@@ -1579,5 +1508,33 @@ onMounted(() => {
   color: #222;
   text-align: center;
   margin: 0 0 $space-m 0;
+}
+.upcoming-events-card .event-item {
+  color: #fff !important;
+  border: 2px solid #888 !important;
+}
+.upcoming-events-card .event-title,
+.upcoming-events-card .event-course,
+.upcoming-events-card .event-time,
+.upcoming-events-card .event-day,
+.upcoming-events-card .event-month,
+.upcoming-events-card .event-day-num {
+  color: #fff !important;
+}
+.upcoming-events-card .event-status-badge {
+  font-weight: 700;
+  color: #d32f2f !important;
+  background: #ffe6e6 !important;
+}
+.upcoming-events-card .event-solve-btn {
+  background: rgba(255,255,255,0.18) !important;
+  color: #e67e22 !important;
+  border: 1.5px solid rgba(255,255,255,0.28) !important;
+  font-weight: 700;
+  transition: background 0.2s, color 0.2s;
+}
+.upcoming-events-card .event-solve-btn:hover {
+  background: rgba(255,255,255,0.28) !important;
+  color: #fff !important;
 }
 </style> 
