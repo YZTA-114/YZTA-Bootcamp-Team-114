@@ -61,8 +61,12 @@ UserSchema.pre("save", async function (next) {
 
 // Sign jwt and return
 UserSchema.methods.getSignedJwtToken = function () {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
+  
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
+    expiresIn: process.env.JWT_EXPIRE || '30d',
   });
 };
 

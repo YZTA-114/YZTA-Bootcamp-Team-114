@@ -12,10 +12,11 @@ const transaction = (fn) => async (req, res, next) => {
     Promise.resolve(fn(req, res, session, next))
     .then(async () => {
         await session.commitTransaction();
+        // Don't call next() here as the function should handle the response
     })
     .catch(async (err) => {
         await session.abortTransaction();
-        console.log('Transaction aborted')
+        console.log('Transaction aborted:', err.message);
         next(err);
     })
     .finally(async () => {
@@ -28,17 +29,13 @@ const transactionSimple = (fn) => async (req, res, next) => {
 
     try {
         await session.withTransaction(async () => await fn(req, res, session));
-
         session.endSession();
-        next();
+        // Don't call next() here as the function should handle the response
     } catch(err) {
-        //wait session.abortTransaction();
         session.endSession();
-        console.log(err);
+        console.log('Transaction error:', err.message);
         next(err);
     }
-   
 }
-
 
 module.exports = {transaction, transactionSimple};

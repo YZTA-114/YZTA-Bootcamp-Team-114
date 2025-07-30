@@ -16,24 +16,39 @@
             </div>
             <div class="home-page-hero-cards">
               <div class="card">
-                <span class="card-title">Eğitim</span>
-                <span class="card-description">Eğitimdeki her şeyi, herkesin erişebileceği bir platformda deneyin.</span>
+                <div class="card-image">
+                  <img src="@/assets/images/content-3326-26b4d60c-56cd-4afa-b00b-bfbdd9571995_640x480.jpg" alt="Louis Braille" />
+                </div>
+                <span class="card-title">Louis Braille</span>
+                <span class="card-description">Braille Alfabesinin mucidi, tüm dünyada görme engellilerin bilgiye erişimini sağladı.</span>
               </div>
               <div class="card md">
-                <span class="card-title">Eğitim</span>
-                <span class="card-description">Eğitimdeki her şeyi, herkesin erişebileceği bir platformda deneyin.</span>
+                <div class="card-image">
+                  <img src="@/assets/images/karanligin-en-renkli-hali-helen-keller.jpg" alt="Helen Keller" />
+                </div>
+                <span class="card-title">Helen Keller</span>
+                <span class="card-description">İlk görme ve işitme engelli üniversite mezunu, 12 kitap yazarı ve aktivist.</span>
               </div>
               <div class="card sm">
-                <span class="card-title">Eğitim</span>
-                <span class="card-description">Eğitimdeki her şeyi, herkesin erişebileceği bir platformda deneyin.</span>
+                <div class="card-image">
+                  <img src="@/assets/images/640px-Stevie_Wonder_1973.jpeg" alt="Stevie Wonder" />
+                </div>
+                <span class="card-title">Stevie Wonder</span>
+                <span class="card-description">25 Grammy Ödülü kazanan müzik efsanesi ve teknoloji destekçisi.</span>
               </div>
               <div class="card md">
-                <span class="card-title">Eğitim</span>
-                <span class="card-description">Eğitimdeki her şeyi, herkesin erişebileceği bir platformda deneyin.</span>
+                <div class="card-image">
+                  <img src="@/assets/images/IMG_472707-7E13F6-057FBD-3938DE-A9E960-68D427.jpg" alt="Cemil Meriç" />
+                </div>
+                <span class="card-title">Cemil Meriç</span>
+                <span class="card-description">Türk edebiyatında derin izler bırakan yazar ve düşünür.</span>
               </div>
               <div class="card">
-                <span class="card-title">Eğitim</span>
-                <span class="card-description">Eğitimdeki her şeyi, herkesin erişebileceği bir platformda deneyin.</span>
+                <div class="card-image">
+                  <img src="@/assets/images/12295,133jpg.png" alt="Aşık Veysel" />
+                </div>
+                <span class="card-title">Aşık Veysel</span>
+                <span class="card-description">Türk halk müziğinin efsanevi ozanı, görme engelli olmasına rağmen büyük eserler verdi.</span>
               </div>
             </div>
           </div>

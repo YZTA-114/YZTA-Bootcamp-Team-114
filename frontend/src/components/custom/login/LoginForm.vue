@@ -54,6 +54,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import FormInput from '@/components/custom/form/FormInput.vue'
 import SocialLoginButton from '@/components/custom/form/SocialLoginButton.vue'
 import { useStore } from 'vuex';
@@ -63,6 +64,7 @@ import { required, email, maxLength, helpers, minLength } from '@vuelidate/valid
 import { useToast } from 'vue-toastification';
 
 const store = useStore();
+const router = useRouter();
 const toast = useToast();
 
 const form = ref({
@@ -87,8 +89,14 @@ const v$ = useVuelidate(rules, form);
 
 const handleSubmit = async () => {
   await store.dispatch('auth/userLogin', form.value).then(() => {
-    /* router.push('/student/dashboard'); */
     toast.success('Giriş başarılı');
+    // Kullanıcı rolüne göre yönlendirme
+    const user = store.getters['auth/getUser'];
+    if (user && user.role === 'teacher') {
+      router.push('/teacher/dashboard');
+    } else {
+      router.push('/student/dashboard');
+    }
   }).catch((error) => {
     toast.error(error.message);
   });

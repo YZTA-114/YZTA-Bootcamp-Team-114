@@ -79,7 +79,7 @@ const selectType = (type) => {
 .register-type-select-form__title {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $black;
+  color: $white;
   margin: 0 0 $space-xs 0;
   font-family: $font-family-primary-bold;
   line-height: 1.2;
@@ -87,7 +87,7 @@ const selectType = (type) => {
 
 .register-type-select-form__subtitle {
   font-size: $font-size-s;
-  color: #666;
+  color: $white;
   margin: 0;
   font-family: $font-family-primary-regular;
   line-height: 1.5;
@@ -114,7 +114,7 @@ const selectType = (type) => {
   text-align: left;
 
   &:hover {
-    border-color: $black;
+    border-color: $white;
     background: #f8f8f8;
   }
 
@@ -158,18 +158,18 @@ const selectType = (type) => {
 .register-type-select-form__login {
   text-align: center;
   font-size: $font-size-xs;
-  color: #666;
+  color: $white;
   font-family: $font-family-primary-regular;
 
   a {
-    color: $black;
+    color: $white;
     text-decoration: none;
     font-weight: $font-weight-semi-bold;
     font-family: $font-family-primary-medium;
     transition: color 0.2s;
 
     &:hover {
-      color: #333;
+      color: #efefef;
     }
   }
 }

@@ -7,7 +7,7 @@
         </div>
         <h2 class="features-title">Erişilebilir Özellikler<span class="dot">.</span></h2>
         <p class="features-desc">
-          Onlearn, görme engelli bireyler için erişilebilir ve kapsayıcı bir eğitim platformudur. Herkes için eşit ve bağımsız öğrenme deneyimi sunar.
+          FeelEd, görme engelli bireyler için tasarlanmış kapsayıcı bir eğitim platformudur. Herkes için eşit ve bağımsız öğrenme deneyimi sunar.
         </p>
         <button class="features-btn">Daha Fazla Bilgi</button>
       </div>
@@ -16,43 +16,43 @@
           <div class="feature-card main">
             <div class="feature-dot"></div>
             <div>
-              <h3>Sesli Anlatım</h3>
-              <p>Tüm ders içerikleri ve materyaller sesli olarak sunulur.</p>
+              <h3>Ekran Okuyucu Uyumluluğu</h3>
+              <p>Tüm içerikler JAWS, NVDA ve diğer ekran okuyucular ile tam uyumlu.</p>
             </div>
           </div>
           <div class="feature-card">
             <div class="feature-dot"></div>
             <div>
-              <h3>Klavye ile Gezinme</h3>
-              <p>Platformda tüm işlemler klavye ile kolayca yapılabilir.</p>
+              <h3>Sesli Anlatım Sistemi</h3>
+              <p>Ders materyalleri ve sınavlar yapay zeka destekli sesli anlatım ile sunulur.</p>
             </div>
           </div>
           <div class="feature-card">
             <div class="feature-dot"></div>
             <div>
-              <h3>Yüksek Kontrast</h3>
-              <p>Görsel içerikler yüksek kontrast ile sunulur, göz yormaz.</p>
+              <h3>Klavye Navigasyonu</h3>
+              <p>Platformda tüm işlemler klavye kısayolları ile kolayca yapılabilir.</p>
             </div>
           </div>
           <div class="feature-card">
             <div class="feature-dot"></div>
             <div>
-              <h3>Topluluk Desteği</h3>
-              <p>Her zaman destek alabileceğiniz aktif bir topluluk.</p>
+              <h3>Yüksek Kontrast Modu</h3>
+              <p>Görsel içerikler yüksek kontrast seçenekleri ile sunulur.</p>
             </div>
           </div>
           <div class="feature-card">
             <div class="feature-dot"></div>
             <div>
-              <h3>Yüksek Kontrast</h3>
-              <p>Görsel içerikler yüksek kontrast ile sunulur, göz yormaz.</p>
+              <h3>Büyük Yazı Seçeneği</h3>
+              <p>Metin boyutları kişiselleştirilebilir ve okunabilirlik artırılır.</p>
             </div>
           </div>
           <div class="feature-card">
             <div class="feature-dot"></div>
             <div>
-              <h3>Topluluk Desteği</h3>
-              <p>Her zaman destek alabileceğiniz aktif bir topluluk.</p>
+              <h3>Sesli Quiz Sistemi</h3>
+              <p>Sınavlar sesli olarak okunur ve sesli yanıt seçenekleri sunulur.</p>
             </div>
           </div>
         </div>
@@ -125,7 +125,7 @@ export default {
   font-family: $font-family-primary-regular;
 }
 .dot {
-  color: #a084e8;
+  color: $orange;
 }
 .features-desc {
   font-size: 1.05rem;
@@ -136,14 +136,14 @@ export default {
   font-family: $font-family-primary-regular;
 }
 .features-btn {
-  background: linear-gradient(90deg, #a084e8 60%, #8f6be8 100%);
+  background: linear-gradient(90deg, $orange 60%, #d2691e 100%);
   color: #fff;
   border: none;
   border-radius: 22px;
   padding: 10px 28px;
   font-size: 1rem;
   font-weight: 500;
-  box-shadow: 0 2px 8px 0 rgba(160, 132, 232, 0.18);
+  box-shadow: 0 2px 8px 0 rgba(234, 128, 20, 0.18);
   cursor: pointer;
   transition: background 0.2s;
   z-index: 1;
@@ -181,7 +181,7 @@ export default {
 .feature-card.main {
   background: linear-gradient(120deg, $orange 70%, $orange 100%);
   color: #fff;
-  box-shadow: 0 8px 32px 0 rgba(160, 132, 232, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(234, 128, 20, 0.18);
   transform: translateY(-18px);
   font-family: $font-family-primary-regular;
 }
@@ -194,11 +194,11 @@ export default {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #a084e8;
+  background: $orange;
 }
 .feature-card.main .feature-dot {
   background: #fff;
-  border: 2px solid #a084e8;
+  border: 2px solid $orange;
 }
 .feature-card h3 {
   font-size: 1.1rem;

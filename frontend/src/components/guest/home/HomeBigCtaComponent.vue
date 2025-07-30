@@ -23,6 +23,7 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 64px 0 64px 0;
+  font-family: $font-family-primary-regular;
 }
 .big-cta-box {
   background: #fff;
@@ -36,26 +37,29 @@ export default {
 .big-cta-box h2 {
   font-size: 2rem;
   font-weight: 700;
+  font-family: $font-family-primary-bold;
   color: #222;
   margin-bottom: 18px;
 }
 .big-cta-box p {
   font-size: 1.1rem;
+  font-family: $font-family-primary-regular;
   color: #444;
   margin-bottom: 28px;
 }
 .big-cta-btn {
-  background: #197D81;
+  background: $orange;
   color: #fff;
   border: none;
   border-radius: 22px;
   padding: 12px 36px;
   font-size: 1.1rem;
   font-weight: 600;
+  font-family: $font-family-primary-medium;
   cursor: pointer;
   transition: background 0.2s;
 }
 .big-cta-btn:hover {
-  background: #0a2a2a;
+  background: #d2691e;
 }
 </style> 

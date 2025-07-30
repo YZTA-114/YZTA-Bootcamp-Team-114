@@ -1,7 +1,7 @@
 <template>
   <section class="creative-how-it-works">
     <div class="chiw-header">
-      <span class="chiw-badge">FeelEd’de Yolculuğun Başlasın!</span>
+      <span class="chiw-badge">FeelEd'de Yolculuğun Başlasın!</span>
       <h2 class="chiw-title">Erişilebilir Eğitime 3 Adımda Ulaş!</h2>
       <p class="chiw-desc">
         FeelEd, görme engelli bireyler için tasarlanmış erişilebilir ve kapsayıcı bir eğitim platformudur. Herkesin eşit ve bağımsız öğrenme hakkı için buradayız.
@@ -10,31 +10,31 @@
     <div class="chiw-steps">
       <div class="chiw-step">
         <div class="chiw-icon" aria-hidden="true">
-          <img src="https://cdn-icons-png.flaticon.com/512/616/616494.png" alt="Kayıt ve Erişim" />
+          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828471.png" alt="Kayıt ve Erişim" />
         </div>
         <h3 class="chiw-step-title">Kolayca Kayıt Ol, Erişimini Kişiselleştir</h3>
         <p class="chiw-step-desc">
-          FeelEd’e hızlıca kaydol, erişilebilirlik tercihlerini belirle. Platformumuz ekran okuyucu ve klavye ile tam uyumlu, herkes için erişilebilir.
+          FeelEd'e hızlıca kaydol, erişilebilirlik tercihlerini belirle. Platformumuz ekran okuyucu ve klavye ile tam uyumlu, herkes için erişilebilir.
         </p>
         <span class="chiw-tip">İpucu: Kendi ihtiyaçlarına göre ayarları özelleştirebilirsin!</span>
       </div>
       <div class="chiw-step">
         <div class="chiw-icon" aria-hidden="true">
-          <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Derslere Katıl" />
+          <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="AI Sesli Asistan" />
         </div>
-        <h3 class="chiw-step-title">Derslere Katıl, Sesli İçeriklerle Öğren</h3>
+        <h3 class="chiw-step-title">AI Destekli Sesli Öğrenme Deneyimi</h3>
         <p class="chiw-step-desc">
-          Tüm dersler ve materyaller sesli anlatım ve yüksek kontrast desteğiyle sunulur. Kendi hızında, bağımsızca öğrenmenin keyfini çıkar.
+          Yapay zeka destekli sesli asistan ile dersleri dinle, sorularını sor ve anlamadığın konuları tekrar et. AI senin öğrenme hızına göre içerik sunar.
         </p>
-        <span class="chiw-tip">İpucu: Klavye kısayolları ile platformda kolayca gezinebilirsin!</span>
+        <span class="chiw-tip">İpucu: AI asistanına sesli sorular sorabilir ve anında yanıt alabilirsin!</span>
       </div>
       <div class="chiw-step">
         <div class="chiw-icon" aria-hidden="true">
-          <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Topluluk ve Destek" />
+          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828640.png" alt="Topluluk ve Destek" />
         </div>
         <h3 class="chiw-step-title">Topluluğa Katıl, Destek Al ve Paylaş</h3>
         <p class="chiw-step-desc">
-          Aktif topluluğumuzda sorularını sor, deneyimlerini paylaş ve destek al. FeelEd’de yalnız değilsin, birlikte daha güçlüyüz!
+          Aktif topluluğumuzda sorularını sor, deneyimlerini paylaş ve destek al. FeelEd'de yalnız değilsin, birlikte daha güçlüyüz!
         </p>
         <span class="chiw-tip">İpucu: Topluluk forumunda her zaman destek bulabilirsin!</span>
       </div>
@@ -86,7 +86,7 @@
 }
 .chiw-desc {
   font-size: 1.15rem;
-  color: #444;
+  color: $white;
   max-width: 650px;
   margin: 0 auto;
   font-family: $font-family-primary-regular;
