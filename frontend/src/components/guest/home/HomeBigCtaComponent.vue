@@ -2,7 +2,7 @@
   <section class="big-cta-section">
     <div class="big-cta-box">
       <h2>Eğitim Herkes İçin Erişilebilir!</h2>
-      <p>Onlearn ile engelsiz ve bağımsız öğrenmeye hemen başla.</p>
+      <p>FeelEd ile engelsiz ve bağımsız öğrenmeye hemen başla.</p>
       <button class="big-cta-btn">Hemen Başla</button>
     </div>
   </section>
