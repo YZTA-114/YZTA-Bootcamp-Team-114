@@ -38,6 +38,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-family: $font-family-primary-regular;
 }
 .testimonial-title {
   font-size: 2rem;
@@ -46,6 +47,7 @@ export default {
   margin-bottom: 36px;
   text-align: center;
   max-width: 700px;
+  font-family: $font-family-primary-regular;
 }
 .testimonial-grid {
   display: grid;
@@ -53,6 +55,7 @@ export default {
   gap: 32px;
   width: 100%;
   max-width: 1100px;
+  font-family: $font-family-primary-regular;
 }
 .testimonial-card {
   background: #f8f7fa;
@@ -64,6 +67,7 @@ export default {
   align-items: center;
   text-align: center;
   gap: 18px;
+  font-family: $font-family-primary-regular;
 }
 .testimonial-img {
   width: 64px;
@@ -77,10 +81,12 @@ export default {
   font-weight: 600;
   margin-bottom: 6px;
   color: #222;
+  font-family: $font-family-primary-regular;
 }
 .testimonial-text {
   font-size: 1rem;
   color: #444;
+  font-family: $font-family-primary-regular;
 }
 @media (max-width: 900px) {
   .testimonial-grid {
