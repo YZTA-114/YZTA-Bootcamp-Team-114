@@ -191,7 +191,7 @@ body, .student-courses-page, .welcome-section, .courses-list, .course-card, .cou
 }
 
 .welcome-section {
-  background: #181818 !important;
+  background: $orange !important;
   color: #fff !important;
 }
 

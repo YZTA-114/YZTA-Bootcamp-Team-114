@@ -104,12 +104,12 @@ const routes = [
         path: 'analytics',
         name: 'teacher-analytics',
         component: () => import('@/pages/teacher/TeacherAnalytics.vue')
-      },
+      },*/
       {
         path: 'profile',
         name: 'teacher-profile',
-        component: () => import('@/pages/teacher/TeacherProfile.vue')
-      } */
+        component: () => import('@/pages/teacher/TeacherProfil.vue')
+      } 
     ]
   }
 ]

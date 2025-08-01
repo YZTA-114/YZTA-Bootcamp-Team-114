@@ -51,7 +51,7 @@
       <div class="profile-root-bg">
         <!-- Turuncu bilgi bloğu -->
         <div class="profile-info-banner">
-          <div class="profile-info-banner-title">Öğrenci Profili</div>
+          <div class="profile-info-banner-title">Öğretmen Profili</div>
           <div class="profile-info-banner-desc">Kişisel bilgilerinizi görüntüleyin ve düzenleyin</div>
         </div>
         <!-- Profil headerı -->

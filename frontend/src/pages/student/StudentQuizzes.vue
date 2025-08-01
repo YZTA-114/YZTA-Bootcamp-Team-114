@@ -49,19 +49,139 @@
     </template>
     <template #content>
       <div class="student-quizzes-page">
-        <h1>Quizlerim</h1>
+        <div class="quizzes-header-block">
+          <h1>Quizlerim</h1>
+        </div>
         <div class="quiz-table-controls" style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center;">
           <input v-model="search" placeholder="Quiz adı ile arayın..." class="quiz-search-input" />
-          <select v-model="selectedCourse" class="quiz-filter-select">
-            <option value="">Tüm Dersler</option>
-            <option v-for="course in courses" :key="course">{{ course }}</option>
-          </select>
-          <select v-model="selectedStatus" class="quiz-filter-select">
-            <option value="">Tüm Durumlar</option>
-            <option value="completed">Tamamlandı</option>
-            <option value="in_progress">Devam Ediyor</option>
-            <option value="not_started">Başlamadı</option>
-          </select>
+
+          <!-- Course Dropdown (Tüm Dersler) -->
+          <div class="filter-dropdown">
+            <button 
+              @click="toggleCourseDropdown"
+              class="filter-dropdown-btn"
+              :class="{ active: showCourseDropdown }"
+            >
+              <div class="filter-btn-content">
+                <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22,4 12,14.01 9,11.01"/>
+                </svg>
+                <span class="filter-text">{{ selectedCourse || 'Tüm Dersler' }}</span>
+              </div>
+              <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </button>
+            <div v-if="showCourseDropdown" class="filter-dropdown-menu">
+              <div class="dropdown-header">
+                <h4>Ders Seçin</h4>
+                <button class="close-dropdown-btn" @click="toggleCourseDropdown">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="dropdown-options">
+                <button 
+                  @click="selectCourse('')"
+                  class="dropdown-option"
+                  :class="{ selected: selectedCourse === '' }"
+                >
+                  <span>Tüm Dersler</span>
+                  <svg v-if="selectedCourse === ''" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </button>
+                <button 
+                  v-for="course in courses" 
+                  :key="course"
+                  @click="selectCourse(course)"
+                  class="dropdown-option"
+                  :class="{ selected: selectedCourse === course }"
+                >
+                  <span>{{ course }}</span>
+                  <svg v-if="selectedCourse === course" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Dropdown (Tüm Durumlar) -->
+          <div class="filter-dropdown">
+            <button 
+              @click="toggleStatusDropdown"
+              class="filter-dropdown-btn"
+              :class="{ active: showStatusDropdown }"
+            >
+              <div class="filter-btn-content">
+                <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"/>
+                </svg>
+                <span class="filter-text">{{ statusLabel }}</span>
+              </div>
+              <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </button>
+            <div v-if="showStatusDropdown" class="filter-dropdown-menu">
+              <div class="dropdown-header">
+                <h4>Durum Seçin</h4>
+                <button class="close-dropdown-btn" @click="toggleStatusDropdown">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="dropdown-options">
+                <button 
+                  @click="selectStatus('')"
+                  class="dropdown-option"
+                  :class="{ selected: selectedStatus === '' }"
+                >
+                  <span>Tüm Durumlar</span>
+                  <svg v-if="selectedStatus === ''" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </button>
+                <button 
+                  @click="selectStatus('completed')"
+                  class="dropdown-option"
+                  :class="{ selected: selectedStatus === 'completed' }"
+                >
+                  <span>Tamamlandı</span>
+                  <svg v-if="selectedStatus === 'completed'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </button>
+                <button 
+                  @click="selectStatus('in_progress')"
+                  class="dropdown-option"
+                  :class="{ selected: selectedStatus === 'in_progress' }"
+                >
+                  <span>Devam Ediyor</span>
+                  <svg v-if="selectedStatus === 'in_progress'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </button>
+                <button 
+                  @click="selectStatus('not_started')"
+                  class="dropdown-option"
+                  :class="{ selected: selectedStatus === 'not_started' }"
+                >
+                  <span>Başlamadı</span>
+                  <svg v-if="selectedStatus === 'not_started'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
           <button class="quiz-add-btn">+ Yeni Quiz</button>
         </div>
         <div class="quiz-table-wrapper">
@@ -184,6 +304,31 @@ function statusText(status) {
   if (status === 'not_started') return 'Başlamadı';
   return '';
 }
+
+const showCourseDropdown = ref(false)
+const showStatusDropdown = ref(false)
+const toggleCourseDropdown = () => {
+  showCourseDropdown.value = !showCourseDropdown.value
+  showStatusDropdown.value = false
+}
+const toggleStatusDropdown = () => {
+  showStatusDropdown.value = !showStatusDropdown.value
+  showCourseDropdown.value = false
+}
+const selectCourse = (course) => {
+  selectedCourse.value = course
+  showCourseDropdown.value = false
+}
+const selectStatus = (status) => {
+  selectedStatus.value = status
+  showStatusDropdown.value = false
+}
+const statusLabel = computed(() => {
+  if (selectedStatus.value === 'completed') return 'Tamamlandı'
+  if (selectedStatus.value === 'in_progress') return 'Devam Ediyor'
+  if (selectedStatus.value === 'not_started') return 'Başlamadı'
+  return 'Tüm Durumlar'
+})
 </script>
 
 <style lang="scss" scoped>
@@ -420,5 +565,146 @@ function statusText(status) {
 .quiz-action-btn:hover {
   background: #e67e22;
   color: #fff;
+}
+  .quizzes-header-block {
+    background: $orange;
+    color: #fff;
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba($orange, 0.10);
+    display: flex;
+    align-items: flex-start;
+    h1 {
+      color: #fff;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0;
+    }
+  }
+
+.filter-dropdown {
+  position: relative;
+  margin-right: 12px;
+  &.active .filter-dropdown-btn {
+    border-color: $orange;
+    background: #232323;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+}
+
+.filter-dropdown-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #181818;
+  border: 1.5px solid #333;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 180px;
+  min-width: 180px;
+  &:hover {
+    border-color: $orange;
+  }
+  .filter-btn-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    .filter-icon {
+      width: 20px;
+      height: 20px;
+      color: #888;
+    }
+    .filter-text {
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+  }
+  .dropdown-arrow {
+    width: 20px;
+    height: 20px;
+    color: #888;
+    transition: transform 0.2s;
+    &.open {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.filter-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #232323;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  z-index: 10;
+  border: 1.5px solid $orange;
+  animation: fadeIn 0.18s;
+  .dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    background: #232323;
+    h4 {
+      margin: 0;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .close-dropdown-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      svg {
+        width: 20px;
+        height: 20px;
+        color: #888;
+      }
+    }
+  }
+  .dropdown-options {
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+  .dropdown-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    font-size: 1rem;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 7px;
+    margin: 2px 8px;
+    transition: background 0.15s, color 0.15s;
+    &:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    &.selected {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-weight: 600;
+    }
+    .check-icon {
+      width: 20px;
+      height: 20px;
+      color: $orange;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    &.selected .check-icon {
+      opacity: 1;
+    }
+  }
 }
 </style>

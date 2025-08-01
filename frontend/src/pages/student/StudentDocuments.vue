@@ -493,30 +493,102 @@
                   <div class="form-row">
                     <div class="form-group">
                       <label for="documentCourse">Ders *</label>
-                      <select 
-                        id="documentCourse"
-                        v-model="newDocument.course" 
-                        required
-                      >
-                        <option value="">Ders seçin</option>
-                        <option v-for="course in courses" :key="course" :value="course">
-                          {{ course }}
-                        </option>
-                      </select>
+                      <!-- Course Dropdown -->
+<div class="filter-dropdown">
+  <button 
+    @click="toggleCourseDropdown"
+    class="filter-dropdown-btn"
+    :class="{ active: showCourseDropdown }"
+  >
+    <div class="filter-btn-content">
+      <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22,4 12,14.01 9,11.01"/>
+      </svg>
+      <span class="filter-text">{{ newDocument.course || 'Ders Seçin' }}</span>
+    </div>
+    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="6,9 12,15 18,9"></polyline>
+    </svg>
+  </button>
+
+  <div v-if="showCourseDropdown" class="filter-dropdown-menu">
+    <div class="dropdown-header">
+      <h4>Ders Seçin</h4>
+      <button class="close-dropdown-btn" @click="toggleCourseDropdown">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="dropdown-options">
+      <button 
+        v-for="c in courses" 
+        :key="c"
+        @click="() => { newDocument.course = c; toggleCourseDropdown(); }"
+        class="dropdown-option"
+        :class="{ selected: newDocument.course === c }"
+      >
+        <span>{{ c }}</span>
+        <svg v-if="newDocument.course === c" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20,6 9,17 4,12"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
                     </div>
                     
                     <div class="form-group">
                       <label for="documentCategory">Kategori *</label>
-                      <select 
-                        id="documentCategory"
-                        v-model="newDocument.category" 
-                        required
-                      >
-                        <option value="">Kategori seçin</option>
-                        <option v-for="category in categories" :key="category" :value="category">
-                          {{ category }}
-                        </option>
-                      </select>
+                      <!-- Category Dropdown -->
+<div class="filter-dropdown">
+  <button 
+    @click="toggleCategoryDropdown"
+    class="filter-dropdown-btn"
+    :class="{ active: showCategoryDropdown }"
+  >
+    <div class="filter-btn-content">
+      <svg class="filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"/>
+      </svg>
+      <span class="filter-text">{{ newDocument.course || 'Kategori Seçin' }}</span>
+
+    </div>
+    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="6,9 12,15 18,9"></polyline>
+    </svg>
+  </button>
+
+  <div v-if="showCategoryDropdown" class="filter-dropdown-menu">
+    <div class="dropdown-header">
+      <h4>Kategori Seçin</h4>
+      <button class="close-dropdown-btn" @click="toggleCategoryDropdown">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="dropdown-options">
+      <button 
+        v-for="cat in categories" 
+        :key="cat"
+        @click="() => { newDocument.category = cat; toggleCategoryDropdown(); }"
+        class="dropdown-option"
+        :class="{ selected: newDocument.category === cat }"
+      >
+        <span>{{ cat }}</span>
+        <svg v-if="newDocument.category === cat" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20,6 9,17 4,12"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
                     </div>
                   </div>
                   
