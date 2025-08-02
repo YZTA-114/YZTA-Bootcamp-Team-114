@@ -17,10 +17,12 @@ const router = express.Router({ mergeParams: true });
 const questionRouter = require('./question');
 const responseRouter = require('./response');
 const quizTakeRouter = require('./quizTake');
+const aiQuizRouter = require('./aiQuiz');
 
 router.use('/:quizId/quiz-questions', questionRouter);
 router.use('/:quizId/quiz-responses', responseRouter);
-router.use('/:quizId/quiz-takes', quizTakeRouter);  
+router.use('/:quizId/quiz-takes', quizTakeRouter);
+router.use('/ai', aiQuizRouter);  
 
 router.use(protect);
 
