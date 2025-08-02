@@ -90,6 +90,11 @@ const routes = [
         name: 'teacher-quizzes',
         component: () => import('@/pages/teacher/TeacherQuiz.vue')
       },
+      {
+        path: 'lectures',
+        name: 'teacher-lectures',
+        component: () => import('@/pages/teacher/TeacherLectures.vue')
+      },
       /* 
       {
         path: 'assignments',
