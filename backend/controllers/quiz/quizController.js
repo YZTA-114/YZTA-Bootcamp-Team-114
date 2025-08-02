@@ -3,13 +3,67 @@ const Quiz = require('../../models/quiz/Quiz');
 const Lesson = require('../../models/classroom/Lesson');
 const ClassroomParticipation = require('../../models/classroom/ClassroomParticipation');
 const asyncHandler = require('../../middleware/async');
+const User = require('../../models/user/User');
 
 // @desc Get all quizzes
 // @route GET /api/v1/quizzes
 // @route GET /api/v1/lessons/:lessonId/quizzes
+// @route GET /api/v1/classrooms/:classroomId/quizzes
 // @access Private
 exports.getQuizzes = asyncHandler(async (req, res, next) => {
-    if (req.params.lessonId) {
+    if (req.params.classroomId) {
+        // Get all quizzes for a classroom
+        const classroomId = req.params.classroomId;
+
+        // Check if user has access to the classroom
+        const participation = await ClassroomParticipation.findOne({
+            classroom: classroomId,
+            user: req.user.id
+        });
+
+        if (!participation && req.user.role !== 'admin') {
+            return next(
+                new ErrorResponse(`User ${req.user.id} is not authorized to view quizzes in this classroom`, 401)
+            );
+        }
+
+        // Get all lessons for the classroom
+        const lessons = await Lesson.find({ classroom: classroomId });
+        const lessonIds = lessons.map(lesson => lesson._id);
+
+        // Get all quizzes for these lessons
+        let quizzes = await Quiz.find({ lesson: { $in: lessonIds } })
+            .populate([
+                {
+                    path: 'createdBy',
+                    select: 'email role'
+                },
+                {
+                    path: 'lesson',
+                    select: 'name'
+                }
+            ]);
+
+        // Filter quizzes based on user role
+        if (req.user.role === 'student') {
+            // Students can see all quizzes (both teacher and student created)
+            quizzes = quizzes.filter(quiz => 
+                quiz.createdBy.role === 'teacher' || // Show all teacher quizzes
+                quiz.createdBy._id.toString() === req.user.id // Show only their own quizzes if student-created
+            );
+        } else if (req.user.role === 'teacher') {
+            // Teachers can only see teacher-created quizzes
+            quizzes = quizzes.filter(quiz => 
+                quiz.createdBy.role === 'teacher'
+            );
+        }
+
+        return res.status(200).json({
+            success: true,
+            count: quizzes.length,
+            data: quizzes
+        });
+    } else if (req.params.lessonId) {
         // Check if user has access to the lesson through classroom participation
         const lesson = await Lesson.findById(req.params.lessonId);
         if (!lesson) {

@@ -10,7 +10,7 @@
       <span>Dökümanlar</span>
     </template>
     <template #sidebar-nav>
-      <DashboardNav :nav-items="navItems" :collapsed="false" />
+      <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
     </template>
     <template #sidebar-classroom-dropdown>
       <div class="sidebar-classroom-dropdown modern-dropdown">
@@ -661,44 +661,15 @@
 import { ref, computed } from 'vue'
 import DashboardLayout from '@/layout/dashboard/DashboardLayout.vue'
 import DashboardNav from '@/components/dashboard/DashboardNav.vue'
+import { useNavigation } from '@/composables/useNavigation'
 
 const userName = ref('John Doe')
-const userRole = ref('Student')
+const userRole = ref('student')
 const userAvatar = ref('/default.png')
 const notificationCount = ref(0)
 
-const navItems = ref([
-  {
-    id: 'dashboard',
-    label: 'Dashboard',
-    path: '/student/dashboard',
-    icon: 'ri-dashboard-line'
-  },
-  {
-    id: 'courses',
-    label: 'Dersler',
-    path: '/student/courses',
-    icon: 'ri-book-line'
-  },
-  {
-    id: 'quizzes',
-    label: 'Quizler',
-    path: '/student/quizzes',
-    icon: 'ri-task-line'
-  },
-  {
-    id: 'documents',
-    label: 'Dökümanlar',
-    path: '/student/documents',
-    icon: 'ri-file-text-line'
-  },
-  {
-    id: 'profile',
-    label: 'Profile',
-    path: '/student/profile',
-    icon: 'ri-user-line'
-  }
-])
+// Navigation
+const { navItems, isSidebarCollapsed } = useNavigation(userRole)
 
 const search = ref('')
 const selectedCourse = ref('')

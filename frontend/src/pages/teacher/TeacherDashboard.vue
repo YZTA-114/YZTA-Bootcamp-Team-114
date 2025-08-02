@@ -1,8 +1,5 @@
 <template>
   <DashboardLayout
-    :user-name="userName"
-    :user-role="userRole"
-    :user-avatar="userAvatar"
     :current-page="currentPage"
     :notification-count="notificationCount"
     @logout="handleLogout"
@@ -13,6 +10,10 @@
       <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
     </template>
 
+    <template #sidebar-classroom-dropdown>
+      <ClassroomDropdown />
+    </template>
+
     <template #content>
       <div class="teacher-dashboard">
         <!-- Welcome Section -->
@@ -21,6 +22,8 @@
             <h1 class="welcome-title">Hoşgeldin {{ userName }}</h1>
             <p class="welcome-subtitle">Bugün öğretmenlik görevlerin neler.</p>
             <div class="motivation-quote">"Eğitim, geleceği şekillendiren en güçlü araçtır."</div>
+            <h1 class="welcome-title">Welcome back, {{ user?.name || 'Teacher' }}!</h1>
+            <p class="welcome-subtitle">Here's your teaching overview for today.</p>
           </div>
           <div class="welcome-actions">
             <button class="btn btn-primary" @click="goToCourses">
@@ -202,21 +205,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import DashboardLayout from '@/layout/dashboard/DashboardLayout.vue'
 import DashboardNav from '@/components/dashboard/DashboardNav.vue'
+import ClassroomDropdown from '@/components/dashboard/ClassroomDropdown.vue'
+import { useNavigation } from '@/composables/useNavigation'
+
+const store = useStore()
 
 // Router
 const router = useRouter()
 
 // User data
-const userName = ref('Dr. Sarah Johnson')
-const userRole = ref('Teacher')
-const userAvatar = ref('/default-avatar.png')
+const user = computed(() => store.getters['auth/getUser'])
+const userRole = computed(() => user.value?.role || 'teacher')
 const currentPage = ref('Dashboard')
 const notificationCount = ref(5)
-const isSidebarCollapsed = ref(false)
+
+// Navigation configuration
+const { navItems, isSidebarCollapsed } = useNavigation(userRole)
 
 // Stats
 const stats = ref({
@@ -225,52 +234,6 @@ const stats = ref({
   pendingSubmissions: 23,
   averageRating: 4.8
 })
-
-// Navigation items
-const navItems = ref([
-  {
-    id: 'dashboard',
-    label: 'Dashboard',
-    path: '/teacher/dashboard',
-    icon: 'ri-dashboard-line'
-  },
-  {
-    id: 'courses',
-    label: 'Derslerim',
-    path: '/teacher/courses',
-    icon: 'ri-book-line'
-  },
-  {
-    id: 'quizzes',
-    label: 'Quizler',
-    path: '/teacher/quizzes',
-    icon: 'ri-task-line'
-  },
-  {
-    id: 'students',
-    label: 'Öğrenciler',
-    path: '/teacher/students',
-    icon: 'ri-group-line'
-  },
-  {
-    id: 'grades',
-    label: 'Notlar',
-    path: '/teacher/grades',
-    icon: 'ri-bar-chart-line'
-  },
-  {
-    id: 'analytics',
-    label: 'Analitik',
-    path: '/teacher/analytics',
-    icon: 'ri-analytics-line'
-  },
-  {
-    id: 'profile',
-    label: 'Profil',
-    path: '/teacher/profile',
-    icon: 'ri-user-line'
-  }
-])
 
 // Recent submissions
 const recentSubmissions = ref([
@@ -471,37 +434,146 @@ body, .teacher-dashboard, .welcome-section, .stats-gradient-box, .dashboard-card
     .welcome-content {
       .welcome-title {
         font-size: $font-size-l;
-        font-weight: $font-weight-bold;
-        margin: 0 0 $space-xs 0;
+        font-weight: $font-weight-semi-bold;
+        margin: 0;
+        color: $black;
       }
-      .welcome-subtitle {
+
+      .btn-text {
+        background: none;
+        border: none;
+        color: $pink;
         font-size: $font-size-s;
-        opacity: 0.9;
-        margin: 0 0 2px 0;
-      }
-      .motivation-quote {
-        font-size: $font-size-xs;
-        opacity: 0.85;
-        margin-top: 2px;
-        font-style: italic;
-        color: $white;
+        font-weight: $font-weight-semi-bold;
+        cursor: pointer;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: darken($pink, 10%);
+        }
       }
     }
 
-    .welcome-actions {
-      .btn {
-        background-color: rgba(255,255,255,0.18) !important;
-        border: 1.5px solid rgba(255,255,255,0.28) !important;
-        color: #fff !important;
-        padding: $space-s $space-l;
-        border-radius: 8px;
-        font-weight: $font-weight-semi-bold;
-        font-family: $font-family-primary-medium;
-        transition: all 0.2s ease;
-        &:hover {
-          background-color: rgba(255,255,255,0.28) !important;
-          color: #fff !important;
-          transform: translateY(-2px);
+    .card-content {
+      padding: $space-l;
+    }
+  }
+
+  .submission-list {
+    .submission-item {
+      display: flex;
+      align-items: center;
+      gap: $space-m;
+      padding: $space-s 0;
+      border-bottom: 1px solid rgba($black, 0.05);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .submission-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .submission-content {
+        flex: 1;
+
+        .submission-title {
+          font-size: $font-size-s;
+          font-weight: $font-weight-semi-bold;
+
+          margin: 0 0 $space-xs 0;
+          color: $black;
+        }
+
+        .submission-student {
+          font-size: $font-size-xs;
+          color: $pink;
+          margin: 0 0 $space-xs 0;
+          font-weight: $font-weight-semi-bold;
+        }
+
+        .submission-course {
+          font-size: $font-size-xs;
+          color: rgba($black, 0.7);
+          margin: 0 0 $space-xs 0;
+        }
+
+        .submission-time {
+          font-size: $font-size-xs;
+          color: rgba($black, 0.6);
+        }
+      }
+
+      .submission-actions {
+        .btn-sm {
+          padding: $space-xs $space-s;
+          font-size: $font-size-xs;
+        }
+      }
+    }
+  }
+
+  .class-list {
+    .class-item {
+      display: flex;
+      align-items: center;
+      gap: $space-m;
+      padding: $space-s 0;
+      border-bottom: 1px solid rgba($black, 0.05);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .class-time {
+        text-align: center;
+        min-width: 80px;
+
+        .class-hour {
+          display: block;
+          font-size: $font-size-s;
+          font-weight: $font-weight-semi-bold;
+          color: $pink;
+        }
+
+        .class-duration {
+          display: block;
+          font-size: $font-size-xs;
+          color: rgba($black, 0.6);
+        }
+      }
+
+      .class-content {
+        flex: 1;
+
+        .class-title {
+          font-size: $font-size-s;
+          font-weight: $font-weight-semi-bold;
+          margin: 0 0 $space-xs 0;
+          color: $black;
+        }
+
+        .class-course {
+          font-size: $font-size-xs;
+          color: rgba($black, 0.7);
+          margin: 0 0 $space-xs 0;
+        }
+
+        .class-students {
+          font-size: $font-size-xs;
+          color: $orange;
+          font-weight: $font-weight-semi-bold;
         }
         i {
           margin-right: $space-xs;

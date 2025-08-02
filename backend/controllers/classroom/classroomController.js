@@ -9,7 +9,7 @@ const asyncHandler = require('../../middleware/async');
 // @route GET /api/v1/users/:userId/classrooms
 // @access Private
 exports.getClassrooms = asyncHandler(async (req, res, next) => {
-    if (req.params.userId) {
+    if (req.params.userId && req.user.role === 'admin') {
         const classrooms = await Classroom.find({ owner: req.params.userId });
         if (!classrooms) {
             return next(
@@ -22,13 +22,29 @@ exports.getClassrooms = asyncHandler(async (req, res, next) => {
             data: classrooms
         });
     } else {
-        // Check if user is admin
-        if (req.user.role !== 'admin') {
-            return next(
-                new ErrorResponse(`User ${req.user.id} is not authorized to view all classrooms`, 401)
-            );
+        // Check user role and handle accordingly
+        if (req.user.role === 'admin') {
+            // Admin can see all classrooms
+            res.status(200).json(res.advancedResults);
+        } else if (req.user.role === 'student') {
+            // Students can only see classrooms they participate in
+            const participations = await ClassroomParticipation.find({ user: req.user.id }).populate('classroom');
+            const classrooms = participations.map(p => p.classroom);
+            
+            res.status(200).json({
+                success: true,
+                count: classrooms.length,
+                data: classrooms
+            });
+        } else {
+            // Teachers see only their own classrooms
+            const classrooms = await Classroom.find({ owner: req.user.id });
+            res.status(200).json({
+                success: true,
+                count: classrooms.length,
+                data: classrooms
+            });
         }
-        res.status(200).json(res.advancedResults);
     }
 });
 

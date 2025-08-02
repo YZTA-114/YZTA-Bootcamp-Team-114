@@ -21,7 +21,9 @@ router.use(protect);
 
 // Re-route into other resource routers
 const lessonRouter = require('./lessonRoute');
+const quizRouter = require('../quiz/quiz');
 router.use('/:classroomId/lessons', lessonRouter);
+router.use('/:classroomId/quizzes', quizRouter);
 
 router
     .route('/')

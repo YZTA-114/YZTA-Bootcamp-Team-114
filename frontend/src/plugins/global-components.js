@@ -85,7 +85,8 @@ import {
   RiCodeLine,
   RiFunctionLine,
   RiAtomLine,
-  RiMicLine
+  RiMicLine,
+  RiAddCircleLine
 } from "@remixicon/vue";
 
 
@@ -172,6 +173,7 @@ const remixIcons = [
   { name: "ri-arrow-left-circle-fill", component: RiArrowLeftCircleFill },
   { name: "ri-arrow-left-s-fill", component: RiArrowLeftSFill },
   { name: "ri-arrow-left-fill", component: RiArrowLeftFill },
+  { name: "ri-add-circle-line", component: RiAddCircleLine },
   // Additional icons for courses
   { name: "ri-code-line", component: RiCodeLine },
   { name: "ri-function-line", component: RiFunctionLine },

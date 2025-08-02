@@ -189,22 +189,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, defineProps, defineEmits, defineExpose } from 'vue'
+import { ref, onMounted, onUnmounted, defineProps, defineEmits, defineExpose, onBeforeMount, computed } from 'vue'
+import { useStore } from 'vuex'
+import { useToast } from 'vue-toastification';
+
+const toast = useToast()
+
+const store = useStore()
+
+const user = computed(() => store.getters['auth/getUser'])
+const classrooms = computed(() => store.getters['classroom/getClassrooms'])
+
+// Computed user info
+const userName = computed(() => user.value?.userProfile.firstName + ' ' + user.value?.userProfile.lastName || 'User')
+const userRole = computed(() => user.value?.role === 'teacher' ? 'Öğretmen' : 'Öğrenci')
+const userAvatar = computed(() => user.value?.userProfile.avatar || '/default-avatar.png')
 
 // Props
 defineProps({
-  userName: {
-    type: String,
-    default: 'User'
-  },
-  userRole: {
-    type: String,
-    default: 'Student'
-  },
-  userAvatar: {
-    type: String,
-    default: '/default-avatar.png'
-  },
   currentPage: {
     type: String,
     default: 'Dashboard'
@@ -291,6 +293,15 @@ onMounted(() => {
     isSidebarCollapsed.value = saved === '1'
   }
 })
+
+onBeforeMount(async () => {
+    await store.dispatch('classroom/getMyClassrooms', user.value._id).then(() => {
+      console.log(classrooms.value);
+    }).catch((err) => {
+      console.log(err);
+      toast.error(err.message);
+    });
+});
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)

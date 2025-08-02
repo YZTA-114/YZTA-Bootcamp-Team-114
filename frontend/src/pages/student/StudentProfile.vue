@@ -1,8 +1,5 @@
 <template>
   <DashboardLayout
-    :user-name="profile.fullName"
-    :user-role="userRole"
-    :user-avatar="userAvatar"
     :current-page="currentPage"
     :notification-count="notificationCount"
     @logout="handleLogout"
@@ -13,36 +10,7 @@
       <span>Profil</span>
     </template>
     <template #sidebar-classroom-dropdown>
-      <div class="sidebar-classroom-dropdown modern-dropdown">
-        <div class="dropdown-selected" @click="dropdownOpen = !dropdownOpen">
-          <span class="dropdown-selected-title">{{ selectedClassroom.name }}</span>
-          <span class="dropdown-arrow" :class="{ open: dropdownOpen }">▼</span>
-        </div>
-        <div v-if="dropdownOpen" class="dropdown-list">
-          <div class="dropdown-header">Sınıflar</div>
-          <div class="dropdown-search-wrapper">
-            <input type="text" v-model="classroomSearch" placeholder="Sınıf ara..." class="dropdown-search" />
-          </div>
-          <div class="dropdown-items">
-            <div
-              v-for="classroom in filteredClassrooms"
-              :key="classroom.id"
-              class="dropdown-item"
-              :class="{ selected: classroom.id === selectedClassroom.id }"
-              @click="selectClassroom(classroom)"
-            >
-              {{ classroom.name }}
-            </div>
-            <div v-if="filteredClassrooms.length === 0" class="dropdown-empty">Sonuç bulunamadı</div>
-          </div>
-          <div class="dropdown-footer">
-            <button class="join-class-btn" @click="joinNewClass">
-              <ri-add-line />
-              Yeni Sınıfa Katıl
-            </button>
-          </div>
-        </div>
-      </div>
+      <ClassroomDropdown />
     </template>
     <template #sidebar-nav>
       <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
@@ -129,171 +97,102 @@
   </DashboardLayout>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import DashboardLayout from '@/layout/dashboard/DashboardLayout.vue'
 import DashboardNav from '@/components/dashboard/DashboardNav.vue'
+import ClassroomDropdown from '@/components/dashboard/ClassroomDropdown.vue'
+import { useStore } from 'vuex'
+import { useToast } from 'vue-toastification'
+import { useNavigation } from '@/composables/useNavigation'
 
-export default {
-  name: 'StudentProfile',
-  components: {
-    DashboardLayout,
-    DashboardNav
-  },
-  data() {
-    return {
-      isEditing: false,
-      originalProfile: {},
-      profile: {
-        fullName: 'Muhammet',
-        email: 'muhammet@example.com',
-        phone: '+90 555 123 4567',
-        birthDate: '2000-01-01',
-        studentId: '2024001',
-        grade: '4. Sınıf',
-        school: '',
-        department: 'Bilgisayar Mühendisliği',
-        avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-        firstName: 'Muhammet',
-        lastName: '',
-        city: '',
-        country: '',
-        bio: '',
-        verified: false
-      },
-      // Dashboard layout props
-      userRole: 'Student',
-      userAvatar: '/src/assets/images/default-avatar.png',
-      currentPage: 'Profil',
-      notificationCount: 3,
-      isSidebarCollapsed: false,
-      
-      // Classroom dropdown
-      dropdownOpen: false,
-      classroomSearch: '',
-      selectedClassroom: {
-        id: 1,
-        name: 'Matematik Sınıfı'
-      },
-      classrooms: [
-        { id: 1, name: 'Matematik Sınıfı' },
-        { id: 2, name: 'Fizik Sınıfı' },
-        { id: 3, name: 'Kimya Sınıfı' },
-        { id: 4, name: 'Biyoloji Sınıfı' },
-        { id: 5, name: 'Tarih Sınıfı' }
-      ],
-      
-      // Navigation items
-      navItems: [
-        {
-          id: 'dashboard',
-          label: 'Dashboard',
-          path: '/student/dashboard',
-          icon: 'ri-dashboard-line'
-        },
-        {
-          id: 'courses',
-          label: 'Dersler',
-          path: '/student/courses',
-          icon: 'ri-book-line'
-        },
-        {
-          id: 'quizzes',
-          label: 'Quizler',
-          path: '/student/quizzes',
-          icon: 'ri-task-line'
-        },
-        {
-          id: 'documents',
-          label: 'Dökümanlar',
-          path: '/student/documents',
-          icon: 'ri-file-text-line'
-        },
-        {
-          id: 'profile',
-          label: 'Profil',
-          path: '/student/profile',
-          icon: 'ri-user-line'
-        }
-      ]
-    }
-  },
-  computed: {
-    filteredClassrooms() {
-      if (!this.classroomSearch) return this.classrooms
-      return this.classrooms.filter(classroom => 
-        classroom.name.toLowerCase().includes(this.classroomSearch.toLowerCase())
-      )
-    }
-  },
-  mounted() {
-    this.loadProfile()
-  },
-  methods: {
-    async loadProfile() {
-      try {
-        console.log('Profil bilgileri yükleniyor...')
-        await new Promise(resolve => setTimeout(resolve, 500))
-      } catch (error) {
-        console.error('Profil bilgileri yüklenirken hata oluştu:', error)
-      }
-    },
-    startEditing() {
-      this.originalProfile = { ...this.profile }
-      this.isEditing = true
-    },
-    cancelEditing() {
-      this.profile = { ...this.originalProfile }
-      this.isEditing = false
-    },
-    async saveProfile() {
-      try {
-        console.log('Profil kaydediliyor:', this.profile)
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        this.isEditing = false
-      } catch (error) {
-        console.error('Profil güncellenirken hata oluştu:', error)
-      }
-    },
-    
-    // Dashboard layout methods
-    handleLogout() {
-      console.log('Çıkış yapılıyor...')
-      this.$router.push('/auth/login')
-    },
-    handleProfile() {
-      console.log('Profil sayfasına gidiliyor...')
-      this.$router.push('/student/profile')
-    },
-    handleSettings() {
-      console.log('Ayarlar sayfasına gidiliyor...')
-    },
-    
-    // Classroom dropdown methods
-    selectClassroom(classroom) {
-      this.selectedClassroom = classroom
-      this.dropdownOpen = false
-    },
-    joinNewClass() {
-      console.log('Yeni sınıfa katılma...')
-      this.dropdownOpen = false
-    },
-    triggerAvatarInput() {
-      this.$refs.avatarInput.click();
-    },
-    onAvatarChange(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          this.profile.avatar = ev.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    deleteAvatar() {
-      this.profile.avatar = null;
-    }
+const router = useRouter()
+const store = useStore()
+const toast = useToast()
+
+const profile = ref({
+  fullName: 'Muhammet',
+  email: 'muhammet@example.com',
+  phone: '+90 555 123 4567',
+  birthDate: '2000-01-01',
+  studentId: '2024001',
+  grade: '4. Sınıf',
+  school: '',
+  department: 'Bilgisayar Mühendisliği',
+  avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+  firstName: 'Muhammet',
+  lastName: '',
+  city: '',
+  country: '',
+  bio: '',
+  verified: false
+})
+
+const isEditing = ref(false)
+const originalProfile = ref({})
+
+const user = computed(() => store.getters['auth/getUser'])
+const userRole = computed(() => user.value?.role || 'student')
+const currentPage = ref('Profil')
+const notificationCount = ref(3)
+
+// Navigation
+const { navItems, isSidebarCollapsed } = useNavigation(userRole)
+
+const avatarInput = ref(null)
+
+const startEditing = () => {
+  originalProfile.value = { ...profile.value }
+  isEditing.value = true
+}
+
+const cancelEditing = () => {
+  profile.value = { ...originalProfile.value }
+  isEditing.value = false
+}
+
+const saveProfile = async () => {
+  try {
+    console.log('Profil kaydediliyor:', profile.value)
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    isEditing.value = false
+  } catch (error) {
+    console.error('Profil güncellenirken hata oluştu:', error)
   }
+}
+
+const triggerAvatarInput = () => {
+  avatarInput.value.click();
+}
+
+const onAvatarChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      profile.value.avatar = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Dashboard layout methods
+const handleLogout = async () => {
+  await store.dispatch('auth/logout').then(() => {
+    toast.success('Çıkış yapıldı');
+    router.push('/auth/login');
+  }).catch(() => {
+    toast.error('Çıkış yapılırken hata oluştu');
+  });
+}
+
+const handleProfile = () => {
+  router.push('/student/profile')
+}
+
+const handleSettings = () => {
+  router.push('/student/settings')
 }
 </script>
 

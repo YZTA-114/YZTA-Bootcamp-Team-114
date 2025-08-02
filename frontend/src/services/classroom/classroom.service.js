@@ -12,7 +12,14 @@ export async function getClassroomByIdAxios(id) {
     });
 }
 
+export async function getMyClassroomsAxios(userId) {
+    return await api.get(`users/${userId}/classrooms`, {
+        withCredentials: true,
+    });
+}
+
 export async function createClassroomAxios(classroomData) {
+    console.log(classroomData)
     return await api.post('classrooms', classroomData, {
         withCredentials: true,
     });

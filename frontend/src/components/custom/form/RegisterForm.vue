@@ -160,6 +160,10 @@
 import { ref, defineProps } from 'vue'
 import { useStore } from 'vuex'
 import FormInput from '@/components/custom/form/FormInput.vue'
+import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification';
+const router = useRouter()
+const toast = useToast()
 
 const props = defineProps({
   userType: {
@@ -206,7 +210,6 @@ const handleSubmit = async () => {
     return
   }
 
-  try {
     isLoading.value = true
     
     // Kayıt verilerini hazırla - Backend formatına uygun
@@ -248,25 +251,14 @@ const handleSubmit = async () => {
     console.log('Gönderilen kayıt verisi:', registerData)
     
     // Auth store'dan kayıt işlemini çağır
-    await store.dispatch('auth/userRegister', registerData)
+    await store.dispatch('auth/userRegister', registerData).then(() => {
+      router.push({ name: 'dashboard' });
+      toast.success('Kayıt başarılı')
+    }).catch(error => {
+      console.error('Kayıt hatası:', error.message);
+      toast.error(error.message)
+    });
     
-    
-  } catch (error) {
-    console.error('Kayıt hatası:', error)
-    
-    // Hata mesajını daha detaylı göster
-    let errorMessage = 'Kayıt işlemi başarısız oldu!'
-    
-    if (error.response && error.response.data && error.response.data.error) {
-      errorMessage = error.response.data.error
-    } else if (error.message) {
-      errorMessage = error.message
-    }
-    
-    alert(errorMessage)
-  } finally {
-    isLoading.value = false
-  }
 }
 </script>
 

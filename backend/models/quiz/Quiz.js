@@ -32,4 +32,12 @@ const QuizSchema = new mongoose.Schema({
     }
 });
 
+// Create questions virtual field
+QuizSchema.virtual('questions', {
+    ref: 'QuizQuestion',
+    localField: '_id',
+    foreignField: 'quiz',
+    justOne: false
+});
+
 module.exports = mongoose.model("Quiz", QuizSchema);

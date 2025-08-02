@@ -1,8 +1,5 @@
 <template>
   <DashboardLayout
-    user-name="Muhammet"
-    :user-role="userRole"
-    :user-avatar="userAvatar"
     :current-page="currentPage"
     :notification-count="notificationCount"
     @logout="handleLogout"
@@ -10,36 +7,7 @@
     @settings="handleSettings"
   >
     <template #sidebar-classroom-dropdown>
-              <div class="sidebar-classroom-dropdown modern-dropdown">
-          <div class="dropdown-selected" @click="dropdownOpen = !dropdownOpen">
-            <span class="dropdown-selected-title">{{ selectedClassroom.name }}</span>
-            <span class="dropdown-arrow" :class="{ open: dropdownOpen }">▼</span>
-          </div>
-          <div v-if="dropdownOpen" class="dropdown-list">
-            <div class="dropdown-header">Sınıflar</div>
-            <div class="dropdown-search-wrapper">
-              <input type="text" v-model="classroomSearch" placeholder="Sınıf ara..." class="dropdown-search" />
-            </div>
-            <div class="dropdown-items">
-              <div
-                v-for="classroom in filteredClassrooms"
-                :key="classroom.id"
-                class="dropdown-item"
-                :class="{ selected: classroom.id === selectedClassroom.id }"
-                @click="selectClassroom(classroom)"
-              >
-                {{ classroom.name }}
-              </div>
-              <div v-if="filteredClassrooms.length === 0" class="dropdown-empty">Sonuç bulunamadı</div>
-            </div>
-            <div class="dropdown-footer">
-              <button class="join-class-btn" @click="joinNewClass">
-                <ri-add-line />
-                Yeni Sınıfa Katıl
-              </button>
-            </div>
-          </div>
-        </div>
+      <ClassroomDropdown />
     </template>
     <template #sidebar-nav>
       <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
@@ -49,20 +17,27 @@
         <!-- Welcome Section -->
         <div class="welcome-section">
           <div class="welcome-content">
-            <h1 class="welcome-title">Hoşgeldin Muhammet</h1>
-            <p class="welcome-subtitle">Bugün derslerinde neler var.</p>
-            <div class="motivation-quote">“Başarı, azimle çalışanların olur.”</div>
+            <h1 class="welcome-title">Hoşgeldin {{ user?.userProfile?.firstName || 'Öğrenci' }}</h1>
+            <p class="welcome-subtitle" v-if="hasClassrooms">Bugün derslerinde neler var.</p>
+            <p class="welcome-subtitle" v-else>Henüz bir sınıfa kayıtlı değilsiniz.</p>
+            <div class="motivation-quote" v-if="hasClassrooms">"Başarı, azimle çalışanların olur."</div>
+            <div class="motivation-quote" v-else>"Öğrenme yolculuğuna başlamak için bir sınıfa katılın."</div>
           </div>
           <div class="welcome-actions">
-            <button class="btn btn-primary" @click="goToCourses">
+            <button v-if="hasClassrooms" class="btn btn-primary" @click="goToCourses">
               <ri-book-line />
               Dersleri Görüntüle
+            </button>
+            <button v-else class="btn btn-primary" @click="joinNewClass">
+              <ri-add-line />
+              Sınıfa Katıl
             </button>
           </div>
         </div>
 
         <!-- Stats Cards -->
-        <div class="stats-gradient-box" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+        <div v-if="currentClassroom" class="stats-gradient-box" style="border: 2px solid rgba(136, 136, 136, 0.5);">
+          <!-- Existing stats content -->
           <div class="stat-col">
             <div class="stat-header-row">
               <div class="stat-bigicon stat-orange"><ri-check-line /></div>
@@ -103,11 +78,26 @@
             <div class="stat-desc">Birçok dersi tamamladın, gurur duyabilirsin!</div>
           </div>
         </div>
+        <div v-else class="no-classroom-box">
+          <div class="no-classroom-icon">
+            <ri-group-line />
+          </div>
+          <h2 class="no-classroom-title">Henüz Bir Sınıfa Kayıtlı Değilsiniz</h2>
+          <p class="no-classroom-desc">
+            Öğrenme yolculuğunuza başlamak için bir sınıfa katılın. 
+            Sınıfa katıldıktan sonra derslerinizi görüntüleyebilir, 
+            quizleri çözebilir ve başarılarınızı takip edebilirsiniz.
+          </p>
+          <button class="btn btn-primary join-class-btn-large" @click="joinNewClass">
+            <ri-add-line />
+            Yeni Sınıfa Katıl
+          </button>
+        </div>
 
-        <!-- Upcoming Events and Solved Quizzes -->
-        <div class="events-and-solved-container">
+        <!-- Events and Solved Quizzes -->
+        <div v-if="currentClassroom" class="events-and-solved-container">
           <!-- Upcoming Events -->
-          <div class="upcoming-events-card" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+          <div class="upcoming-events-card" style="border: 2px solid rgba(136, 136, 136, 0.5);">
             <h2 class="events-title">Yaklaşan Quizler</h2>
             <div class="events-list">
               <div class="event-item">
@@ -176,7 +166,7 @@
           </div>
 
           <!-- Solved Quizzes Table -->
-          <div class="solved-quizzes-card" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+          <div class="solved-quizzes-card" style="border: 2px solid rgba(136, 136, 136, 0.5);">
             <h2 class="solved-title">Sonuçlarım</h2>
             <div class="solved-list-table">
               <div class="solved-list-header">
@@ -234,7 +224,7 @@
         </div>
 
         <!-- Recent Activity & Upcoming Deadlines -->
-        <div class="dashboard-grid">
+        <div v-if="hasClassrooms" class="dashboard-grid">
         </div>
       </div>
     </template>
@@ -259,18 +249,22 @@ import { useRouter } from 'vue-router'
 import DashboardLayout from '@/layout/dashboard/DashboardLayout.vue'
 import DashboardNav from '@/components/dashboard/DashboardNav.vue'
 import ConfirmModal from '@/components/custom/ConfirmModal.vue'
+import ClassroomDropdown from '@/components/dashboard/ClassroomDropdown.vue'
+import { useStore } from 'vuex'
+import { useNavigation } from '@/composables/useNavigation'
 
+const store = useStore()
 
 // Router
-const router = useRouter()
+const router = useRouter();
 
-
-
+const user = computed(() => store.getters['auth/getUser'])
+const currentClassroom = computed(() => store.getters['classroom/getCurrentClassroom'])
 
 // User data
-const userRole = ref('Student')
-const userAvatar = ref('/default.png')
-const currentPage = ref(1)
+const userRole = computed(() => user.value?.role || 'student')
+const { navItems, isSidebarCollapsed } = useNavigation(userRole)
+const currentPage = ref('Dashboard')
 const notificationCount = ref(3)
 
 // Modal state
@@ -287,66 +281,11 @@ const stats = ref({
 })
 
 // Navigation items
-const navItems = ref([
-  {
-    id: 'dashboard',
-    label: 'Dashboard',
-    path: '/student/dashboard',
-    icon: 'ri-dashboard-line'
-  },
-  {
-    id: 'courses',
-    label: 'Dersler',
-    path: '/student/courses',
-    icon: 'ri-book-line'
-  },
-  {
-    id: 'quizzes',
-    label: 'Quizler',
-    path: '/student/quizzes',
-    icon: 'ri-task-line'
-  },
-  {
-    id: 'documents',
-    label: 'Dökümanlar',
-    path: '/student/documents',
-    icon: 'ri-file-text-line'
-  },
-  {
-    id: 'profile',
-    label: 'Profil',
-    path: '/student/profile',
-    icon: 'ri-user-line'
-  }
-])
+// Remove the old navItems definition since we're using the shared one
 
-// Classroom dropdown için veri
-const classrooms = [
-  { id: 1, name: 'Matematik Sınıfı' },
-  { id: 2, name: 'Fizik Sınıfı' },
-  { id: 3, name: 'Kimya Sınıfı' },
-  { id: 4, name: 'Biyoloji Sınıfı' },
-  { id: 5, name: 'Tarih Sınıfı' }
-]
-const selectedClassroom = ref(classrooms[0])
-const dropdownOpen = ref(false)
-const classroomSearch = ref('')
-
-function selectClassroom(classroom) {
-  selectedClassroom.value = classroom
-  dropdownOpen.value = false
-}
-
-function joinNewClass() {
-  // Yeni sınıfa katılma işlemi burada gerçekleştirilecek
-  console.log('Yeni sınıfa katılma modalı açılacak')
-  dropdownOpen.value = false
-  // Burada modal açılabilir veya sayfa yönlendirmesi yapılabilir
-}
-const filteredClassrooms = computed(() => {
-  if (!classroomSearch.value) return classrooms
-  return classrooms.filter(c => c.name.toLowerCase().includes(classroomSearch.value.toLowerCase()))
-})
+// Classroom data from store
+const classrooms = computed(() => store.getters['classroom/getUserClassrooms'])
+const hasClassrooms = computed(() => classrooms.value && classrooms.value.length > 0)
 
 // Methods
 const handleLogout = () => {
@@ -949,8 +888,8 @@ body, .student-dashboard, .welcome-section, .stats-gradient-box, .dashboard-card
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border: 1.5px solid $orange;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      border: 1.5px solid #888;
+      box-shadow: 0 1px 4px rgba(136, 136, 136, 0.1);
       transition: border 0.2s;
     }
     .dropdown-selected:hover, .dropdown-selected:focus {
@@ -983,7 +922,7 @@ body, .student-dashboard, .welcome-section, .stats-gradient-box, .dashboard-card
       width: 100%;
       min-width: 180px;
       padding-bottom: 8px;
-      border: 1.5px solid $orange;
+      border: 1.5px solid #888;
       animation: fadeIn 0.18s;
     }
     .dropdown-header {
@@ -991,7 +930,7 @@ body, .student-dashboard, .welcome-section, .stats-gradient-box, .dashboard-card
       font-weight: 700;
       color: #fff;
       padding: 14px 18px 6px 18px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(136, 136, 136, 0.1);
       background: #232323;
     }
     .dropdown-search-wrapper {
@@ -1001,7 +940,7 @@ body, .student-dashboard, .welcome-section, .stats-gradient-box, .dashboard-card
       width: 100%;
       padding: 7px 12px;
       border-radius: 7px;
-      border: 1.2px solid rgba(255,255,255,0.1);
+      border: 1.2px solid rgba(136, 136, 136, 0.3);
       background: #232323;
       color: #fff;
       font-size: 1rem;
@@ -1009,7 +948,7 @@ body, .student-dashboard, .welcome-section, .stats-gradient-box, .dashboard-card
       transition: border 0.2s;
     }
     .dropdown-search:focus {
-      border: 1.2px solid rgba(255,255,255,0.2);
+      border: 1.2px solid rgba(136, 136, 136, 0.5);
     }
     .dropdown-items {
       max-height: 220px;
@@ -1033,7 +972,7 @@ body, .student-dashboard, .welcome-section, .stats-gradient-box, .dashboard-card
     
     .dropdown-footer {
       padding: 8px 18px 12px 18px;
-      border-top: 1px solid rgba(255,255,255,0.1);
+      border-top: 1px solid rgba(136, 136, 136, 0.1);
       margin-top: 4px;
     }
     
@@ -1527,14 +1466,77 @@ body, .student-dashboard, .welcome-section, .stats-gradient-box, .dashboard-card
   background: #ffe6e6 !important;
 }
 .upcoming-events-card .event-solve-btn {
-  background: rgba(255,255,255,0.18) !important;
-  color: #e67e22 !important;
-  border: 1.5px solid rgba(255,255,255,0.28) !important;
+  background: rgba(136, 136, 136, 0.18) !important;
+  color: #888 !important;
+  border: 1.5px solid rgba(136, 136, 136, 0.28) !important;
   font-weight: 700;
   transition: background 0.2s, color 0.2s;
 }
 .upcoming-events-card .event-solve-btn:hover {
-  background: rgba(255,255,255,0.28) !important;
+  background: rgba(136, 136, 136, 0.28) !important;
   color: #fff !important;
+}
+
+.dropdown-selected-title.no-classroom {
+  color: #888;
+  font-style: italic;
+}
+
+.no-classroom-message {
+  padding: 24px 18px;
+  text-align: center;
+  color: #888;
+  font-size: $font-size-s;
+  line-height: 1.4;
+}
+
+.no-classroom-box {
+  background: #111;
+  border: 2px solid rgba(136, 136, 136, 0.5);
+  border-radius: 18px;
+  padding: 48px 24px;
+  text-align: center;
+  margin-bottom: $space-l;
+  
+  .no-classroom-icon {
+    font-size: 64px;
+    color: #888;
+    margin-bottom: 24px;
+    
+    i {
+      opacity: 0.8;
+    }
+  }
+  
+  .no-classroom-title {
+    font-size: $font-size-l;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+  
+  .no-classroom-desc {
+    font-size: $font-size-m;
+    color: #888;
+    max-width: 600px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+  
+  .join-class-btn-large {
+    font-size: $font-size-m;
+    padding: 12px 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    
+    i {
+      font-size: $font-size-l;
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
 }
 </style> 

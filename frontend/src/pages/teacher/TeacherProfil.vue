@@ -13,36 +13,7 @@
       <span>Profil</span>
     </template>
     <template #sidebar-classroom-dropdown>
-      <div class="sidebar-classroom-dropdown modern-dropdown">
-        <div class="dropdown-selected" @click="dropdownOpen = !dropdownOpen">
-          <span class="dropdown-selected-title">{{ selectedClassroom.name }}</span>
-          <span class="dropdown-arrow" :class="{ open: dropdownOpen }">▼</span>
-        </div>
-        <div v-if="dropdownOpen" class="dropdown-list">
-          <div class="dropdown-header">Sınıflar</div>
-          <div class="dropdown-search-wrapper">
-            <input type="text" v-model="classroomSearch" placeholder="Sınıf ara..." class="dropdown-search" />
-          </div>
-          <div class="dropdown-items">
-            <div
-              v-for="classroom in filteredClassrooms"
-              :key="classroom.id"
-              class="dropdown-item"
-              :class="{ selected: classroom.id === selectedClassroom.id }"
-              @click="selectClassroom(classroom)"
-            >
-              {{ classroom.name }}
-            </div>
-            <div v-if="filteredClassrooms.length === 0" class="dropdown-empty">Sonuç bulunamadı</div>
-          </div>
-          <div class="dropdown-footer">
-            <button class="join-class-btn" @click="joinNewClass">
-              <ri-add-line />
-              Yeni Sınıfa Katıl
-            </button>
-          </div>
-        </div>
-      </div>
+      <ClassroomDropdown />
     </template>
     <template #sidebar-nav>
       <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
@@ -130,14 +101,36 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import DashboardLayout from '@/layout/dashboard/DashboardLayout.vue'
 import DashboardNav from '@/components/dashboard/DashboardNav.vue'
+import ClassroomDropdown from '@/components/dashboard/ClassroomDropdown.vue'
+import { useNavigation } from '@/composables/useNavigation'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
 
 export default {
-  name: 'StudentProfile',
+  name: 'TeacherProfile',
   components: {
     DashboardLayout,
-    DashboardNav
+    DashboardNav,
+    ClassroomDropdown
+  },
+  setup() {
+    const userRole = ref('teacher')
+    const { navItems, isSidebarCollapsed } = useNavigation(userRole)
+    const store = useStore()
+    const router = useRouter()
+    const toast = useToast()
+    return {
+      navItems,
+      isSidebarCollapsed,
+      userRole,
+      store,
+      router,
+      toast
+    }
   },
   data() {
     return {
@@ -161,11 +154,9 @@ export default {
         verified: false
       },
       // Dashboard layout props
-      userRole: 'Student',
       userAvatar: '/src/assets/images/default-avatar.png',
       currentPage: 'Profil',
       notificationCount: 3,
-      isSidebarCollapsed: false,
       
       // Classroom dropdown
       dropdownOpen: false,
@@ -180,40 +171,6 @@ export default {
         { id: 3, name: 'Kimya Sınıfı' },
         { id: 4, name: 'Biyoloji Sınıfı' },
         { id: 5, name: 'Tarih Sınıfı' }
-      ],
-      
-      // Navigation items
-      navItems: [
-        {
-          id: 'dashboard',
-          label: 'Dashboard',
-          path: '/student/dashboard',
-          icon: 'ri-dashboard-line'
-        },
-        {
-          id: 'courses',
-          label: 'Dersler',
-          path: '/student/courses',
-          icon: 'ri-book-line'
-        },
-        {
-          id: 'quizzes',
-          label: 'Quizler',
-          path: '/student/quizzes',
-          icon: 'ri-task-line'
-        },
-        {
-          id: 'documents',
-          label: 'Dökümanlar',
-          path: '/student/documents',
-          icon: 'ri-file-text-line'
-        },
-        {
-          id: 'profile',
-          label: 'Profil',
-          path: '/student/profile',
-          icon: 'ri-user-line'
-        }
       ]
     }
   },
@@ -256,13 +213,17 @@ export default {
     },
     
     // Dashboard layout methods
-    handleLogout() {
-      console.log('Çıkış yapılıyor...')
-      this.$router.push('/auth/login')
+    async handleLogout() {
+      await this.store.dispatch('auth/logout').then(() => {
+        this.toast.success('Çıkış yapıldı');
+        this.router.push('/auth/login');
+      }).catch(() => {
+        this.toast.error('Çıkış yapılırken hata oluştu');
+      });
     },
     handleProfile() {
       console.log('Profil sayfasına gidiliyor...')
-      this.$router.push('/student/profile')
+      this.router.push('/teacher/profile')
     },
     handleSettings() {
       console.log('Ayarlar sayfasına gidiliyor...')

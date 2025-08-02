@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
-const { nanoid } = require('nanoid');
+const { customAlphabet } = require('nanoid');
 
 // Function to generate random classroom code using nanoid
 const generateClassroomCode = () => {
-    return nanoid(4).toUpperCase();
+    const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 10)
+    return nanoid(6).toUpperCase();
 };
 
 const ClassroomSchema = new mongoose.Schema({
@@ -11,7 +12,7 @@ const ClassroomSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a name']
     },
-    subject: {
+    description: {
         type: String,
         required: [true, 'Please add a description']
     },

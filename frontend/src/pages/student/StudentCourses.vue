@@ -16,36 +16,7 @@
       <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
     </template>
     <template #sidebar-classroom-dropdown>
-      <div class="sidebar-classroom-dropdown modern-dropdown">
-        <div class="dropdown-selected" @click="dropdownOpen = !dropdownOpen">
-          <span class="dropdown-selected-title">{{ selectedClassroom.name }}</span>
-          <span class="dropdown-arrow" :class="{ open: dropdownOpen }">▼</span>
-        </div>
-        <div v-if="dropdownOpen" class="dropdown-list">
-          <div class="dropdown-header">Sınıflar</div>
-          <div class="dropdown-search-wrapper">
-            <input type="text" v-model="classroomSearch" placeholder="Sınıf ara..." class="dropdown-search" />
-          </div>
-          <div class="dropdown-items">
-            <div
-              v-for="classroom in filteredClassrooms"
-              :key="classroom.id"
-              class="dropdown-item"
-              :class="{ selected: classroom.id === selectedClassroom.id }"
-              @click="selectClassroom(classroom)"
-            >
-              {{ classroom.name }}
-            </div>
-            <div v-if="filteredClassrooms.length === 0" class="dropdown-empty">Sonuç bulunamadı</div>
-          </div>
-          <div class="dropdown-footer">
-            <button class="join-class-btn" @click="joinNewClass">
-              <ri-add-line />
-              Yeni Sınıfa Katıl
-            </button>
-          </div>
-        </div>
-      </div>
+      <ClassroomDropdown />
     </template>
 
     <template #content>
@@ -65,27 +36,13 @@
           </button>
         </div>
         <div class="courses-list">
-          <div v-for="course in filteredCourses" :key="course.id" class="course-card">
-            <div class="course-card-img">
-              <img :src="course.image" alt="course image" />
+          <div v-for="course in courses" :key="course.id" class="course-card">
+            <h3>{{ course.name }}</h3>
+            <p>Öğretmen: {{ course.teacher }}</p>
+            <div class="progress-bar">
+              <div :style="{ width: course.progress + '%' }" class="progress"></div>
             </div>
-            <div class="course-card-content">
-              <div class="course-card-header">
-                <h3>{{ course.title }}</h3>
-                <div class="course-rating">
-                  <span>{{ course.rating }}</span>
-                  <i class="ri-star-fill"></i>
-                </div>
-              </div>
-              <p class="course-desc">{{ course.desc }}</p>
-              <div class="course-tags">
-                <span v-for="tag in course.tags" :key="tag" class="course-tag">{{ tag }}</span>
-              </div>
-              <div class="course-footer">
-                <span class="course-date">Başlangıç: {{ course.start }}</span>
-                <button class="view-more">Detay</button>
-              </div>
-            </div>
+            <p>Sonraki Ders: {{ course.nextLesson }}</p>
           </div>
         </div>
       </div>
@@ -94,91 +51,43 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import DashboardLayout from '@/layout/dashboard/DashboardLayout.vue'
 import DashboardNav from '@/components/dashboard/DashboardNav.vue'
+import ClassroomDropdown from '@/components/dashboard/ClassroomDropdown.vue'
+import { useNavigation } from '@/composables/useNavigation'
 
 const userName = ref('Muhammet')
-const userRole = ref('Öğrenci')
-const userAvatar = ref('/default.png')
-const currentPage = ref('Derslerim')
+const userRole = ref('student')
+const userAvatar = ref('/src/assets/images/default-avatar.png')
+const currentPage = ref('Dersler')
 const notificationCount = ref(3)
-const isSidebarCollapsed = ref(false)
 
-const navItems = ref([
-  { id: 'dashboard', label: 'Dashboard', path: '/student/dashboard', icon: 'ri-dashboard-line' },
-  { id: 'courses', label: 'Dersler', path: '/student/courses', icon: 'ri-book-line' },
-  { id: 'quizzes', label: 'Quizler', path: '/student/quizzes', icon: 'ri-task-line' },
-  { id: 'documents', label: 'Dökümanlar', path: '/student/documents', icon: 'ri-file-text-line' },
-  { id: 'profile', label: 'Profil', path: '/student/profile', icon: 'ri-user-line' }
-])
+// Navigation
+const { navItems, isSidebarCollapsed } = useNavigation(userRole)
 
-const tabs = ['Tümü', 'Aktif', 'Yaklaşan', 'Tamamlanan']
-const activeTab = ref('Yaklaşan')
-
+// Course data
 const courses = ref([
   {
     id: 1,
-    title: 'İngilizce Dersi',
-    desc: 'En popüler eğitmenlerle dil dersleri',
-    tags: ['Diller'],
-    rating: 4.5,
-    start: '20 Temmuz',
-    image: require('@/assets/images/a_dark-themed_modern_and_professional_background_smooth_gradient_transitions_in_deep_navy_and_charc_4a.png')
-  },
-  {
-    id: 2,
-    title: 'Tasarım Stratejisi',
-    desc: 'Tasarım konsepti oluşturma ve doğru planlama dersi',
-    tags: ['UI/UX Tasarım', 'Web Tasarım'],
-    rating: 4.0,
-    start: '22 Temmuz',
-    image: require('@/assets/images/nk-ni-wgS7Iz0Chtg-unsplash.jpg')
-  },
-  {
-    id: 3,
-    title: 'İşletme Dersi',
-    desc: 'Yeni projelerden korkmadan işinizi güvenle kurmanın yolları',
-    tags: ['Pazarlama', 'Finans'],
-    rating: 4.2,
-    start: '26 Temmuz',
-    image: require('@/assets/images/team-386673_1280.jpg')
+    name: 'Matematik',
+    teacher: 'Ahmet Hoca',
+    progress: 75,
+    nextLesson: '2024-03-20 14:30'
   }
 ])
 
-const filteredCourses = computed(() => {
-  if (activeTab.value === 'Tümü') return courses.value
-  if (activeTab.value === 'Yaklaşan') return courses.value // örnek veri
-  // Diğer tablar için filtreleme eklenebilir
-  return courses.value
-})
-
-// Sınıflar dropdown state ve fonksiyonları
-const classrooms = [
-  { id: 1, name: 'Matematik Sınıfı' },
-  { id: 2, name: 'Fizik Sınıfı' },
-  { id: 3, name: 'Kimya Sınıfı' },
-  { id: 4, name: 'Biyoloji Sınıfı' },
-  { id: 5, name: 'Tarih Sınıfı' }
-]
-const selectedClassroom = ref(classrooms[0])
-const dropdownOpen = ref(false)
-const classroomSearch = ref('')
-
-const filteredClassrooms = computed(() => {
-  if (!classroomSearch.value) return classrooms
-  return classrooms.filter(c => c.name.toLowerCase().includes(classroomSearch.value.toLowerCase()))
-})
-
-function selectClassroom(classroom) {
-  selectedClassroom.value = classroom
-  dropdownOpen.value = false
+// Methods
+const handleLogout = () => {
+  // Implement logout logic
 }
 
-function joinNewClass() {
-  // Yeni sınıfa katılma işlemi burada gerçekleştirilecek
-  console.log('Yeni sınıfa katılma modalı açılacak')
-  dropdownOpen.value = false
+const handleProfile = () => {
+  // Navigate to profile
+}
+
+const handleSettings = () => {
+  // Navigate to settings
 }
 </script>
 
@@ -456,112 +365,44 @@ body, .student-courses-page, .welcome-section, .courses-list, .course-card, .cou
 }
 
 .courses-list {
-  display: flex;
-  flex-direction: column;
-  gap: $space-m;
-  .course-card {
-    display: flex;
-    background: $white;
-    border-radius: $space-s;
-    box-shadow: 0 4px 16px rgba($black, 0.06);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.course-card {
+  background: #232323;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  h3 {
+    color: #fff;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+  }
+
+  p {
+    color: #888;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    margin-bottom: 15px;
     overflow: hidden;
-    transition: box-shadow 0.2s, transform 0.2s;
-    cursor: pointer;
-    border: 1px solid rgba($black, 0.04);
-    &:hover {
-      box-shadow: 0 8px 32px rgba($black, 0.10);
-      transform: translateY(-2px) scale(1.01);
-      border-color: rgba($orange, 0.18);
-    }
-    .course-card-img {
-      width: 110px;
-      min-width: 110px;
-      height: 110px;
-      background: $white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      img {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: $space-xs;
-      }
-    }
-    .course-card-content {
-      flex: 1;
-      padding: $space-m $space-l $space-m $space-m;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      .course-card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        h3 {
-          font-size: $font-size-l;
-          font-weight: $font-weight-bold;
-          margin: 0;
-          color: $grey;
-          font-family: $font-family-primary-bold;
-        }
-        .course-rating {
-          display: flex;
-          align-items: center;
-          gap: $space-3xs;
-          font-size: $font-size-m;
-          color: $orange;
-          i {
-            font-size: $font-size-m;
-          }
-        }
-      }
-      .course-desc {
-        color: $grey;
-        opacity: 0.7;
-        font-size: $font-size-s;
-        margin: $space-3xs 0 $space-2xs 0;
-        font-family: $font-family-primary-regular;
-      }
-      .course-tags {
-        display: flex;
-        gap: $space-2xs;
-        margin-bottom: $space-2xs;
-        .course-tag {
-          background: $white;
-          color: $grey;
-          font-size: $font-size-xs;
-          border-radius: $space-3xs;
-          padding: 2px 10px;
-          font-weight: $font-weight-semi-bold;
-          border: 1px solid $orange;
-        }
-      }
-      .course-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        .course-date {
-          color: $grey;
-          opacity: 0.6;
-          font-size: $font-size-xs;
-        }
-        .view-more {
-          background: $orange;
-          color: $white;
-          border: none;
-          border-radius: $space-xs;
-          padding: $space-2xs $space-m;
-          font-size: $font-size-s;
-          font-weight: $font-weight-bold;
-          cursor: pointer;
-          transition: background 0.2s;
-          font-family: $font-family-primary-medium;
-          &:hover {
-            background: $orange;
-          }
-        }
-      }
+
+    .progress {
+      height: 100%;
+      background: $orange;
+      border-radius: 4px;
+      transition: width 0.3s ease;
     }
   }
 }

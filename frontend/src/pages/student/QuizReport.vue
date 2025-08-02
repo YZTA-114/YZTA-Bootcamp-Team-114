@@ -7,7 +7,7 @@
     :notification-count="0"
   >
     <template #sidebar-nav>
-      <DashboardNav :nav-items="navItems" :collapsed="false" />
+      <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
     </template>
     <template #content>
       <!-- Quiz raporu içeriği buraya gelecek -->
@@ -19,15 +19,10 @@
 import DashboardLayout from '@/layout/dashboard/DashboardLayout.vue'
 import DashboardNav from '@/components/dashboard/DashboardNav.vue'
 import { ref } from 'vue'
+import { useNavigation } from '@/composables/useNavigation'
 
-const navItems = ref([
-  { id: 'dashboard', label: 'Dashboard', path: '/student/dashboard', icon: 'ri-dashboard-line' },
-  { id: 'courses', label: 'Dersler', path: '/student/courses', icon: 'ri-book-line' },
-  { id: 'assignments', label: 'Quizler', path: '/student/assignments', icon: 'ri-task-line' },
-  { id: 'documents', label: 'Dokümanlarım', path: '/student/documents', icon: 'ri-file-text-line' },
-  { id: 'calendar', label: 'Takvim', path: '/student/calendar', icon: 'ri-calendar-line' },
-  { id: 'profile', label: 'Profil', path: '/student/profile', icon: 'ri-user-line' }
-])
+const userRole = ref('student')
+const { navItems, isSidebarCollapsed } = useNavigation(userRole)
 </script>
 
 <style scoped>
