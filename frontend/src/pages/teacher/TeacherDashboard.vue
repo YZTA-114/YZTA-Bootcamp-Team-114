@@ -31,7 +31,7 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="stats-gradient-box" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+        <div class="stats-gradient-box" style="border: 2px solid rgba(211, 211, 211, 0.5);">
           <div class="stat-col">
             <div class="stat-header-row">
               <div class="stat-bigicon stat-orange"><ri-book-line /></div>
@@ -76,7 +76,7 @@
         <!-- Upcoming Classes and Recent Submissions -->
         <div class="events-and-solved-container">
           <!-- Upcoming Classes -->
-          <div class="upcoming-events-card" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+          <div class="upcoming-events-card" style="border: 2px solid rgba(211, 211, 211, 0.5);">
             <h2 class="events-title">Bugünkü Dersler</h2>
             <div class="events-list">
               <div 
@@ -111,7 +111,7 @@
           </div>
 
           <!-- Recent Submissions Table -->
-          <div class="solved-quizzes-card" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+          <div class="solved-quizzes-card" style="border: 2px solid rgba(211, 211, 211, 0.5);">
             <h2 class="solved-title">Son Ödevler</h2>
             <div class="solved-list-table">
               <div class="solved-list-header">

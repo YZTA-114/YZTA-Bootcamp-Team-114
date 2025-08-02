@@ -62,7 +62,7 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="stats-gradient-box" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+        <div class="stats-gradient-box" style="border: 2px solid rgba(211, 211, 211, 0.5);">
           <div class="stat-col">
             <div class="stat-header-row">
               <div class="stat-bigicon stat-orange"><ri-check-line /></div>
@@ -107,7 +107,7 @@
         <!-- Upcoming Events and Solved Quizzes -->
         <div class="events-and-solved-container">
           <!-- Upcoming Events -->
-          <div class="upcoming-events-card" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+          <div class="upcoming-events-card" style="border: 2px solid rgba(211, 211, 211, 0.5);">
             <h2 class="events-title">Yaklaşan Quizler</h2>
             <div class="events-list">
               <div class="event-item">
@@ -176,7 +176,7 @@
           </div>
 
           <!-- Solved Quizzes Table -->
-          <div class="solved-quizzes-card" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+          <div class="solved-quizzes-card" style="border: 2px solid rgba(211, 211, 211, 0.5);">
             <h2 class="solved-title">Sonuçlarım</h2>
             <div class="solved-list-table">
               <div class="solved-list-header">
