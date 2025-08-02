@@ -18,120 +18,140 @@
         <!-- Welcome Section -->
         <div class="welcome-section">
           <div class="welcome-content">
-            <h1 class="welcome-title">Welcome back, {{ userName }}!</h1>
-            <p class="welcome-subtitle">Here's your teaching overview for today.</p>
+            <h1 class="welcome-title">Hoşgeldin {{ userName }}</h1>
+            <p class="welcome-subtitle">Bugün öğretmenlik görevlerin neler.</p>
+            <div class="motivation-quote">"Eğitim, geleceği şekillendiren en güçlü araçtır."</div>
           </div>
           <div class="welcome-actions">
             <button class="btn btn-primary" @click="goToCourses">
               <ri-book-line />
-              Manage Courses
+              Dersleri Yönet
             </button>
           </div>
         </div>
 
         <!-- Stats Cards -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon">
-              <ri-book-line />
+        <div class="stats-gradient-box" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+          <div class="stat-col">
+            <div class="stat-header-row">
+              <div class="stat-bigicon stat-orange"><ri-book-line /></div>
+              <div class="stat-title">Aktif Dersler</div>
             </div>
-            <div class="stat-content">
-              <h3 class="stat-number">{{ stats.activeCourses }}</h3>
-              <p class="stat-label">Active Courses</p>
-            </div>
+            <div class="stat-score"><span>{{ stats.activeCourses }}</span><span class="stat-outof">/10</span></div>
+            <div class="stat-percent">100%</div>
+            <div class="stat-desc">Harika! Tüm derslerin aktif, devam et!</div>
           </div>
-
-          <div class="stat-card">
-            <div class="stat-icon">
-              <ri-group-line />
+          <div class="stat-divider"></div>
+          <div class="stat-col">
+            <div class="stat-header-row">
+              <div class="stat-bigicon stat-pink"><ri-group-line /></div>
+              <div class="stat-title">Toplam Öğrenci</div>
             </div>
-            <div class="stat-content">
-              <h3 class="stat-number">{{ stats.totalStudents }}</h3>
-              <p class="stat-label">Total Students</p>
-            </div>
+            <div class="stat-score"><span>{{ stats.totalStudents }}</span><span class="stat-outof">/200</span></div>
+            <div class="stat-percent">85%</div>
+            <div class="stat-desc">Öğrenci sayın çok iyi, böyle devam et!</div>
           </div>
-
-          <div class="stat-card">
-            <div class="stat-icon">
-              <ri-file-text-line />
+          <div class="stat-divider"></div>
+          <div class="stat-col">
+            <div class="stat-header-row">
+              <div class="stat-bigicon stat-yellow"><ri-file-text-line /></div>
+              <div class="stat-title">Bekleyen Ödevler</div>
             </div>
-            <div class="stat-content">
-              <h3 class="stat-number">{{ stats.pendingSubmissions }}</h3>
-              <p class="stat-label">Pending Submissions</p>
-            </div>
+            <div class="stat-score"><span>{{ stats.pendingSubmissions }}</span><span class="stat-outof">/50</span></div>
+            <div class="stat-percent">60%</div>
+            <div class="stat-desc">Ödevleri zamanında değerlendirmeyi unutma!</div>
           </div>
-
-          <div class="stat-card">
-            <div class="stat-icon">
-              <ri-star-line />
+          <div class="stat-divider"></div>
+          <div class="stat-col">
+            <div class="stat-header-row">
+              <div class="stat-bigicon stat-green"><ri-star-line /></div>
+              <div class="stat-title">Ortalama Puan</div>
             </div>
-            <div class="stat-content">
-              <h3 class="stat-number">{{ stats.averageRating }}/5</h3>
-              <p class="stat-label">Average Rating</p>
-            </div>
+            <div class="stat-score"><span>{{ stats.averageRating }}</span><span class="stat-outof">/5</span></div>
+            <div class="stat-percent">{{ stats.averageRating * 20 }}%</div>
+            <div class="stat-desc">Öğrencilerinden çok yüksek puan alıyorsun!</div>
           </div>
         </div>
 
-        <!-- Dashboard Grid -->
-        <div class="dashboard-grid">
-          <!-- Recent Submissions -->
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h2 class="card-title">Recent Submissions</h2>
-              <button class="btn btn-text" @click="viewAllSubmissions">View All</button>
-            </div>
-            <div class="card-content">
-              <div class="submission-list">
-                <div 
-                  v-for="submission in recentSubmissions" 
-                  :key="submission.id" 
-                  class="submission-item"
-                >
-                  <div class="submission-avatar">
-                    <img :src="submission.studentAvatar" :alt="submission.studentName" />
+        <!-- Upcoming Classes and Recent Submissions -->
+        <div class="events-and-solved-container">
+          <!-- Upcoming Classes -->
+          <div class="upcoming-events-card" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+            <h2 class="events-title">Bugünkü Dersler</h2>
+            <div class="events-list">
+              <div 
+                v-for="classItem in todaysClasses" 
+                :key="classItem.id" 
+                class="event-item"
+              >
+                <div class="event-status-badge">{{ classItem.time }}</div>
+                <div class="event-date-box">
+                  <span class="event-day-num">{{ classItem.studentCount }}</span>
+                  <span class="event-month">Öğr</span>
+                </div>
+                <div class="event-content">
+                  <h3 class="event-title">{{ classItem.title }}</h3>
+                  <div class="event-course">Ders: {{ classItem.courseName }}</div>
+                  <div class="event-time">
+                    <ri-time-line />
+                    Süre: {{ classItem.duration }}
                   </div>
-                  <div class="submission-content">
-                    <h4 class="submission-title">{{ submission.assignmentTitle }}</h4>
-                    <p class="submission-student">{{ submission.studentName }}</p>
-                    <p class="submission-course">{{ submission.courseName }}</p>
-                    <span class="submission-time">{{ submission.submittedAt }}</span>
-                  </div>
-                  <div class="submission-actions">
-                    <button class="btn btn-sm btn-primary" @click="gradeSubmission(submission)">
-                      Grade
-                    </button>
+                  <div class="event-actions">
+                    <button class="event-solve-btn" @click="startClass(classItem)">Başlat</button>
                   </div>
                 </div>
               </div>
             </div>
+            <div class="events-footer">
+              <button class="view-more-btn" @click="viewAllClasses">
+                Daha Fazla Gör
+                <ri-arrow-down-s-line />
+              </button>
+            </div>
           </div>
 
-          <!-- Upcoming Classes -->
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h2 class="card-title">Today's Classes</h2>
-              <button class="btn btn-text" @click="viewAllClasses">View All</button>
-            </div>
-            <div class="card-content">
-              <div class="class-list">
-                <div 
-                  v-for="classItem in todaysClasses" 
-                  :key="classItem.id" 
-                  class="class-item"
+          <!-- Recent Submissions Table -->
+          <div class="solved-quizzes-card" style="border: 2px solid rgba(230, 126, 34, 0.5);">
+            <h2 class="solved-title">Son Ödevler</h2>
+            <div class="solved-list-table">
+              <div class="solved-list-header">
+                <div class="solved-col">ÖĞRENCİ</div>
+                <div class="solved-col">DERS</div>
+                <div class="solved-col">ÖDEV</div>
+                <div class="solved-col">TARİH</div>
+                <div class="solved-col">DURUM</div>
+                <div class="solved-col"></div>
+              </div>
+              <div
+                class="solved-list-row"
+                v-for="submission in recentSubmissions"
+                :key="submission.id"
+              >
+                <div class="solved-col">{{ submission.studentName }}</div>
+                <div class="solved-col">{{ submission.courseName }}</div>
+                <div class="solved-col">{{ submission.assignmentTitle }}</div>
+                <div class="solved-col">{{ submission.submittedAt }}</div>
+                <div class="solved-col"
+                  :class="{
+                    'high-score': submission.status === 'graded',
+                    'mid-score': submission.status === 'pending',
+                    'low-score': submission.status === 'late'
+                  }"
                 >
-                  <div class="class-time">
-                    <span class="class-hour">{{ classItem.time }}</span>
-                    <span class="class-duration">{{ classItem.duration }}</span>
-                  </div>
-                  <div class="class-content">
-                    <h4 class="class-title">{{ classItem.title }}</h4>
-                    <p class="class-course">{{ classItem.courseName }}</p>
-                    <p class="class-students">{{ classItem.studentCount }} students</p>
-                  </div>
-                  <div class="class-actions">
-                    <button class="btn btn-sm btn-outline" @click="startClass(classItem)">
-                      Start
-                    </button>
+                  {{ submission.status === 'graded' ? 'Değerlendirildi' : submission.status === 'pending' ? 'Bekliyor' : 'Gecikmiş' }}
+                </div>
+                <div class="solved-col" style="display: flex; justify-content: flex-end; gap: 8px;">
+                  <div class="report-icon-wrapper" @click="gradeSubmission(submission)">
+                    <svg class="report-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20" fill="none">
+                      <rect x="8" y="8" width="48" height="48" rx="6" stroke="#666" stroke-width="4" fill="none"/>
+                      <polyline points="18,44 28,32 38,38 46,22" fill="none" stroke="#666" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                      <circle cx="18" cy="44" r="3" fill="#666"/>
+                      <circle cx="28" cy="32" r="3" fill="#666"/>
+                      <circle cx="38" cy="38" r="3" fill="#666"/>
+                      <circle cx="46" cy="22" r="3" fill="#666"/>
+                      <polyline points="40,8 56,8 56,24" fill="none" stroke="#666" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="report-tooltip">Değerlendir</div>
                   </div>
                 </div>
               </div>
@@ -141,38 +161,38 @@
 
         <!-- Quick Actions -->
         <div class="quick-actions">
-          <h2 class="section-title">Quick Actions</h2>
+          <h2 class="section-title">Hızlı İşlemler</h2>
           <div class="actions-grid">
             <button class="action-card" @click="createAssignment">
               <div class="action-icon">
                 <ri-add-line />
               </div>
-              <h3 class="action-title">Create Assignment</h3>
-              <p class="action-description">Add a new assignment to your courses</p>
+              <h3 class="action-title">Ödev Oluştur</h3>
+              <p class="action-description">Derslerine yeni ödev ekle</p>
             </button>
 
             <button class="action-card" @click="scheduleClass">
               <div class="action-icon">
                 <ri-calendar-line />
               </div>
-              <h3 class="action-title">Schedule Class</h3>
-              <p class="action-description">Schedule a new class session</p>
+              <h3 class="action-title">Ders Planla</h3>
+              <p class="action-description">Yeni ders oturumu planla</p>
             </button>
 
             <button class="action-card" @click="gradeAssignments">
               <div class="action-icon">
                 <ri-check-line />
               </div>
-              <h3 class="action-title">Grade Assignments</h3>
-              <p class="action-description">Review and grade student submissions</p>
+              <h3 class="action-title">Ödevleri Değerlendir</h3>
+              <p class="action-description">Öğrenci ödevlerini incele ve puanla</p>
             </button>
 
             <button class="action-card" @click="viewAnalytics">
               <div class="action-icon">
                 <ri-analytics-line />
               </div>
-              <h3 class="action-title">View Analytics</h3>
-              <p class="action-description">Check course performance metrics</p>
+              <h3 class="action-title">Analitikleri Görüntüle</h3>
+              <p class="action-description">Ders performans metriklerini kontrol et</p>
             </button>
           </div>
         </div>
@@ -196,6 +216,7 @@ const userRole = ref('Teacher')
 const userAvatar = ref('/default-avatar.png')
 const currentPage = ref('Dashboard')
 const notificationCount = ref(5)
+const isSidebarCollapsed = ref(false)
 
 // Stats
 const stats = ref({
@@ -215,43 +236,37 @@ const navItems = ref([
   },
   {
     id: 'courses',
-    label: 'My Courses',
+    label: 'Derslerim',
     path: '/teacher/courses',
     icon: 'ri-book-line'
   },
   {
-    id: 'assignments',
-    label: 'Assignments',
-    path: '/teacher/assignments',
+    id: 'quizzes',
+    label: 'Quizler',
+    path: '/teacher/quizzes',
     icon: 'ri-task-line'
   },
   {
     id: 'students',
-    label: 'Students',
+    label: 'Öğrenciler',
     path: '/teacher/students',
     icon: 'ri-group-line'
   },
   {
     id: 'grades',
-    label: 'Grades',
+    label: 'Notlar',
     path: '/teacher/grades',
     icon: 'ri-bar-chart-line'
   },
   {
-    id: 'calendar',
-    label: 'Calendar',
-    path: '/teacher/calendar',
-    icon: 'ri-calendar-line'
-  },
-  {
     id: 'analytics',
-    label: 'Analytics',
+    label: 'Analitik',
     path: '/teacher/analytics',
     icon: 'ri-analytics-line'
   },
   {
     id: 'profile',
-    label: 'Profile',
+    label: 'Profil',
     path: '/teacher/profile',
     icon: 'ri-user-line'
   }
@@ -261,27 +276,30 @@ const navItems = ref([
 const recentSubmissions = ref([
   {
     id: 1,
-    assignmentTitle: 'Final Project Submission',
+    assignmentTitle: 'Final Proje Ödevi',
     studentName: 'Muhammet',
     studentAvatar: '/default-avatar.png',
-    courseName: 'Computer Science 201',
-    submittedAt: '2 hours ago'
+    courseName: 'Bilgisayar Bilimi 201',
+    submittedAt: '2 saat önce',
+    status: 'pending'
   },
   {
     id: 2,
-    assignmentTitle: 'Research Paper',
+    assignmentTitle: 'Araştırma Makalesi',
     studentName: 'Jane Smith',
     studentAvatar: '/default-avatar.png',
-    courseName: 'English Literature',
-    submittedAt: '4 hours ago'
+    courseName: 'İngiliz Edebiyatı',
+    submittedAt: '4 saat önce',
+    status: 'graded'
   },
   {
     id: 3,
-    assignmentTitle: 'Lab Report',
+    assignmentTitle: 'Laboratuvar Raporu',
     studentName: 'Mike Johnson',
     studentAvatar: '/default-avatar.png',
-    courseName: 'Physics 101',
-    submittedAt: '1 day ago'
+    courseName: 'Fizik 101',
+    submittedAt: '1 gün önce',
+    status: 'late'
   }
 ])
 
@@ -289,26 +307,26 @@ const recentSubmissions = ref([
 const todaysClasses = ref([
   {
     id: 1,
-    title: 'Introduction to Algorithms',
-    courseName: 'Computer Science 201',
+    title: 'Algoritma Girişi',
+    courseName: 'Bilgisayar Bilimi 201',
     time: '09:00 AM',
-    duration: '90 min',
+    duration: '90 dk',
     studentCount: 32
   },
   {
     id: 2,
-    title: 'Data Structures Lab',
-    courseName: 'Computer Science 201',
+    title: 'Veri Yapıları Lab',
+    courseName: 'Bilgisayar Bilimi 201',
     time: '02:00 PM',
-    duration: '120 min',
+    duration: '120 dk',
     studentCount: 28
   },
   {
     id: 3,
-    title: 'Advanced Programming',
-    courseName: 'Computer Science 301',
+    title: 'İleri Programlama',
+    courseName: 'Bilgisayar Bilimi 301',
     time: '04:30 PM',
-    duration: '90 min',
+    duration: '90 dk',
     studentCount: 25
   }
 ])
@@ -328,10 +346,6 @@ const handleSettings = () => {
 
 const goToCourses = () => {
   router.push('/teacher/courses')
-}
-
-const viewAllSubmissions = () => {
-  router.push('/teacher/submissions')
 }
 
 const viewAllClasses = () => {
@@ -371,12 +385,84 @@ onMounted(() => {
 <style lang="scss" scoped>
 @import '@/assets/scss/custom/_variable.scss';
 
+// KOYU TEMA OVERRIDES
+body, .teacher-dashboard, .welcome-section, .stats-gradient-box, .dashboard-card, .solved-quizzes-card, .upcoming-events-card, .solved-list-table, .quiz-item, .event-item {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+.welcome-section {
+  background: #e67e22 !important;
+  color: #fff !important;
+}
+
+.welcome-title, .welcome-subtitle, .motivation-quote {
+  color: #fff !important;
+}
+
+.stats-gradient-box, .solved-quizzes-card, .upcoming-events-card {
+  background: #111 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important;
+}
+
+.stat-title, .stat-score, .stat-desc, .stat-percent, .stat-outof {
+  color: #fff !important;
+}
+
+.dashboard-card, .quiz-card, .solved-card {
+  background: #111 !important;
+  color: #fff !important;
+}
+
+.card-title, .events-title, .solved-title {
+  color: #fff !important;
+}
+
+.solved-list-table, .solved-list-header, .solved-list-row {
+  background: #111 !important;
+  color: #fff !important;
+}
+.solved-list-header, .solved-list-row {
+  border-bottom: 1.5px solid #888 !important;
+}
+.solved-list-header .solved-col, .solved-list-row .solved-col {
+  color: #fff !important;
+}
+.solved-list-row:hover {
+  background: #181818 !important;
+}
+
+.quiz-item, .event-item {
+  background: #181818 !important;
+  color: #fff !important;
+  border: 1px solid #222 !important;
+}
+
+.quiz-row, .event-title, .event-course, .event-time, .event-day, .event-month, .event-day-num {
+  color: #fff !important;
+}
+
+.btn, .btn-primary, .btn-solve, .event-solve-btn, .view-more-btn {
+  background: #e67e22 !important;
+  color: #fff !important;
+  border: none !important;
+}
+.btn:hover, .btn-primary:hover, .btn-solve:hover, .event-solve-btn:hover, .view-more-btn:hover {
+  background: #ca6f1e !important;
+  color: #fff !important;
+}
+
 .teacher-dashboard {
+  min-height: 100vh;
+  box-sizing: border-box;
+  overflow-y: auto;
+
   .welcome-section {
-    background: linear-gradient(135deg, $pink 0%, darken($pink, 15%) 100%);
+    background: $orange;
     color: $white;
-    padding: $space-xl;
-    border-radius: 12px;
+    padding: $space-s $space-m;
+    border-radius: 8px;
     margin-bottom: $space-l;
     display: flex;
     justify-content: space-between;
@@ -384,276 +470,41 @@ onMounted(() => {
 
     .welcome-content {
       .welcome-title {
-        font-size: $font-size-xxl;
+        font-size: $font-size-l;
         font-weight: $font-weight-bold;
-        margin: 0 0 $space-s 0;
+        margin: 0 0 $space-xs 0;
       }
-
       .welcome-subtitle {
-        font-size: $font-size-m;
+        font-size: $font-size-s;
         opacity: 0.9;
-        margin: 0;
+        margin: 0 0 2px 0;
+      }
+      .motivation-quote {
+        font-size: $font-size-xs;
+        opacity: 0.85;
+        margin-top: 2px;
+        font-style: italic;
+        color: $white;
       }
     }
 
     .welcome-actions {
       .btn {
-        background-color: rgba($white, 0.2);
-        border: 1px solid rgba($white, 0.3);
-        color: $white;
+        background-color: rgba(255,255,255,0.18) !important;
+        border: 1.5px solid rgba(255,255,255,0.28) !important;
+        color: #fff !important;
         padding: $space-s $space-l;
         border-radius: 8px;
         font-weight: $font-weight-semi-bold;
+        font-family: $font-family-primary-medium;
         transition: all 0.2s ease;
-
         &:hover {
-          background-color: rgba($white, 0.3);
+          background-color: rgba(255,255,255,0.28) !important;
+          color: #fff !important;
           transform: translateY(-2px);
         }
-
         i {
           margin-right: $space-xs;
-        }
-      }
-    }
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: $space-m;
-    margin-bottom: $space-l;
-
-    .stat-card {
-      background-color: $white;
-      padding: $space-l;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba($black, 0.1);
-      display: flex;
-      align-items: center;
-      gap: $space-m;
-      transition: transform 0.2s ease;
-
-      &:hover {
-        transform: translateY(-4px);
-      }
-
-      .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: $font-size-l;
-        color: $white;
-
-        &:nth-child(1) {
-          background: linear-gradient(135deg, $pink, darken($pink, 10%));
-        }
-
-        &:nth-child(2) {
-          background: linear-gradient(135deg, $orange, darken($orange, 10%));
-        }
-
-        &:nth-child(3) {
-          background: linear-gradient(135deg, $yellow, darken($yellow, 10%));
-        }
-
-        &:nth-child(4) {
-          background: linear-gradient(135deg, #28a745, darken(#28a745, 10%));
-        }
-      }
-
-      .stat-content {
-        .stat-number {
-          font-size: $font-size-xxl;
-          font-weight: $font-weight-bold;
-          margin: 0 0 $space-xs 0;
-          color: $black;
-        }
-
-        .stat-label {
-          font-size: $font-size-s;
-          color: rgba($black, 0.7);
-          margin: 0;
-        }
-      }
-    }
-  }
-
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: $space-l;
-    margin-bottom: $space-l;
-
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .dashboard-card {
-    background-color: $white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba($black, 0.1);
-    overflow: hidden;
-
-    .card-header {
-      padding: $space-l;
-      border-bottom: 1px solid rgba($black, 0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .card-title {
-        font-size: $font-size-l;
-        font-weight: $font-weight-semi-bold;
-        margin: 0;
-        color: $black;
-      }
-
-      .btn-text {
-        background: none;
-        border: none;
-        color: $pink;
-        font-size: $font-size-s;
-        font-weight: $font-weight-semi-bold;
-        cursor: pointer;
-        transition: color 0.2s ease;
-
-        &:hover {
-          color: darken($pink, 10%);
-        }
-      }
-    }
-
-    .card-content {
-      padding: $space-l;
-    }
-  }
-
-  .submission-list {
-    .submission-item {
-      display: flex;
-      align-items: center;
-      gap: $space-m;
-      padding: $space-s 0;
-      border-bottom: 1px solid rgba($black, 0.05);
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      .submission-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        overflow: hidden;
-        flex-shrink: 0;
-
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-      }
-
-      .submission-content {
-        flex: 1;
-
-        .submission-title {
-          font-size: $font-size-s;
-          font-weight: $font-weight-semi-bold;
-          margin: 0 0 $space-xs 0;
-          color: $black;
-        }
-
-        .submission-student {
-          font-size: $font-size-xs;
-          color: $pink;
-          margin: 0 0 $space-xs 0;
-          font-weight: $font-weight-semi-bold;
-        }
-
-        .submission-course {
-          font-size: $font-size-xs;
-          color: rgba($black, 0.7);
-          margin: 0 0 $space-xs 0;
-        }
-
-        .submission-time {
-          font-size: $font-size-xs;
-          color: rgba($black, 0.6);
-        }
-      }
-
-      .submission-actions {
-        .btn-sm {
-          padding: $space-xs $space-s;
-          font-size: $font-size-xs;
-        }
-      }
-    }
-  }
-
-  .class-list {
-    .class-item {
-      display: flex;
-      align-items: center;
-      gap: $space-m;
-      padding: $space-s 0;
-      border-bottom: 1px solid rgba($black, 0.05);
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      .class-time {
-        text-align: center;
-        min-width: 80px;
-
-        .class-hour {
-          display: block;
-          font-size: $font-size-s;
-          font-weight: $font-weight-semi-bold;
-          color: $pink;
-        }
-
-        .class-duration {
-          display: block;
-          font-size: $font-size-xs;
-          color: rgba($black, 0.6);
-        }
-      }
-
-      .class-content {
-        flex: 1;
-
-        .class-title {
-          font-size: $font-size-s;
-          font-weight: $font-weight-semi-bold;
-          margin: 0 0 $space-xs 0;
-          color: $black;
-        }
-
-        .class-course {
-          font-size: $font-size-xs;
-          color: rgba($black, 0.7);
-          margin: 0 0 $space-xs 0;
-        }
-
-        .class-students {
-          font-size: $font-size-xs;
-          color: $orange;
-          font-weight: $font-weight-semi-bold;
-        }
-      }
-
-      .class-actions {
-        .btn-sm {
-          padding: $space-xs $space-s;
-          font-size: $font-size-xs;
         }
       }
     }
@@ -756,5 +607,406 @@ onMounted(() => {
     padding: $space-xs $space-s;
     font-size: $font-size-xs;
   }
+}
+
+// Stats gradient box styles
+.stats-gradient-box {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  background: $white;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba($black, 0.10);
+  padding: $space-m $space-l;
+  margin-bottom: $space-l;
+  min-height: 160px;
+  overflow: hidden;
+}
+.stat-col {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 $space-m;
+  min-width: 0;
+  text-align: center;
+}
+.stat-header-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: $space-xs;
+  width: 100%;
+  margin-bottom: $space-xs;
+}
+.stat-title {
+  color: #222;
+  font-size: $font-size-m;
+  font-weight: 600;
+  text-align: left;
+  margin-bottom: 0;
+}
+.stat-bigicon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 0;
+}
+.stat-orange,
+.stat-pink,
+.stat-yellow,
+.stat-green {
+  background: linear-gradient(135deg, $pink, darken($pink, 10%));
+  color: #fff;
+}
+.stat-score {
+  color: #222;
+  font-size: $font-size-xl;
+  font-weight: 700;
+  margin-bottom: 2px;
+  text-align: center;
+}
+.stat-outof {
+  font-size: $font-size-s;
+  font-weight: 400;
+  opacity: 0.8;
+  margin-left: 2px;
+  color: #222;
+}
+.stat-percent {
+  background: rgba(0,0,0,0.08);
+  color: #222;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 2px 12px;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  display: inline-block;
+}
+.stat-desc {
+  color: #222;
+  font-size: $font-size-xs;
+  text-align: center;
+  margin-top: 2px;
+  font-weight: 400;
+}
+.stat-divider {
+  width: 1px;
+  background: #222;
+  margin: 0 $space-xs;
+  border-radius: 2px;
+}
+
+// Events and solved container
+.events-and-solved-container {
+  display: flex;
+  gap: $space-l;
+  margin-bottom: $space-l;
+  align-items: flex-start;
+}
+
+.upcoming-events-card {
+  background: $white;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px rgba($black, 0.08);
+  padding: $space-l;
+  flex: 0 0 400px;
+}
+.events-title {
+  font-size: $font-size-l;
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+  margin: 0 0 $space-m 0;
+}
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-m;
+  margin-bottom: $space-l;
+}
+.event-item {
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: $space-s;
+  position: relative;
+  box-shadow: 0 2px 8px rgba($black, 0.04);
+  display: flex;
+  align-items: flex-start;
+  gap: $space-s;
+  min-height: 70px;
+}
+.event-status-badge {
+  position: absolute;
+  top: $space-s;
+  right: 50px;
+  background: #ffe6e6;
+  color: #d32f2f;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.event-date-box {
+  width: 40px;
+  height: 40px;
+  background: $orange;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 12px;
+}
+.event-day-num {
+  font-size: $font-size-m;
+  font-weight: 700;
+  color: #222;
+  line-height: 1;
+}
+.event-month {
+  font-size: $font-size-xs;
+  font-weight: 600;
+  color: #222;
+  margin-top: 2px;
+}
+.event-content {
+  flex: 1;
+  margin-top: 12px;
+}
+.event-title {
+  font-size: $font-size-s;
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 2px 0;
+  line-height: 1.2;
+}
+.event-course {
+  font-size: $font-size-xs;
+  color: #666;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.event-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: $font-size-xs;
+  color: #666;
+  font-weight: 500;
+}
+.event-time i {
+  font-size: $font-size-xs;
+  color: #666;
+}
+.event-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0;
+  position: absolute;
+  bottom: $space-s;
+  right: $space-s;
+}
+.event-solve-btn {
+  background: $white;
+  color: $pink;
+  border: 1px solid $pink;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 32px;
+  text-align: center;
+}
+.event-solve-btn:hover {
+  background: rgba($pink, 0.08);
+  color: $pink;
+}
+.events-footer {
+  display: flex;
+  justify-content: center;
+}
+.view-more-btn {
+  background: none;
+  border: none;
+  color: #2196f3;
+  font-size: $font-size-s;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: $space-xs $space-s;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.view-more-btn:hover {
+  background: rgba(33, 150, 243, 0.08);
+}
+.view-more-btn i {
+  font-size: $font-size-xs;
+}
+
+// Solved quizzes card styles
+.solved-quizzes-card {
+  background: $white;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px rgba($black, 0.08);
+  padding: $space-l;
+  flex: 1;
+}
+
+.solved-title {
+  font-size: $font-size-l;
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+  margin: 0 0 $space-m 0;
+}
+
+.solved-list-table {
+  width: 100%;
+  background: $white;
+  overflow: visible;
+  font-size: $font-size-s;
+  margin-bottom: 18px;
+
+  .solved-list-header {
+    display: flex;
+    color: $black;
+    font-weight: $font-weight-bold;
+    border-bottom: 1px solid #eee;
+    padding: 10px 0 10px 0;
+    background: #f5f6fa;
+    .solved-col {
+      flex: 1 1 0;
+      text-align: left;
+      padding: 0 12px;
+      font-size: $font-size-xs;
+      letter-spacing: 0.5px;
+      &:last-child {
+        text-align: right;
+      }
+    }
+  }
+
+  .solved-list-row {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 12px 0 12px 0;
+    transition: background 0.18s;
+    background: #fff;
+    &:nth-child(even) {
+      background: #fafbfc;
+    }
+    &:hover {
+      background: #fce4ec;
+    }
+    .solved-col {
+      flex: 1 1 0;
+      text-align: left;
+      padding: 0 12px;
+      font-size: $font-size-s;
+      color: $black;
+      background: none;
+      &:last-child {
+        text-align: right;
+        .report-icon-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: transparent;
+          border-radius: 8px;
+          width: 40px;
+          height: 40px;
+          cursor: pointer;
+          transition: background 0.2s;
+          position: relative;
+        }
+        .report-icon-wrapper:hover {
+          background: transparent;
+          .report-tooltip {
+            opacity: 1;
+            pointer-events: auto;
+          }
+        }
+        .report-icon {
+          display: block;
+          margin: auto;
+        }
+        .report-tooltip {
+          position: absolute;
+          left: 50%;
+          top: 110%;
+          transform: translateX(-50%);
+          background: $black;
+          color: $white;
+          padding: 6px 14px;
+          border-radius: 6px;
+          font-size: $font-size-xs;
+          white-space: nowrap;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.2s;
+          z-index: 20;
+        }
+      }
+    }
+  }
+}
+
+.high-score {
+  color: #28a745 !important;
+  font-weight: bold;
+}
+.mid-score {
+  color: #ffc107 !important;
+  font-weight: bold;
+}
+.low-score {
+  color: #dc3545 !important;
+  font-weight: bold;
+}
+
+.upcoming-events-card .event-item {
+  color: #fff !important;
+  border: 2px solid #888 !important;
+}
+.upcoming-events-card .event-title,
+.upcoming-events-card .event-course,
+.upcoming-events-card .event-time,
+.upcoming-events-card .event-day,
+.upcoming-events-card .event-month,
+.upcoming-events-card .event-day-num {
+  color: #fff !important;
+}
+.upcoming-events-card .event-status-badge {
+  font-weight: 700;
+  color: #d32f2f !important;
+  background: #ffe6e6 !important;
+}
+.upcoming-events-card .event-solve-btn {
+  background: rgba(255,255,255,0.18) !important;
+  color: #e67e22 !important;
+  border: 1.5px solid rgba(255,255,255,0.28) !important;
+  font-weight: 700;
+  transition: background 0.2s, color 0.2s;
+}
+.upcoming-events-card .event-solve-btn:hover {
+  background: rgba(255,255,255,0.28) !important;
+  color: #fff !important;
 }
 </style> 

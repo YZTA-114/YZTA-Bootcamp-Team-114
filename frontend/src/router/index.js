@@ -75,6 +75,16 @@ const routes = [
         name: 'teacher-dashboard',
         component: () => import('@/pages/teacher/TeacherDashboard.vue')
       },
+              {
+          path: 'students',
+          name: 'teacher-students',
+          component: () => import('@/pages/teacher/TeacherStudents.vue')
+        },
+        {
+          path: 'analytics',
+          name: 'teacher-analytics',
+          component: () => import('@/pages/teacher/TeacherAnalytics.vue')
+        },
       /* {
         path: 'courses',
         name: 'teacher-courses',
@@ -84,11 +94,6 @@ const routes = [
         path: 'assignments',
         name: 'teacher-assignments',
         component: () => import('@/pages/teacher/TeacherAssignments.vue')
-      },
-      {
-        path: 'students',
-        name: 'teacher-students',
-        component: () => import('@/pages/teacher/TeacherStudents.vue')
       },
       {
         path: 'grades',
