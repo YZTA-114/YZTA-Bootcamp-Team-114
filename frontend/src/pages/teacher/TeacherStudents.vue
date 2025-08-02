@@ -16,59 +16,16 @@
     <template #content>
       <div class="teacher-students">
         <!-- Header Section -->
-        <div class="page-header">
-          <div class="header-content">
-            <h1 class="page-title">Öğrencilerim</h1>
-            <p class="page-subtitle">Tüm öğrencilerinizi yönetin ve takip edin</p>
-            <div class="header-actions">
-              <button class="btn btn-primary" @click="addNewStudent">
-                <ri-add-line />
-                Yeni Öğrenci Ekle
-              </button>
-            </div>
+        <div class="welcome-section">
+          <div class="welcome-content">
+            <h1 class="welcome-title">Öğrencilerim</h1>
+            <p class="welcome-subtitle">Tüm öğrencilerinizi yönetin ve takip edin</p>
           </div>
-        </div>
-
-        <!-- Stats Cards -->
-        <div class="stats-gradient-box" style="border: 2px solid rgba(230, 126, 34, 0.5);">
-          <div class="stat-col">
-            <div class="stat-header-row">
-              <div class="stat-bigicon stat-orange"><ri-group-line /></div>
-              <div class="stat-title">Toplam Öğrenci</div>
-            </div>
-            <div class="stat-score"><span>{{ stats.totalStudents }}</span><span class="stat-outof">/200</span></div>
-            <div class="stat-percent">85%</div>
-            <div class="stat-desc">Sınıf kapasitesinin %85'i dolu</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-col">
-            <div class="stat-header-row">
-              <div class="stat-bigicon stat-pink"><ri-user-line /></div>
-              <div class="stat-title">Aktif Öğrenci</div>
-            </div>
-            <div class="stat-score"><span>{{ stats.activeStudents }}</span><span class="stat-outof">/170</span></div>
-            <div class="stat-percent">92%</div>
-            <div class="stat-desc">Öğrencilerin %92'si aktif</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-col">
-            <div class="stat-header-row">
-              <div class="stat-bigicon stat-yellow"><ri-star-line /></div>
-              <div class="stat-title">Ortalama Başarı</div>
-            </div>
-            <div class="stat-score"><span>{{ stats.averageGrade }}</span><span class="stat-outof">%</span></div>
-            <div class="stat-percent">{{ stats.averageGrade }}%</div>
-            <div class="stat-desc">Genel başarı ortalaması çok iyi</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-col">
-            <div class="stat-header-row">
-              <div class="stat-bigicon stat-green"><ri-time-line /></div>
-              <div class="stat-title">Bu Hafta Katılım</div>
-            </div>
-            <div class="stat-score"><span>{{ stats.weeklyAttendance }}</span><span class="stat-outof">%</span></div>
-            <div class="stat-percent">{{ stats.weeklyAttendance }}%</div>
-            <div class="stat-desc">Haftalık katılım oranı yüksek</div>
+          <div class="welcome-actions">
+            <button class="btn btn-primary" @click="addNewStudent">
+              <ri-add-line />
+              Yeni Öğrenci Ekle
+            </button>
           </div>
         </div>
 
@@ -192,11 +149,6 @@
               </div>
             </div>
           </div>
-
-          <button class="btn btn-outline export-btn" @click="exportStudents">
-            <ri-download-line />
-            Dışa Aktar
-          </button>
         </div>
 
         <!-- Students Table -->
@@ -258,14 +210,14 @@
               </div>
               
               <div class="table-col actions">
-                <button class="action-btn" @click.stop="editStudent(student)" title="Düzenle">
-                  <ri-edit-line />
+                <button class="action-btn" @click.stop="editStudent(student)" title="Öğrenci Bilgilerini Düzenle">
+                  <ri-edit-line class="action-icon" />
                 </button>
-                <button class="action-btn" @click.stop="viewProgress(student)" title="İlerleme">
-                  <ri-bar-chart-line />
+                <button class="action-btn" @click.stop="viewProgress(student)" title="Öğrenci İlerlemesini Görüntüle">
+                  <ri-bar-chart-line class="action-icon" />
                 </button>
-                <button class="action-btn" @click.stop="sendMessage(student)" title="Mesaj">
-                  <ri-message-line />
+                <button class="action-btn" @click.stop="sendMessage(student)" title="Öğrenciye Mesaj Gönder">
+                  <ri-message-line class="action-icon" />
                 </button>
               </div>
             </div>
@@ -305,6 +257,190 @@
       </div>
     </template>
   </DashboardLayout>
+
+  <!-- Add Student Modal -->
+  <div v-if="showAddStudentModal" class="modal-overlay" @click="closeAddStudentModal">
+    <div class="modal-container" @click.stop>
+      <div class="modal-header">
+        <h2 class="modal-title">Yeni Öğrenci Ekle</h2>
+        <button class="modal-close-btn" @click="closeAddStudentModal">
+          <ri-close-line />
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <form @submit.prevent="submitNewStudent">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="studentName">Öğrenci Adı *</label>
+              <input 
+                type="text" 
+                id="studentName" 
+                v-model="newStudent.name" 
+                placeholder="Öğrenci adını girin"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="studentEmail">E-posta *</label>
+              <input 
+                type="email" 
+                id="studentEmail" 
+                v-model="newStudent.email" 
+                placeholder="ornek@email.com"
+                required
+              />
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Sınıf *</label>
+              <div class="custom-dropdown">
+                <button 
+                  type="button"
+                  @click="toggleModalClassDropdown"
+                  class="custom-dropdown-btn"
+                  :class="{ active: showModalClassDropdown }"
+                >
+                  <div class="dropdown-btn-content">
+                    <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"/>
+                    </svg>
+                    <span class="dropdown-text">{{ newStudent.class || 'Sınıf seçin' }}</span>
+                  </div>
+                  <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"></polyline>
+                  </svg>
+                </button>
+                
+                <div v-show="showModalClassDropdown" class="custom-dropdown-menu">
+                  <div class="dropdown-header">
+                    <h4>Sınıf Seçin</h4>
+                    <button type="button" class="close-dropdown-btn" @click="toggleModalClassDropdown">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="dropdown-options">
+                    <button 
+                      type="button"
+                      @click="selectModalClass('9A')"
+                      class="dropdown-option"
+                      :class="{ selected: newStudent.class === '9A' }"
+                    >
+                      <span>9A</span>
+                      <svg v-if="newStudent.class === '9A'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                      </svg>
+                    </button>
+                    <button 
+                      type="button"
+                      @click="selectModalClass('9B')"
+                      class="dropdown-option"
+                      :class="{ selected: newStudent.class === '9B' }"
+                    >
+                      <span>9B</span>
+                      <svg v-if="newStudent.class === '9B'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                      </svg>
+                    </button>
+                    <button 
+                      type="button"
+                      @click="selectModalClass('10A')"
+                      class="dropdown-option"
+                      :class="{ selected: newStudent.class === '10A' }"
+                    >
+                      <span>10A</span>
+                      <svg v-if="newStudent.class === '10A'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                      </svg>
+                    </button>
+                    <button 
+                      type="button"
+                      @click="selectModalClass('10B')"
+                      class="dropdown-option"
+                      :class="{ selected: newStudent.class === '10B' }"
+                    >
+                      <span>10B</span>
+                      <svg v-if="newStudent.class === '10B'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                      </svg>
+                    </button>
+                    <button 
+                      type="button"
+                      @click="selectModalClass('11A')"
+                      class="dropdown-option"
+                      :class="{ selected: newStudent.class === '11A' }"
+                    >
+                      <span>11A</span>
+                      <svg v-if="newStudent.class === '11A'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                      </svg>
+                    </button>
+                    <button 
+                      type="button"
+                      @click="selectModalClass('11B')"
+                      class="dropdown-option"
+                      :class="{ selected: newStudent.class === '11B' }"
+                    >
+                      <span>11B</span>
+                      <svg v-if="newStudent.class === '11B'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                      </svg>
+                    </button>
+                    <button 
+                      type="button"
+                      @click="selectModalClass('12A')"
+                      class="dropdown-option"
+                      :class="{ selected: newStudent.class === '12A' }"
+                    >
+                      <span>12A</span>
+                      <svg v-if="newStudent.class === '12A'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                      </svg>
+                    </button>
+                    <button 
+                      type="button"
+                      @click="selectModalClass('12B')"
+                      class="dropdown-option"
+                      :class="{ selected: newStudent.class === '12B' }"
+                    >
+                      <span>12B</span>
+                      <svg v-if="newStudent.class === '12B'" class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="studentPhone">Telefon</label>
+              <input 
+                type="tel" 
+                id="studentPhone" 
+                v-model="newStudent.phone" 
+                placeholder="0555 123 45 67"
+              />
+            </div>
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" @click="closeAddStudentModal">
+              İptal
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <ri-add-line />
+              Öğrenci Ekle
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -471,6 +607,18 @@ const selectedStatus = ref('')
 const showClassDropdown = ref(false)
 const showStatusDropdown = ref(false)
 
+// Modal state
+const showAddStudentModal = ref(false)
+const showModalClassDropdown = ref(false)
+
+// New student form data
+const newStudent = ref({
+  name: '',
+  email: '',
+  class: '',
+  phone: ''
+})
+
 // Class and Status options for dropdowns
 const classOptions = ref([
   { label: 'Matematik', value: 'matematik' },
@@ -542,7 +690,55 @@ const handleSettings = () => {
 }
 
 const addNewStudent = () => {
-  router.push('/teacher/students/add')
+  showAddStudentModal.value = true
+}
+
+const closeAddStudentModal = () => {
+  showAddStudentModal.value = false
+  showModalClassDropdown.value = false
+  // Reset form
+  newStudent.value = {
+    name: '',
+    email: '',
+    class: '',
+    phone: ''
+  }
+}
+
+const toggleModalClassDropdown = () => {
+  showModalClassDropdown.value = !showModalClassDropdown.value
+}
+
+const selectModalClass = (className) => {
+  newStudent.value.class = className
+  showModalClassDropdown.value = false
+}
+
+const submitNewStudent = () => {
+  // Generate a new ID
+  const newId = Math.max(...students.value.map(s => s.id)) + 1
+  
+  // Create new student object
+  const studentToAdd = {
+    id: newId,
+    name: newStudent.value.name,
+    email: newStudent.value.email,
+    avatar: '/default-avatar.png',
+    class: newStudent.value.class,
+    attendance: 0,
+    grade: 0,
+    status: 'active',
+    phone: newStudent.value.phone
+  }
+  
+  // Add to students array
+  students.value.push(studentToAdd)
+  
+  // Close modal
+  closeAddStudentModal()
+  
+  // Show success message (you can implement a toast notification here)
+  console.log('Yeni öğrenci başarıyla eklendi:', studentToAdd)
 }
 
 const exportStudents = () => {
@@ -686,13 +882,13 @@ body, .teacher-students, .page-header, .stats-gradient-box, .students-table-cont
   background: #181818 !important;
 }
 
-.btn, .btn-primary, .btn-outline {
+.btn:not(.title-btn), .btn-primary:not(.title-btn), .btn-outline:not(.title-btn) {
   background: #e67e22 !important;
   color: #fff !important;
   border: none !important;
 }
 
-.btn:hover, .btn-primary:hover, .btn-outline:hover {
+.btn:not(.title-btn):hover, .btn-primary:not(.title-btn):hover, .btn-outline:not(.title-btn):hover {
   background: #ca6f1e !important;
   color: #fff !important;
 }
@@ -702,7 +898,7 @@ body, .teacher-students, .page-header, .stats-gradient-box, .students-table-cont
   box-sizing: border-box;
   overflow-y: auto;
 
-  .page-header {
+  .welcome-section {
     background: #e67e22;
     color: #fff;
     padding: $space-xl;
@@ -713,8 +909,8 @@ body, .teacher-students, .page-header, .stats-gradient-box, .students-table-cont
     align-items: center;
     box-shadow: 0 4px 24px rgba(230, 126, 34, 0.2);
 
-    .header-content {
-      .page-title {
+    .welcome-content {
+      .welcome-title {
         font-size: $font-size-xxl;
         font-weight: $font-weight-bold;
         margin: 0 0 $space-xs 0;
@@ -722,38 +918,35 @@ body, .teacher-students, .page-header, .stats-gradient-box, .students-table-cont
         font-family: serif;
       }
 
-      .page-subtitle {
+      .welcome-subtitle {
         font-size: $font-size-m;
         color: rgba(255, 255, 255, 0.9);
-        margin: 0 0 $space-xs 0;
+        margin: 0;
         font-family: serif;
-      }
-
-      .header-actions {
-        margin-top: $space-s;
-        
-        .btn {
-          background-color: transparent;
-          border: 1px solid rgba(255, 255, 255, 0.5);
-          color: #fff;
-          padding: $space-s $space-l;
-          border-radius: 8px;
-          font-weight: $font-weight-semi-bold;
-          transition: all 0.2s ease;
-          
-          &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-          }
-          
-          i {
-            margin-right: $space-xs;
-          }
-        }
       }
     }
 
-
+    .welcome-actions {
+      .btn {
+        background-color: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: #fff;
+        padding: $space-s $space-l;
+        border-radius: 8px;
+        font-weight: $font-weight-semi-bold;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: $space-xs;
+        backdrop-filter: blur(10px);
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.25);
+          border-color: rgba(255, 255, 255, 0.6);
+          transform: translateY(-2px);
+        }
+      }
+    }
   }
 
   .search-filter-section {
@@ -1168,8 +1361,8 @@ body, .teacher-students, .page-header, .stats-gradient-box, .students-table-cont
             justify-content: flex-end;
 
             .action-btn {
-              width: 32px;
-              height: 32px;
+              width: 28px;
+              height: 28px;
               border: none;
               border-radius: 6px;
               background: rgba($white, 0.1);
@@ -1179,10 +1372,34 @@ body, .teacher-students, .page-header, .stats-gradient-box, .students-table-cont
               align-items: center;
               justify-content: center;
               transition: all 0.2s;
+              position: relative;
+
+              .action-icon {
+                font-size: 14px;
+                width: 14px;
+                height: 14px;
+              }
 
               &:hover {
                 background: rgba($orange, 0.2);
                 color: $orange;
+                transform: scale(1.1);
+              }
+
+              &:hover::after {
+                content: attr(title);
+                position: absolute;
+                bottom: -30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                white-space: nowrap;
+                z-index: 1000;
+                pointer-events: none;
               }
             }
           }
@@ -1360,4 +1577,349 @@ body, .teacher-students, .page-header, .stats-gradient-box, .students-table-cont
   margin: 0 $space-xs;
   border-radius: 2px;
 }
-</style> 
+
+// Modal styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-container {
+  background: #000000;
+  border-radius: 12px;
+  width: 85%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideIn 0.3s ease;
+}
+
+.modal-header {
+  background: #e67e22;
+  color: white;
+  padding: $space-m;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  .modal-title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    margin: 0;
+    font-family: serif;
+  }
+
+  .modal-close-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: $space-xs;
+    border-radius: 6px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.1);
+    }
+  }
+}
+
+.modal-body {
+  padding: $space-l;
+  color: white;
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-m;
+    margin-bottom: $space-m;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: $space-m;
+    }
+  }
+
+  .form-group {
+    margin-bottom: $space-m;
+
+    label {
+      display: block;
+      margin-bottom: $space-xs;
+      font-weight: $font-weight-semi-bold;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: $font-size-xs;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: $space-s;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: $font-size-xs;
+      transition: all 0.2s;
+      box-sizing: border-box;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      &:focus {
+        outline: none;
+        border-color: #e67e22;
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.2);
+      }
+    }
+
+    select {
+      cursor: pointer;
+
+      option {
+        background: #2c3e50;
+        color: white;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .custom-dropdown {
+      position: relative;
+      width: 100%;
+
+      .custom-dropdown-btn {
+        width: 100%;
+        padding: $space-s;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: $font-size-xs;
+        transition: all 0.2s;
+        box-sizing: border-box;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+
+        &:hover {
+          border-color: rgba(255, 255, 255, 0.3);
+          background: rgba(255, 255, 255, 0.15);
+        }
+
+        &.active {
+          border-color: #e67e22;
+          background: rgba(255, 255, 255, 0.15);
+          box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.2);
+        }
+
+        .dropdown-btn-content {
+          display: flex;
+          align-items: center;
+          gap: $space-s;
+
+          .dropdown-icon {
+            width: 16px;
+            height: 16px;
+            color: rgba(255, 255, 255, 0.7);
+          }
+
+          .dropdown-text {
+            color: white;
+          }
+        }
+
+        .dropdown-arrow {
+          width: 16px;
+          height: 16px;
+          color: rgba(255, 255, 255, 0.7);
+          transition: transform 0.2s;
+        }
+
+        &.active .dropdown-arrow {
+          transform: rotate(180deg);
+        }
+      }
+
+      .custom-dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #1a1a1a;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        margin-top: 4px;
+        z-index: 1000;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        max-height: 200px;
+        overflow-y: auto;
+
+        .dropdown-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: $space-m;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+          h4 {
+            margin: 0;
+            font-size: $font-size-s;
+            font-weight: $font-weight-semi-bold;
+            color: white;
+          }
+
+          .close-dropdown-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+              width: 16px;
+              height: 16px;
+            }
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.1);
+              color: white;
+            }
+          }
+        }
+
+        .dropdown-options {
+          padding: $space-xs;
+
+          .dropdown-option {
+            width: 100%;
+            padding: $space-s $space-m;
+            background: transparent;
+            border: none;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: $font-size-s;
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.1);
+            }
+
+            &.selected {
+              background: rgba(230, 126, 34, 0.2);
+              color: #e67e22;
+            }
+
+            .check-icon {
+              width: 16px;
+              height: 16px;
+              color: #e67e22;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: $space-s;
+    justify-content: flex-end;
+    margin-top: $space-l;
+    padding-top: $space-m;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    .btn {
+      padding: $space-s $space-m;
+      border-radius: 6px;
+      font-weight: $font-weight-semi-bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: $space-xs;
+      border: none;
+      font-size: $font-size-xs;
+
+      &.btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+          transform: translateY(-2px);
+        }
+      }
+
+      &.btn-primary {
+        background: #e67e22;
+        color: white;
+        border: 1px solid #e67e22;
+
+        &:hover {
+          background: #d35400;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+</style>
