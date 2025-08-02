@@ -460,13 +460,13 @@ const currentPage = ref('Öğrenciler')
 const notificationCount = ref(5)
 const isSidebarCollapsed = ref(false)
 
-// Stats
-const stats = ref({
-  totalStudents: 170,
-  activeStudents: 156,
-  averageGrade: 87,
-  weeklyAttendance: 94
-})
+// Stats (commented out as not currently used)
+// const stats = ref({
+//   totalStudents: 170,
+//   activeStudents: 156,
+//   averageGrade: 87,
+//   weeklyAttendance: 94
+// })
 
 // Navigation items
 const navItems = ref([
@@ -741,10 +741,10 @@ const submitNewStudent = () => {
   console.log('Yeni öğrenci başarıyla eklendi:', studentToAdd)
 }
 
-const exportStudents = () => {
-  // Export functionality
-  console.log('Exporting students...')
-}
+// Export functionality (commented out as not currently used)
+// const exportStudents = () => {
+//   console.log('Exporting students...')
+// }
 
 const viewStudentDetails = (student) => {
   router.push(`/teacher/students/${student.id}`)

@@ -85,11 +85,12 @@ const routes = [
           name: 'teacher-analytics',
           component: () => import('@/pages/teacher/TeacherAnalytics.vue')
         },
-      /* {
-        path: 'courses',
-        name: 'teacher-courses',
-        component: () => import('@/pages/teacher/TeacherCourses.vue')
+      {
+        path: 'quizzes',
+        name: 'teacher-quizzes',
+        component: () => import('@/pages/teacher/TeacherQuiz.vue')
       },
+      /* 
       {
         path: 'assignments',
         name: 'teacher-assignments',
@@ -109,7 +110,8 @@ const routes = [
         path: 'analytics',
         name: 'teacher-analytics',
         component: () => import('@/pages/teacher/TeacherAnalytics.vue')
-      },*/
+      },
+      */
       {
         path: 'profile',
         name: 'teacher-profile',
