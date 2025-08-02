@@ -1,48 +1,49 @@
 const { v4: uuidv4 } = require("uuid");
-
-const asyncHandler = require("../middleware/async");
+const multer = require("multer");
 const ErrorResponse = require("../utils/errorResponse");
 
-const photoUpload = (fileKey, required = true) =>
-  asyncHandler(async (req, res, next) => {
-    const file = req.files && req.files[fileKey];
+// Configure multer storage
+const storage = multer.memoryStorage();
 
-    if (!file && required) {
-      return next(new ErrorResponse("Please upload a file", 400));
-    } else if (!file) {
-      return next();
-    }
-
+// Configure multer upload
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: process.env.MAX_FILE_UPLOAD || 10485760 // 10MB default
+  },
+  fileFilter: (req, file, cb) => {
     // Make sure the image is a photo
     if (!file.mimetype.startsWith("image")) {
-      return next(new ErrorResponse("Please upload an image file", 400));
+      return cb(new ErrorResponse("Please upload an image file", 400), false);
     }
+    cb(null, true);
+  }
+});
 
-    // Check file size
-    if (file.size > process.env.MAX_FILE_UPLOAD) {
-      return next(
-        new ErrorResponse(
-          `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
-          400
-        )
-      );
-    }
+// Middleware to process the uploaded file
+const processUpload = (fileKey) => (req, res, next) => {
+  if (!req.file) {
+    return next(new ErrorResponse("Please upload a file", 400));
+  }
 
-    // Create custom filename
-    const date = new Date();
-    file.name =
-      uuidv4() +
-      "_" +
-      date.getMonth() +
-      "_" +
-      date.getDay() +
-      "_" +
-      date.getFullYear();
-      // + path.parse(file.name).ext;
+  // Create custom filename
+  const date = new Date();
+  const newFilename = uuidv4() +
+    "_" +
+    date.getMonth() +
+    "_" +
+    date.getDay() +
+    "_" +
+    date.getFullYear();
 
-    req.files[fileKey] = file;
+  req.file.filename = newFilename;
+  next();
+};
 
-    next();
-  });
+// Export middleware that combines multer upload and processing
+const photoUpload = (fileKey) => [
+  upload.single(fileKey),
+  processUpload(fileKey)
+];
 
 module.exports = photoUpload;

@@ -38,9 +38,7 @@ const upload = multer({
   }
 });
 
-// Tüm route'lar teacher yetkisi gerektirir
 router.use(protect);
-router.use(authorize('teacher'));
 
 // @route   GET /api/v1/quiz/ai/status
 // @desc    AI servis durumunu kontrol et

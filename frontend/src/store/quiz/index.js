@@ -6,19 +6,8 @@ import {
     updateQuizAxios,
     deleteQuizAxios
 } from '@/services/quiz/quiz.service';
-
-function asyncHandler(fn, errorHandler) {
-    return async function (...args) {
-        try {
-            return await fn.apply(this, args);
-        } catch (error) {
-            if (errorHandler) {
-                return errorHandler(error);
-            }
-            throw error;
-        }
-    };
-}
+import asyncHandler from '@/utils/async';
+import ai from './ai';
 
 function handleError(error) {
     console.error('Error in quiz store:', error);
@@ -30,6 +19,9 @@ function handleError(error) {
 
 export default {
     namespaced: true,
+    modules: {
+        ai
+    },
     
     state() {
         return {

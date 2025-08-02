@@ -3,7 +3,6 @@ const dotenv = require("dotenv");
 const path = require("path");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-const fileupload = require("express-fileupload");
 const cloudinary = require("cloudinary").v2;
 const helmet = require("helmet");
 
@@ -35,7 +34,7 @@ const quizzes = require("./routes/quiz/quiz");
 const quizQuestions = require("./routes/quiz/question");
 const quizTakes = require("./routes/quiz/quizTake");
 const quizResponses = require("./routes/quiz/response");
-
+const aiQuiz = require("./routes/quiz/aiQuiz");
 const cors = require("cors");
 const app = express();
 
@@ -90,18 +89,12 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // File Uploading with size limits and performance optimizations
-app.use(
-  fileupload({
-    limits: {
-      fileSize: parseInt(process.env.MAX_FILE_UPLOAD || "10485760"), // 10MB default
-    },
-    abortOnLimit: true,
-    responseOnLimit: "File size limit has been reached",
-    debug: process.env.NODE_ENV === "development",
-    safeFileNames: true,
-    preserveExtension: true,
-  })
-);
+const multer = require('multer');
+const upload = multer({
+  limits: {
+    fileSize: parseInt(process.env.MAX_FILE_UPLOAD || "10485760"), // 10MB default
+  }
+});
 
 // Set static folder with caching headers
 app.use(
@@ -133,7 +126,7 @@ app.use("/api/v1/quizzes", quizzes);
 app.use("/api/v1/quiz-questions", quizQuestions);
 app.use("/api/v1/quiz-takes", quizTakes);
 app.use("/api/v1/quiz-responses", quizResponses);
-
+app.use("/api/v1/quiz/ai", aiQuiz);
 // Error handler with performance logging
 app.use(errorHandler);
 

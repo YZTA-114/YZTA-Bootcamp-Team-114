@@ -101,8 +101,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 // @route    PUT /api/v1/auth/uploadavatar
 // @access   Private
 exports.uploadAvatar = asyncHandler(async (req, res, next) => {
-  const file = req.files?.file;
-  console.log(file);
+  const file = req.file;
 
   const userProfile = await UserProfile.findOne({ user: req.user.id });
 
@@ -118,7 +117,7 @@ exports.uploadAvatar = asyncHandler(async (req, res, next) => {
   if (file) {
     // Upload new image to cloudinary
     let imageUrl = await uploadToCloudinary(file, "avatar-images", {
-      public_id: file.name,
+      public_id: file.filename,
     });
 
     // Remove old avatar image
@@ -135,7 +134,7 @@ exports.uploadAvatar = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data: file.name,
+    data: file.filename,
   });
 });
 

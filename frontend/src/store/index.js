@@ -5,6 +5,7 @@ import classroomParticipation from "./classroom-participation";
 import quiz from "./quiz";
 import quizTake from "./quiz/quiz-take";
 import quizResponse from "./quiz/quiz-response";
+import ai from "./quiz/ai";
 
 const debug = process.env.NODE_ENV !== "production";
 
@@ -15,7 +16,8 @@ export default createStore({
         classroomParticipation,
         quiz,
         quizTake,
-        quizResponse
+        quizResponse,
+        ai
     },
     strict: debug,
     plugins: debug ? [createLogger()] : []

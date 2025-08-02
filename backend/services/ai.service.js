@@ -4,16 +4,132 @@ const pdf = require('pdf-parse');
 const multer = require('multer');
 const sharp = require('sharp');
 const tesseract = require('node-tesseract-ocr');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { ChatGoogleGenerativeAI } = require("@langchain/google-genai");
+const { PromptTemplate } = require("@langchain/core/prompts");
+const { JsonOutputFunctionsParser } = require("langchain/output_parsers");
 const { z } = require('zod');
 
-// Gemini konfigürasyonu
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Add logger utility
+const logger = {
+  info: (message, data = '') => console.log(`[INFO] ${message}`, data),
+  error: (message, error = '') => console.error(`[ERROR] ${message}`, error),
+  debug: (message, data = '') => console.debug(`[DEBUG] ${message}`, data)
+};
 
 class AIService {
   constructor() {
     this.supportedImageFormats = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff'];
     this.supportedPdfFormats = ['pdf'];
+
+    // Initialize Gemini model
+    this.model = new ChatGoogleGenerativeAI({
+      modelName: "gemini-2.5-flash",
+      apiKey: process.env.GEMINI_API_KEY,
+    });
+
+    // Define the output parser schema
+    this.questionsJsonSchema = {
+      name: "ExtractQuestions",
+      description: "Extract questions and answers from text",
+      parameters: {
+        type: "object",
+        properties: {
+          questions: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                question: { type: "string" },
+                options: { 
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      isCorrect: { type: "boolean" },
+                      content: { type: "string" },
+                      explanation: { type: "string" }
+                    },
+                    required: ["isCorrect", "content"]
+                  }
+                },
+                type: { 
+                  type: "string",
+                  enum: ["multiple_choice", "true_false", "open_ended"]
+                }
+              },
+              required: ["question", "type"]
+            }
+          }
+        },
+        required: ["questions"]
+      }
+    };
+
+    // Create output parser
+    this.outputParser = new JsonOutputFunctionsParser({
+      function_schema: this.questionsJsonSchema
+    });
+
+    // Create prompt template
+    this.promptTemplate = new PromptTemplate({
+      template: `Analyze the following text and extract questions and answers. The text may be from an exam, quiz, or test content.
+    
+    Text:
+    {text}
+    
+    Extract questions and answers in a JSON format with the following structure:
+    - A "questions" array containing question objects
+    - Each question object should have:
+      - "question": the question text
+      - "options": array of option objects (each with "isCorrect", "content", and optional "explanation")
+      - "type": either "multiple_choice", "true_false", or "open_ended"
+    
+    Example format:
+    {{
+      "questions": [
+        {{
+          "question": "What is the capital of France?",
+          "options": [
+            {{
+              "isCorrect": true,
+              "content": "Paris",
+              "explanation": "Paris is the capital and largest city of France"
+            }},
+            {{
+              "isCorrect": false,
+              "content": "London"
+            }}
+          ],
+          "type": "multiple_choice"
+        }}
+      ]
+    }}
+    
+    IMPORTANT RULES:
+    1. Return ONLY the JSON object, no other text
+    2. DO NOT wrap the response in markdown code blocks (no \`\`\`)
+    3. DO NOT add 'json' or any other text at the beginning
+    4. DO NOT add any comments or explanations
+    5. The response must be valid JSON
+
+    If no questions are found, return an empty array: {{"questions": []}}`,
+      inputVariables: ["text"]
+    });
+
+    // Initialize Zod schema for response validation
+    this.AIResponseSchema = z.object({
+      questions: z.array(z.object({
+        question: z.string(),
+        options: z.array(
+          z.object({
+            isCorrect: z.boolean(),
+            content: z.string(),
+            explanation: z.string().optional()
+          })
+        ).optional(),
+        type: z.enum(['multiple_choice', 'true_false', 'open_ended'])
+      }))
+    });
   }
 
   /**
@@ -40,9 +156,12 @@ class AIService {
    */
   async extractTextFromPDF(fileBuffer) {
     try {
+      logger.info('Starting PDF text extraction');
       const data = await pdf(fileBuffer);
+      logger.info('PDF text extraction completed', { textLength: data.text.length });
       return data.text;
     } catch (error) {
+      logger.error('PDF text extraction failed', error);
       throw new Error(`PDF metin çıkarma hatası: ${error.message}`);
     }
   }
@@ -54,24 +173,28 @@ class AIService {
    */
   async extractTextFromImage(fileBuffer) {
     try {
-      // Görseli optimize et
+      logger.info('Starting image text extraction');
+      
+      logger.debug('Optimizing image');
       const optimizedImage = await sharp(fileBuffer)
         .resize(2000, 2000, { fit: 'inside', withoutEnlargement: true })
         .png()
         .toBuffer();
+      logger.debug('Image optimization completed');
 
-      // OCR konfigürasyonu
       const config = {
-        lang: 'tur+eng', // Türkçe ve İngilizce
-        oem: 1,
+        lang: 'tur+eng',
+        oem: 3,
         psm: 3,
         dpi: 300,
-        preprocess: 'contrast',
       };
 
+      logger.debug('Starting OCR processing');
       const text = await tesseract.recognize(optimizedImage, config);
+      logger.info('Image text extraction completed', { textLength: text.length });
       return text;
     } catch (error) {
+      logger.error('Image text extraction failed', error);
       throw new Error(`Görsel metin çıkarma hatası: ${error.message}`);
     }
   }
@@ -83,59 +206,85 @@ class AIService {
    */
   async extractQuestionsAndAnswers(text) {
     try {
-      // Zod schema for AI response validation
-      const AIResponseSchema = z.object({
-        questions: z.array(z.object({
-          question: z.string(),
-          options: z.array(z.string()).optional(),
-          correctAnswer: z.string().optional(),
-          explanation: z.string().optional(),
-          type: z.enum(['multiple_choice', 'true_false', 'open_ended'])
-        }))
-      });
+      logger.info('Starting AI analysis');
+      
+      logger.debug('Formatting prompt');
+      const formattedPrompt = await this.promptTemplate.format({ text });
 
-      const prompt = `
-Aşağıdaki metni analiz ederek soru ve cevapları çıkar. 
-Metin bir sınav, quiz veya test içeriği olabilir.
-
-Metin:
-${text}
-
-Lütfen aşağıdaki formatta JSON döndür:
-{
-  "questions": [
-    {
-      "question": "Soru metni",
-      "options": ["A) Seçenek 1", "B) Seçenek 2", "C) Seçenek 3", "D) Seçenek 4"],
-      "correctAnswer": "A",
-      "explanation": "Doğru cevabın açıklaması (varsa)",
-      "type": "multiple_choice" // multiple_choice, true_false, open_ended
-    }
-  ]
-}
-
-Eğer soru bulunamazsa boş array döndür. Sadece JSON formatında cevap ver.
-`;
-
-      // LangChain ile Gemini'ya prompt gönder
-      const response = await model.invoke(prompt);
-
-      let parsedResponse;
-      try {
-        parsedResponse = JSON.parse(response);
-      } catch (e) {
-        // Kod bloğu içinde dönerse ayıkla
-        const match = response.match(/```json\s*([\s\S]*?)\s*```/);
-        if (match) {
-          parsedResponse = JSON.parse(match[1]);
-        } else {
-          throw new Error('AI yanıtı JSON formatında değil: ' + response);
-        }
+      logger.debug('Calling AI model');
+      const response = await this.model.invoke(formattedPrompt);
+      
+      logger.debug('Response received', { responseType: typeof response });
+      
+      // Handle different response formats
+      let responseText;
+      if (typeof response === 'string') {
+        responseText = response;
+      } else if (response && response.content) {
+        responseText = response.content;
+      } else if (Array.isArray(response) && response.length > 0) {
+        responseText = response[0].content;
+      } else {
+        throw new Error('Unexpected response format from AI model');
       }
 
-      const validatedResponse = AIResponseSchema.parse(parsedResponse);
-      return validatedResponse.questions || [];
+      // Clean the response text
+      responseText = responseText
+        // Remove markdown code blocks
+        .replace(/```(?:json)?\n?/g, '')
+        // Remove any trailing/leading whitespace
+        .trim();
+      
+      logger.debug('Cleaned response text', { 
+        firstChars: responseText.substring(0, 50) + '...',
+        length: responseText.length 
+      });
+
+      logger.debug('Parsing AI response');
+      let parsedResponse;
+      try {
+        parsedResponse = await this.outputParser.parse(responseText);
+      } catch (parseError) {
+        logger.error('Failed to parse AI response', { 
+          error: parseError.message,
+          responseText: responseText.substring(0, 200) + '...' 
+        });
+        throw new Error(`JSON parsing error: ${parseError.message}`);
+      }
+
+      logger.debug('Validating response schema');
+      let validatedResponse;
+      try {
+        validatedResponse = this.AIResponseSchema.parse(parsedResponse);
+      } catch (validationError) {
+        logger.error('Schema validation failed', { 
+          error: validationError.message,
+          parsedResponse 
+        });
+        throw new Error(`Schema validation error: ${validationError.message}`);
+      }
+      
+      const questions = validatedResponse.questions || [];
+      logger.info('AI analysis completed', { questionCount: questions.length });
+      
+      // Additional validation of questions
+      if (questions.length > 0) {
+        logger.debug('Sample question', { 
+          firstQuestion: {
+            type: questions[0].type,
+            hasOptions: Boolean(questions[0].options),
+            optionsCount: questions[0].options?.length
+          }
+        });
+      }
+      
+      return questions;
     } catch (error) {
+      logger.error('AI analysis failed', {
+        errorType: error.constructor.name,
+        errorMessage: error.message,
+        stack: error.stack
+      });
       throw new Error(`AI analiz hatası: ${error.message}`);
     }
   }
@@ -148,12 +297,15 @@ Eğer soru bulunamazsa boş array döndür. Sadece JSON formatında cevap ver.
    */
   async extractQuestionsFromFile(fileBuffer, filename) {
     try {
+      logger.info('Starting file processing', { filename });
       const fileType = this.getFileType(filename);
       
       if (fileType === 'unsupported') {
+        logger.error('Unsupported file type', { filename, fileType });
         throw new Error('Desteklenmeyen dosya formatı');
       }
 
+      logger.debug('File type detected', { fileType });
       let extractedText = '';
 
       if (fileType === 'pdf') {
@@ -163,21 +315,34 @@ Eğer soru bulunamazsa boş array döndür. Sadece JSON formatında cevap ver.
       }
 
       if (!extractedText || extractedText.trim().length === 0) {
+        logger.error('No text extracted from file', { filename });
         throw new Error('Dosyadan metin çıkarılamadı');
       }
 
-      // AI ile soru-cevap analizi
+      logger.debug('Text extracted successfully', { textLength: extractedText.length });
       const questions = await this.extractQuestionsAndAnswers(extractedText);
       
-      return {
+      const result = {
         success: true,
         questions: questions,
-        extractedText: extractedText.substring(0, 500) + '...', // İlk 500 karakter
+        extractedText: extractedText.substring(0, 500) + '...',
         fileType: fileType,
         totalQuestions: questions.length
       };
-
+      
+      logger.info('File processing completed', { 
+        filename,
+        fileType,
+        totalQuestions: questions.length 
+      });
+      
+      return result;
     } catch (error) {
+      logger.error('File processing failed', { 
+        filename,
+        error: error.message 
+      });
+      
       return {
         success: false,
         error: error.message,
@@ -195,15 +360,22 @@ Eğer soru bulunamazsa boş array döndür. Sadece JSON formatında cevap ver.
    * @returns {Promise<Array>} - Her dosya için sonuçlar
    */
   async extractQuestionsFromMultipleFiles(files) {
+    logger.info('Starting multiple files processing', { fileCount: files.length });
     const results = [];
     
     for (const file of files) {
+      logger.debug('Processing file', { filename: file.originalname });
       const result = await this.extractQuestionsFromFile(file.buffer, file.originalname);
       results.push({
         filename: file.originalname,
         ...result
       });
     }
+    
+    logger.info('Multiple files processing completed', { 
+      totalFiles: files.length,
+      successCount: results.filter(r => r.success).length
+    });
     
     return results;
   }
@@ -228,15 +400,52 @@ Eğer soru bulunamazsa boş array döndür. Sadece JSON formatında cevap ver.
    * @returns {Array} - Temizlenmiş sorular
    */
   cleanAndFormatQuestions(questions) {
-    return questions
-      .filter(question => this.validateQuestion(question))
-      .map(question => ({
-        ...question,
-        question: question.question.trim(),
-        options: question.options ? question.options.map(opt => opt.trim()) : [],
-        correctAnswer: question.correctAnswer ? question.correctAnswer.trim() : '',
-        explanation: question.explanation ? question.explanation.trim() : ''
-      }));
+    try {
+      logger.debug('Starting to clean and format questions', { questionCount: questions.length });
+      
+      return questions
+        .filter(question => this.validateQuestion(question))
+        .map(question => {
+          const cleanedQuestion = {
+            ...question,
+            question: question.question?.trim() || '',
+            type: question.type?.trim() || 'multiple_choice'
+          };
+
+          // Handle options if they exist
+          if (Array.isArray(question.options)) {
+            cleanedQuestion.options = question.options.map(opt => {
+              if (typeof opt === 'string') {
+                return {
+                  content: opt.trim(),
+                  isCorrect: false
+                };
+              }
+              return {
+                content: (opt.content || '').trim(),
+                isCorrect: Boolean(opt.isCorrect),
+                explanation: opt.explanation ? opt.explanation.trim() : undefined
+              };
+            });
+          } else {
+            cleanedQuestion.options = [];
+          }
+
+          // Handle optional fields
+          if (question.explanation) {
+            cleanedQuestion.explanation = question.explanation.trim();
+          }
+
+          return cleanedQuestion;
+        });
+    } catch (error) {
+      logger.error('Error in cleanAndFormatQuestions', {
+        error: error.message,
+        stack: error.stack
+      });
+      // Return the original questions if cleaning fails
+      return questions;
+    }
   }
 }
 

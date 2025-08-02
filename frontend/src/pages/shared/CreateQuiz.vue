@@ -10,36 +10,7 @@
       <span>Quiz Oluştur</span>
     </template>
     <template #sidebar-classroom-dropdown>
-      <div class="sidebar-classroom-dropdown modern-dropdown">
-        <div class="dropdown-selected" @click="dropdownOpen = !dropdownOpen">
-          <span class="dropdown-selected-title">{{ selectedClassroom.name }}</span>
-          <span class="dropdown-arrow" :class="{ open: dropdownOpen }">▼</span>
-        </div>
-        <div v-if="dropdownOpen" class="dropdown-list">
-          <div class="dropdown-header">Sınıflar</div>
-          <div class="dropdown-search-wrapper">
-            <input type="text" v-model="classroomSearch" placeholder="Sınıf ara..." class="dropdown-search" />
-          </div>
-          <div class="dropdown-items">
-            <div
-              v-for="classroom in filteredClassrooms"
-              :key="classroom.id"
-              class="dropdown-item"
-              :class="{ selected: classroom.id === selectedClassroom.id }"
-              @click="selectClassroom(classroom)"
-            >
-              {{ classroom.name }}
-            </div>
-            <div v-if="filteredClassrooms.length === 0" class="dropdown-empty">Sonuç bulunamadı</div>
-          </div>
-          <div class="dropdown-footer">
-            <button class="join-class-btn" @click="joinNewClass">
-              <ri-add-line />
-              {{ user.value?.role === 'teacher' ? 'Yeni Sınıf Oluştur' : 'Yeni Sınıfa Katıl' }}
-            </button>
-          </div>
-        </div>
-      </div>
+      <ClassroomDropdown />
     </template>
     <template #sidebar-nav>
       <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
@@ -184,9 +155,9 @@
               <button type="button" @click="goBack" class="btn-secondary">
                 İptal
               </button>
-              <button type="submit" class="btn-primary" :disabled="!isFormValid || isLoading">
-                <span v-if="isLoading" class="loading-spinner"></span>
-                {{ isLoading ? 'Oluşturuluyor...' : 'Quiz Oluştur' }}
+              <button type="submit" class="btn-primary" :disabled="!isFormValid || isProcessing">
+                <span v-if="isProcessing" class="loading-spinner"></span>
+                {{ isProcessing ? 'İşleniyor...' : 'Quiz Oluştur' }}
               </button>
             </div>
           </form>
@@ -197,12 +168,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useToast } from 'vue-toastification'
 import DashboardLayout from '@/layout/dashboard/DashboardLayout.vue'
 import DashboardNav from '@/components/dashboard/DashboardNav.vue'
+import ClassroomDropdown from '@/components/dashboard/ClassroomDropdown.vue'
 import { useNavigation } from '@/composables/useNavigation'
 
 const toast = useToast()
@@ -218,14 +190,8 @@ const notificationCount = ref(3)
 // Navigation
 const { navItems, isSidebarCollapsed } = useNavigation(userRole)
 
-// Classroom management
-const selectedClassroom = ref({
-  id: '',
-  name: 'Sınıf Seçin'
-})
-const dropdownOpen = ref(false)
-const classroomSearch = ref('')
-const classrooms = computed(() => store.getters['classroom/getClassrooms'])
+// Get current classroom from store
+const selectedClassroom = computed(() => store.getters['classroom/getCurrentClassroom'])
 
 // File upload
 const uploadedFile = ref(null)
@@ -253,17 +219,15 @@ const quizForm = ref({
 const isLoading = ref(false)
 
 // Computed properties
-const filteredClassrooms = computed(() => {
-  return classrooms.value.filter(classroom => 
-    classroom.name.toLowerCase().includes(classroomSearch.value.toLowerCase())
-  )
+const isProcessing = computed(() => {
+  return isLoading.value || store.getters['ai/getLoading']
 })
 
 const isFormValid = computed(() => {
   return uploadedFile.value && 
-         selectedLesson.value && 
+         selectedClassroom.value && 
          quizForm.value.title.trim().length > 0 &&
-         selectedClassroom.value.id
+         selectedLesson.value
 })
 
 // Methods
@@ -279,18 +243,6 @@ const handleProfile = () => {
 
 const handleSettings = () => {
   const route = userRole.value === 'teacher' ? '/teacher/settings' : '/student/settings'
-  router.push(route)
-}
-
-const selectClassroom = (classroom) => {
-  selectedClassroom.value = classroom
-  dropdownOpen.value = false
-  // Here you would fetch lessons for the selected classroom
-  // store.dispatch('lesson/fetchClassroomLessons', classroom.id)
-}
-
-const joinNewClass = () => {
-  const route = userRole.value === 'teacher' ? '/teacher/create-classroom' : '/student/join-classroom'
   router.push(route)
 }
 
@@ -368,29 +320,49 @@ const createQuiz = async () => {
   isLoading.value = true
   
   try {
-    // Create form data for file upload
-    const formData = new FormData()
-    formData.append('file', uploadedFile.value)
-    formData.append('title', quizForm.value.title)
-    formData.append('description', quizForm.value.description)
-    formData.append('lessonId', selectedLesson.value.id)
-    formData.append('classroomId', selectedClassroom.value.id)
+    // Clear any previous AI data
+    await store.dispatch('ai/clearExtractedData')
     
-    // Here you would call the API to create the quiz
-    // await store.dispatch('quiz/createQuiz', { lessonId: selectedLesson.value.id, quizData: formData })
+    // Extract questions from the uploaded file using AI
+    toast.info('Dosya işleniyor ve sorular çıkarılıyor...')
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    const result = await store.dispatch('ai/extractQuestionsFromFile', uploadedFile.value)
     
-    toast.success('Quiz başarıyla oluşturuldu!')
-    
-    // Redirect back to quizzes page
-    const route = userRole.value === 'teacher' ? '/teacher/dashboard' : '/student/quizzes'
-    router.push(route)
+    if (result && result.questions && result.questions.length > 0) {
+      // Log extracted questions for testing purposes
+      console.log('=== EXTRACTED QUESTIONS ===')
+      console.log('File Info:', {
+        filename: result.filename,
+        fileType: result.fileType,
+        totalQuestions: result.totalQuestions
+      })
+      console.log('Extracted Text:', result.extractedText)
+      console.log('Questions:', result.questions)
+      console.log('=== END EXTRACTED QUESTIONS ===')
+      
+      toast.success(`Başarıyla ${result.questions.length} soru çıkarıldı! Konsolu kontrol edin.`)
+      
+      // For testing purposes, we're not creating the quiz in database
+      // Just showing the success message and staying on the page
+      
+    } else {
+      toast.warning('Dosyadan herhangi bir soru çıkarılamadı. Lütfen dosyanın soru içerdiğinden emin olun.')
+    }
     
   } catch (error) {
-    console.error('Quiz creation error:', error)
-    toast.error('Quiz oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.')
+    console.error('AI extraction error:', error)
+    
+    // Handle different types of errors
+    if (error.response && error.response.data && error.response.data.message) {
+      toast.error(`Hata: ${error.response.data.message}`)
+    } else if (error.message) {
+      toast.error(`Hata: ${error.message}`)
+    } else {
+      toast.error('Dosya işlenirken bir hata oluştu. Lütfen tekrar deneyin.')
+    }
+    
+    // Also log the full error for debugging
+    console.error('Full error details:', error)
   } finally {
     isLoading.value = false
   }
@@ -400,175 +372,10 @@ const goBack = () => {
   const route = userRole.value === 'teacher' ? '/teacher/dashboard' : '/student/quizzes'
   router.push(route)
 }
-
-// Lifecycle
-onMounted(async () => {
-  // Fetch classrooms
-  try {
-    await store.dispatch('classroom/fetchClassrooms')
-    if (classrooms.value.length > 0) {
-      selectedClassroom.value = classrooms.value[0]
-    }
-  } catch (err) {
-    console.log(err)
-    toast.error(err.message)
-  }
-  
-  // Fetch classrooms if not already loaded
-  if (classrooms.value.length === 0) {
-    await store.dispatch('classroom/fetchClassrooms')
-  }
-})
 </script>
 
 <style lang="scss" scoped>
 @import '@/assets/scss/custom/_variable.scss';
-
-.sidebar-classroom-dropdown {
-  position: relative;
-  margin-bottom: 18px;
-  padding: 0 16px;
-  font-family: inherit;
-  &.modern-dropdown {
-    .dropdown-selected {
-      font-size: 1.1rem;
-      font-weight: 600;
-      background: #232323;
-      color: #fff;
-      padding: 14px 18px;
-      border-radius: 10px;
-      width: 100%;
-      min-width: 180px;
-      text-align: left;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border: 1.5px solid $orange;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-      transition: border 0.2s;
-    }
-    .dropdown-selected:hover, .dropdown-selected:focus {
-      border: 1.5px solid darken($orange, 10%);
-    }
-    .dropdown-selected-title {
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .dropdown-arrow {
-      margin-left: 10px;
-      font-size: 1.1rem;
-      transition: transform 0.2s;
-      color: #fff;
-      &.open {
-        transform: rotate(180deg);
-      }
-    }
-    .dropdown-list {
-      position: absolute;
-      top: 110%;
-      left: 0;
-      right: 0;
-      background: #232323;
-      border-radius: 12px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
-      z-index: 20;
-      width: 100%;
-      min-width: 180px;
-      padding-bottom: 8px;
-      border: 1.5px solid $orange;
-      animation: fadeIn 0.18s;
-    }
-    .dropdown-header {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #fff;
-      padding: 14px 18px 6px 18px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      background: #232323;
-    }
-    .dropdown-search-wrapper {
-      padding: 8px 18px 0 18px;
-    }
-    .dropdown-search {
-      width: 100%;
-      padding: 7px 12px;
-      border-radius: 7px;
-      border: 1.2px solid rgba(255,255,255,0.1);
-      background: #232323;
-      color: #fff;
-      font-size: 1rem;
-      outline: none;
-      transition: border 0.2s;
-    }
-    .dropdown-search:focus {
-      border: 1.2px solid rgba(255,255,255,0.2);
-    }
-    .dropdown-items {
-      max-height: 220px;
-      overflow-y: auto;
-      margin-top: 4px;
-    }
-    .dropdown-item {
-      padding: 12px 18px;
-      font-size: 1rem;
-      color: #fff;
-      cursor: pointer;
-      text-align: left;
-      border-radius: 7px;
-      margin: 2px 8px;
-      transition: background 0.15s, color 0.15s;
-    }
-    .dropdown-item.selected, .dropdown-item:hover {
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-    }
-    .dropdown-footer {
-      padding: 8px 18px 12px 18px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      margin-top: 4px;
-      display: flex;
-      justify-content: flex-end;
-      background: #232323;
-      border-radius: 0 0 12px 12px;
-    }
-    .join-class-btn {
-      width: 100%;
-      padding: 10px 16px;
-      background: $orange;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-      &:hover {
-        background: darken($orange, 10%);
-        transform: translateY(-1px);
-      }
-      &:active {
-        transform: translateY(0);
-      }
-    }
-    .dropdown-empty {
-      padding: 16px 18px;
-      color: #888;
-      font-size: 1rem;
-      text-align: center;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  }
-}
 
 .create-quiz-page {
   background: #000;
