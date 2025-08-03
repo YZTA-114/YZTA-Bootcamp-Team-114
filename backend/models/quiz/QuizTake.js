@@ -20,11 +20,14 @@ const QuizTakeSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    // TODO: add expiration time
     completedAt: {
         type: Date,
         default: null
     },
+    responses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'QuizResponse'
+    }],
     createdAt: {
         type: Date,
         default: Date.now

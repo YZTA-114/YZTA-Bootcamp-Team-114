@@ -1,6 +1,14 @@
 <template>
   <div class="take-quiz-container">
-    <div class="main-content">
+    <div v-if="loading || submitting" class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">{{ submitting ? 'Quiz gönderiliyor...' : 'Quiz yükleniyor...' }}</div>
+    </div>
+    <div v-else-if="error" class="error-container">
+      <div class="error-message">{{ error }}</div>
+      <button class="retry-btn" @click="loadQuiz">Tekrar Dene</button>
+    </div>
+    <div v-else class="main-content">
       <div class="question-sidebar">
 
         <div class="timer-container">
@@ -37,7 +45,7 @@
             <div class="placeholder-icon">?</div>
           </div>
           <div class="profile-info">
-            <div class="user-name">Muhammet</div>
+            <div class="user-name">{{ user.userProfile.firstName }} {{ user.userProfile.lastName }}</div>
             <div class="user-role">Student</div>
           </div>
         </div>
@@ -68,12 +76,12 @@
                 v-for="(option, index) in currentQuestion.options" 
                 :key="index"
                 class="option-item"
-                :class="{ selected: selectedAnswer === index }"
+                :class="{ selected: selectedAnswers[currentQuestionIndex] === index }"
                 @click="selectAnswer(index)"
               >
                 <div class="option-letter">{{ String.fromCharCode(65 + index) }})</div>
-                <div class="option-text">{{ option }}</div>
-                <div class="option-check" v-if="selectedAnswer === index">
+                <div class="option-text">{{ option.content }}</div>
+                <div class="option-check" v-if="selectedAnswers[currentQuestionIndex] === index">
                   <ri-check-line />
                 </div>
               </div>
@@ -95,8 +103,10 @@
         <SecondaryButton
           v-if="currentQuestionIndex === quizQuestions.length - 1"
           class="finish-btn-fixed"
+          @click="submitQuiz"
+          :disabled="submitting"
         >
-          Sınavı Bitir
+          {{ submitting ? 'Gönderiliyor...' : 'Sınavı Bitir' }}
         </SecondaryButton>
         
         <!-- quiz-actions buttons removed as requested -->
@@ -107,10 +117,22 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+import { useToast } from 'vue-toastification'
 import SecondaryButton from '@/components/custom/button/SecondaryButton.vue'
 
-// Timer logic
-const totalSeconds = ref(6669) // 1 hour 51 minutes 9 seconds
+const route = useRoute()
+const router = useRouter()
+const store = useStore()
+const toast = useToast()
+
+const user = computed(() => store.getters['auth/getUser']);
+
+const loading = ref(true)
+const submitting = ref(false)
+const error = ref(null)
+const totalSeconds = ref(0)
 const timerDisplay = computed(() => {
   const hours = Math.floor(totalSeconds.value / 3600).toString().padStart(2, '0')
   const minutes = Math.floor((totalSeconds.value % 3600) / 60).toString().padStart(2, '0')
@@ -119,286 +141,119 @@ const timerDisplay = computed(() => {
 })
 
 let timerInterval = null
+
+const loadQuiz = async () => {
+  try {
+    loading.value = true
+    error.value = null
+    
+    // Fetch quiz data
+    const quizResponse = await store.dispatch('quiz/fetchQuizById', route.params.quizId)
+    console.log('Raw Quiz Response:', quizResponse)
+    
+    if (!quizResponse || !quizResponse.questions) {
+      throw new Error('Quiz verisi alınamadı')
+    }
+    
+    // Fetch quiz take to verify it exists and is valid
+    const quizTakeResponse = await store.dispatch('quizTake/fetchQuizTakeById', route.params.quizTakeId)
+    console.log('Raw Quiz Take Response:', quizTakeResponse)
+    
+    if (!quizTakeResponse || quizTakeResponse.status !== 'uncompleted') {
+      toast.error('Bu quiz zaten tamamlanmış veya süresi dolmuş')
+      router.push('/student/quizzes')
+      return
+    }
+
+    // Set up timer
+    totalSeconds.value = quizResponse.timeLimit * 60 // Convert minutes to seconds
+    timerInterval = setInterval(() => {
+      if (totalSeconds.value > 0) {
+        totalSeconds.value--
+      } else {
+        // Time's up - submit quiz
+        submitQuiz()
+      }
+    }, 1000)
+
+    // Set up questions
+    console.log('Questions before mapping:', quizResponse.questions)
+    quizQuestions.value = quizResponse.questions.map(q => {
+      console.log('Processing question:', q)
+      console.log('Question options:', q.options)
+      return {
+        id: q._id,
+        text: q.content,
+        options: Array.isArray(q.options) ? q.options.map(opt => ({
+          id: opt._id,
+          content: opt.content
+        })) : []
+      }
+    })
+
+    console.log('Final Quiz Questions:', quizQuestions.value)
+
+  } catch (error) {
+    console.error('Error in loadQuiz:', error)
+    error.value = error.message || 'Quiz yüklenirken bir hata oluştu'
+    toast.error(error.value)
+  } finally {
+    loading.value = false
+  }
+}
+
 onMounted(() => {
-  timerInterval = setInterval(() => {
-    if (totalSeconds.value > 0) totalSeconds.value--
-  }, 1000)
-})
-onUnmounted(() => {
-  clearInterval(timerInterval)
+  loadQuiz()
 })
 
-const goToQuestion = (idx) => {
-  currentQuestionIndex.value = idx
+onUnmounted(() => {
+  if (timerInterval) {
+    clearInterval(timerInterval)
+  }
+})
+
+const submitQuiz = async () => {
+  try {
+    submitting.value = true
+    clearInterval(timerInterval)
+    
+    // Collect all answers
+    const answers = []
+    quizQuestions.value.forEach((question, index) => {
+      if (selectedAnswers.value[index] !== undefined) {
+        const selectedOption = question.options[selectedAnswers.value[index]]
+        answers.push({
+          questionId: question.id,
+          answerOption: selectedOption.id
+        })
+      }
+    })
+
+    // Submit quiz
+    await store.dispatch('quiz/submitQuiz', {
+      quizTakeId: route.params.quizTakeId,
+      answers: answers
+    })
+    
+    console.log("Answers", answers);
+    toast.success('Quiz başarıyla tamamlandı')
+    router.push('/student/quizzes')
+  } catch (error) {
+    console.error('Error submitting quiz:', error)
+    toast.error('Quiz gönderilirken bir hata oluştu')
+  } finally {
+    submitting.value = false
+  }
 }
 
 const currentQuestionIndex = ref(0)
-const selectedAnswer = ref(null)
+const selectedAnswers = ref({})
 
-const quizQuestions = ref([
-  {
-    id: 1,
-    text: `<p>İlerideki uçurumun kıyısına kadar yürüdüler. "Kıyı" sözcüğünün bu cümledeki anlamı, aşağıdaki altı çizili sözcüklerin hangisinde vardır?</p>`,
-    options: [
-      "Paltosunun yakasını kaldırıp caddeye doğru yürümeye başladı.",
-      "Duvarın kenarında tek başına uzun bir süre bekledi.",
-      "Genç adam etrafına meraklı gözlerle bakıyordu.",
-      "Komşuluk ilişkilerinin çok iyi olduğu bir çevrede yetişti."
-    ]
-  },
-  {
-    id: 2,
-    text: `<p>Aşağıdakilerin hangisinde "orta" sözcüğü, cümlede kazandığı anlamla eşleştirilmiştir?</p>`,
-    options: [
-      "Topluluk içinde, arasında.",
-      "Orta boy bir ev aldılar.",
-      "Orta yaşlı bir adam geldi.",
-      "Orta seviyede bir öğrenci."
-    ]
-  },
-  {
-    id: 3,
-    text: `<p>Aşağıdakilerin hangisinde bir öneri gerekçesiyle birlikte verilmiştir?</p>`,
-    options: [
-      "Damlayan bir musluk, bir günde yedi kova su harcar.",
-      "Kirli ellerde ne kadar çok mikrop yaşıyor, biliyor musunuz?",
-      "Suyumuza sahip çıkalım, bir damla suya muhtaç kalabiliriz.",
-      "Ne kadar su harcadığına dikkat et, muslukları kontrol et!"
-    ]
-  },
-  {
-    id: 4,
-    text: `<p>Sayın profesör, yeni kitabının bir bölümünde "Tükenmez Kalem"e cevap vermiş. Daha doğrusu "Tükenmez Kalem köşesinin yazarı Mehmet Efe!" diyerek baltayı taşa vurmuş. Meğer beni Mehmet Efe sanıyormuş. Birincisi ben Mehmet Efe değilim, kendisini tanımam. Sadece yazılarını okurum. İkincisi, sayın profesör bana değil, asıl kendisiyle ilgili iddiaları dile getiren tarihçi Sezai Kerim'e cevap vermeli. Zaten Sezai Kerim de tam bu noktada "Yanlış bilgiyle doğru bilgiyi ayırt edemiyor, hep..." diyordu.</p>
-    <p>Bu metinde üç nokta ile belirtilen yere aşağıdaki deyimlerden hangisi getirilirse parçada anlatılanlar özetlenmiş olur?</p>`,
-    options: [
-      "bir baltaya sap olamıyor.",
-      "saman altından su yürütüyor.",
-      "saman alevi gibi parlayıp sönüyor.",
-      "sapla samanı birbirine karıştırıyor."
-    ]
-  },
-  {
-    id: 5,
-    text: `<p>Gençliği bir mutluluk dönemi saymak yanılgısına düşenler, ihtiyarlığı da acıklı bir dönem sayıyorlar. "Artık ben ihtiyarladım." dediğimde "Hayır, sadece yaşlandınız." diyorlar. (K) Sanki yaşlanmakla ihtiyarlamak aynı anlama gelmiyormuş gibi. (L) Benden genç olanlar, benimle karşılaşır karşılaşmaz "Sizi çok iyi gördüm." diyorlar selam yerine. (M) Bunu söylerken, sanırım yaşlılığın beni incittiğini düşünüyorlar. (N) Aslında huzurlu ve güzel günlerin bir başlangıcı.</p>
-    <p>Yukarıdaki paragrafta düşüncenin akışını kesen bir eksiklik bulunmaktadır. Bu eksikliği gidermek için K, L, M, N harfleriyle belirtilen boşlukların hangisine "Oysa yaşlanmak hiç de üzülecek bir durum değil." cümlesi getirilmelidir?</p>`,
-    options: [
-      "K",
-      "L", 
-      "M",
-      "N"
-    ]
-  },
-  {
-    id: 6,
-    text: `<p>"Ala keçiyi gören, içi dolu yağ sanır." atasözündeki "dolu" sözcüğünün sesteşi aşağıdaki cümlelerin hangisinde vardır?</p>`,
-    options: [
-      "Doludur gönlüm ışıklarla bu bayram sabahı.",
-      "Bugün çok doluyum, yarın görüşelim.",
-      "Gölün kenarına kurdukları çadır, doludan zarar görmüştü.",
-      "Haftaya pazartesiye kadar bütün uçaklar dolu."
-    ]
-  },
-  {
-    id: 7,
-    text: `<p>Aşağıdakilerden hangisi bir "düşünce yazısı"dır?</p>`,
-    options: [
-      "Kuzuyu kâtibe verdim, kâtip bana yazı verdi... Yazıyı ozana verdim, ozan bana sazı verdi... Kimseye vermem bu sazı, ben çalarım bazı bazı, dinle benden, ince telden, söyleşelim tatlı dilden...",
-      "Tüm vazgeçişlerime rağmen defterden vazgeçebilir miyim? Asla... Öyle bilgisayar delisi değilim ben. El yazısı, karalamalar, satırların üstüne çizmenin zevki... Bilgisayara değişilir mi bunlar?",
-      "Sokak lambaları gün boyu yanıyor, yine de insanlar sisten birbirlerine çarpıyordu. Fayton beygirlerinin çıngırakları, insan ve nal sesleri, bu sisli havada boğuk boğuk duyuluyordu. Hafta haftayı izliyor, hava hiç değişmiyordu.",
-      "Birkaç ay içinde büyük bir ilerleme göstermişti. Tüm derslerde durumunu epeyce düzeltmişti. 'Bu çocuk bu sınıfı üç sene okusa yine başaramaz!'diyenler şaşıp kalıyorlardı. O sene Osman takdir alarak sınıfı geçti."
-    ]
-  },
-  {
-    id: 8,
-    text: `<p>"Şiir yazmış bir kimse başkasına zarar vermez." Orhan Veli mi söylemişti bunu? Sanatın işlevini ve yararını çok ince bir biçimde açıklayan bu söz, her kesimden okura da adanmalıdır, diyorum. Çünkü işlev açısından ele alınırsa yukarıdaki cümle yalnız şairi değil, şiir okurunu da kavrayan bir öz taşıyor. Roman okurunu da, öykü okurunu da...</p>
-    <p>Bu paragrafın anlatımında aşağıdakilerin hangisi kullanılmıştır?</p>`,
-    options: [
-      "Tanımlama",
-      "Öyküleme",
-      "Benzetme",
-      "Tanık gösterme"
-    ]
-  },
-  {
-    id: 9,
-    text: `<div class="question-image-container">
-      <div class="speech-bubble">
-        <p>Nedense bilimsel bir kesinliğe sahiptir haritalar gözümüzde. Çoğu zaman birer insan ürünü olduklarını bile unuturuz. Haritalar, yeryüzünü olduğu gibi gösteren tartışmasız birer fotoğraftır toplumun gözünde.</p>
-      </div>
-    </div>
-    <p>Deniz'in verdiği cevaba göre, Oya aşağıdakilerden hangisini sormuştur?</p>`,
-    options: [
-      "Bir haritadan yararlanarak bilmediğimiz bir yere gidebilir miyiz?",
-      "Haritalar gerçeğin kendisini mi yansıtır yoksa onun kurgulanmış resmi midir?",
-      "Modern dünya haritalarının çiziminde hangi yöntemler kullanılmıştır?",
-      "Önüne bir dünya haritası koyup gözlerinle ülkeden ülkeye, kıtadan kıtaya gezdin mi?"
-    ]
-  },
-  {
-    id: 10,
-    text: `<p>(1) Kavurucu temmuz güneşi, Ömer dayıyı yormuş; terletmişti. (2) Ömer dayı sabahtan beri tarlasında ekin biçiyordu. (3) Arada sırada doğrulup dinleniyordu. (4) Çizgili, yakasız keten gömleğinin önü boydan boya açıktı.</p>
-    <p>Bu parçadaki numaralandırılmış cümlelerin hangisinde neden-sonuç ilişkisi vardır?</p>`,
-    options: [
-      "1",
-      "2", 
-      "3",
-      "4"
-    ]
-  },
-  {
-    id: 11,
-    text: `<div class="text-excerpt">
-      <p>"Mercan Adası", denizci bir ailenin oğlu olan Ralph ve arkadaşlarının Güney Pasifik'te batan bir gemiden kurtularak bir mercan adasına çıkmalarını, bu adada yaşadıkları heyecanlı günleri anlatır. Burası, neredeyse bütün yıl yaz mevsiminin hüküm sürdüğü, ağaçların bol ve lezzetli meyvelerle dolup taştığı bir yerdir.</p>
-    </div>
-    <div class="text-excerpt">
-      <p>Her çocuk, bence zevkle okunmaya değer ilginç bir kitap; karşısında uzun uzun, hayran hayran düşünülecek bir bilinmeyenler âlemidir... Ben bu kitapta sadece gördüklerimi ve duyduklarımı (işittiklerimi değil, hissettiklerimi) sunuyorum. Çok sevdiğim "Benim Küçük Dostlarım"ı, daha doğrusu binlerce küçük dostumdan rastgele birkaçını okurlarıma da tanıtmak istedim.</p>
-    </div>
-    <p>Bu iki metne göre, her iki kitapla ilgili olarak aşağıdakilerden hangisi söylenebilir?</p>`,
-    options: [
-      "Çocuklar için yazılmış oldukları",
-      "Yazarlarının düşüncelerini yansıttıkları",
-      "Yaşanabilecek olayları konu edindikleri",
-      "Çocuklara okuma alışkanlığı kazandırmayı amaçladıkları"
-    ]
-  },
-  {
-    id: 12,
-    text: `<p>Eleştirmenlik zor bir iş. Bazı dergilerde öyle kitap eleştirileri okuyorum ki kitabı okumadığım hâlde yazarına haksızlık edildiğini anlıyorum. Yazar yirmi yıl emek vermiş; bir arkadaş çıkıyor, onu yerin dibine batırıyor, olur mu? Adamın dedikodusunu yapar gibi kitap eleştiriyor. Yazarın kitabı ile kişiliğini hâlâ karıştırıyoruz.</p>
-    <p>Bu parçada, sözü edilen eleştirmenlerle ilgili olarak aşağıdakilerden hangisinden yakınılmaktadır?</p>`,
-    options: [
-      "Kitapları ayrıntılı okumadan eleştirmelerinden",
-      "Başarılı yazarları yeterince tanımadıklarından",
-      "Sayfa sayısı çok olan kitaplarla ilgilenmediklerinden",
-      "Kitabın içeriğinden çok, yazara ilişkin özellikleri söz konusu etmelerinden"
-    ]
-  },
-  {
-    id: 13,
-    text: `<p>Zaman ileriye doğru akıp gittiğine göre, büyülendiğimiz "gelecek", aslında el değmemiş "geçmiş"ten başka bir şey değildir.</p>
-    <p>Aşağıdakilerden hangisi bu cümleyle aynı anlamdadır?</p>`,
-    options: [
-      "Zaman, geçmişten geleceğe akıp giden bir nehirdir.",
-      "Gelecek dediğimiz zaman dilimi, günü gelince geçmiş adını alır.",
-      "Geçmiş ve gelecek, zamanın birbirine en uzak duraklarıdır.",
-      "Zamanın doğduğu kaynak geçmiş ise, döküldüğü deniz de gelecektir."
-    ]
-  },
-  {
-    id: 14,
-    text: `<p>Bir çocuk hiçbir zaman karga ya da tilkinin, insan gibi konuşacağına inanmaz. Fakat böyle olağanüstülüklere ihtiyacı vardır. Nitekim kendi oyuncak bebeklerine birer kişilik yakıştıran, onlarla konuşan ve türlü türlü sahneler düzenleyen bir çocuk, yarattığı olaylara inanmış değildir. Yanlış kanılar, boş inançlar çocuklara yetişkinlerden geçer; asıl bundan çekinmek gerekir. Yoksa hayalin gıdası olan masallardan değil.</p>
-    <p>Bu metnin ana düşüncesi aşağıdakilerden hangisidir?</p>`,
-    options: [
-      "Hayal kurmak, çocuğun başarılı olmasında çok etkilidir.",
-      "Çocuklardan önce yetişkinler masal okuyarak hayal kurmayı öğrenmelidir.",
-      "Çocuğa zarar veren hayal kurması değil, kafasının yanlış fikirlerle doldurulmasıdır.",
-      "Ana dilinin kavranmasında, hayal gücünün zenginleşmesinde masalların büyük payı vardır."
-    ]
-  },
-  {
-    id: 15,
-    text: `<p>Bu parçanın başlığında, okuyucunun dikkatini çekmek için aşağıdakilerden hangisi yapılmıştır?</p>`,
-    options: [
-      "Cilt, kaleye benzetilmiştir.",
-      "Cildin sanat yönü vurgulanmıştır.",
-      "Cilt, bir insan gibi konuşturulmuştur.",
-      "Cilt yapmanın ustalık gerektirdiği belirtilmiştir."
-    ]
-  },
-  {
-    id: 16,
-    text: `<p>Çok okuyan bir sanat tarihçisi tanıyorum. Okuduğu kitaplardan "Tuhaf Bir Serüven" adlı kitap için "İşte bu benim klasiğim!" derdi. Bu kitabı kendi klasiği olarak görmesinin nedeni, her fırsatta ondan espriler aktarması, içinde yer aldığı her olayla romanın sahneleri arasında bağlantı kurması ve kendisinin, yaşadıklarının, düşüncelerinin yavaş yavaş "Tuhaf Bir Serüven" romanının çehresine bürünmesiydi.</p>
-    <p>Sanat tarihçisinin, parçada sözü edilen kitabı klasik olarak görmesinin nedeni aşağıdakilerden hangisidir?</p>`,
-    options: [
-      "Üzerinde fazlaca yorum yapılması",
-      "Birçok insan tarafından okunması",
-      "Edebî değerine önem vermesi",
-      "Kendi hayatıyla ilişkilendirmesi"
-    ]
-  },
-  {
-    id: 17,
-    text: `<p>Aşağıda bir paragrafın cümleleri karışık olarak verilmiştir:</p>
-    <p>1. Bu önerimi uygularsan yanlışlarını fark edeceksin.</p>
-    <p>2. Bu yolla, hem tüm bilimlerin ve sanatların kaynağı olan deneyim hazinen zenginleşecek hem de resim sanatında yetkinleşerek doruklara ulaşacaksın.</p>
-    <p>3. Çalışmalarındaki yanlışlıkları gidermek için resimde ortaya koyduğun nesneleri, gereksiz ayrıntılardan kurtarıp gerçeğine benzeyecek kadar belirginleştirmelisin.</p>
-    <p>4. Yani hatalarını eleştirerek yön vereceğin yargılama gücün sayesinde, resimlerindeki orantısız ve ölçüsüz her ayrıntıyı ayırt ederek düzeltebileceksin.</p>
-    <p>Kaç numaralı cümle, bu paragraftaki düşünce akışına göre en sonda yer almalıdır?</p>`,
-    options: [
-      "1",
-      "2", 
-      "3",
-      "4"
-    ]
-  },
-  {
-    id: 18,
-    text: `<p>Genç bir yazarın, sevdiği yazarları seçmesinin her zaman önemli bir adım olduğuna kuşku yok. Sonunda yazı yolunun üstündeki her dönemeçte bir yazarla karşılaşır genç yazar ve sevdiği yazarların niteliği, gideceği yolun ucunun baştan görülmesini sağlar...</p>
-    <p>Paragrafın anlam bütünlüğü dikkate alındığında, üç nokta ile belirtilen yere aşağıdakilerden hangisi getirilmelidir?</p>`,
-    options: [
-      "Bu seçimi yapabilme yeteneği, onun kendine özgü bir okuma biçimi edindiğini, dolayısıyla kendine özgü bir yazının izini sürmeye başladığını gösterir.",
-      "'İyi ki çok okudum.' diyebilmenin yazarlar için ne denli ayırt edici bir özellik olduğunu genç yazarlar daha iyi değerlendirir.",
-      "Öykü dünyasının nasıl kurgulanması gerektiğine ilişkin başka derse gereksinimi kalmayacak şekilde onu kendi içlerine çekecektir bu eserler.",
-      "Ancak okurlar istediğinde, sevdikleri yazarları dile getirmekten kaçınmak bir yana, sıraya bile koyarak açıklarlar."
-    ]
-  },
-  {
-    id: 19,
-    text: `<p>Soba gürül gürül yanıyordu. Odam iyice ısınmıştı. Kedi her zamanki gibi köşesinde, mışıl mışıl uyuyordu ama benim gözüme uyku girmiyordu. Çünkü kuş onun kafasından benim kafama, benim kafamdan onun kafasına konup duruyordu. Uzun bir süre kuşun kanat seslerine, kedinin mırıltısına kulak kesildim.</p>
-    <p>Yazar, bu metinde anlatımı kuvvetlendirmek için aşağıdaki dil ve anlatım özelliklerinin hangisinden yararlanmıştır?</p>`,
-    options: [
-      "Deyimlerden",
-      "Kişileştirmelerden",
-      "Eksiltili cümlelerden",
-      "Olağanüstü ögelerden"
-    ]
-  },
-  {
-    id: 20,
-    text: `<p>Adayı en ıssız köşelerine ( 1 ) kıyılarına kadar dolaştık ( 2 ) yerlere atılmış bir çöp ( 3 ) bir kâğıt parçası ( 4 ) bir meyve kabuğu bile bulamadık.</p>
-    <p>Bu cümledeki kaç numaralı boşluğa noktalı virgül konmalıdır?</p>`,
-    options: [
-      "1",
-      "2", 
-      "3",
-      "4"
-    ]
-  },
-  {
-    id: 21,
-    text: `<p>Serpilmeye başladı bir rüzgâr ince ince,<br>Son yokuş noktasından düzlüğe çevrilince.</p>
-    <p>Faruk Nafiz Çamlıbel</p>
-    <p>Bu dizelerdeki altı çizili sözcüklerden hangisi fiilimsidir?</p>`,
-    options: [
-      "Başladı",
-      "Rüzgâr",
-      "Yokuş",
-      "Çevrilince"
-    ]
-  },
-  {
-    id: 22,
-    text: `<p>Erciyes Dağı, güneş batarken bütün heybetiyle bulutların arasından bizi selamlıyordu.</p>
-    <p>Bu cümlenin dolaylı tümleci aşağıdakilerden hangisidir?</p>`,
-    options: [
-      "güneş batarken",
-      "bütün heybetiyle",
-      "bulutların arasından",
-      "bizi"
-    ]
-  },
-  {
-    id: 23,
-    text: `<p>Sayın Veli,</p>
-    <p>Bu davetiyedeki anlatım bozukluğu aşağıdakilerin hangisiyle giderilebilir?</p>`,
-    options: [
-      "'sizi' sözcüğü 'sizleri' yapılarak",
-      "'de' bağlacı cümleden çıkarılarak",
-      "'yılında' sözcüğünün yerine 'tarihinde' sözcüğü getirilerek",
-      "'gösterimizde' sözcüğü 'etkinliğimizde' sözcüğüyle değiştirilerek"
-    ]
-  }
-])
+const selectAnswer = (optionIndex) => {
+  selectedAnswers.value[currentQuestionIndex.value] = optionIndex
+}
 
+const quizQuestions = ref([])
 const currentQuestion = computed(() => {
   return quizQuestions.value[currentQuestionIndex.value]
 })
@@ -406,21 +261,17 @@ const currentQuestion = computed(() => {
 const nextQuestion = () => {
   if (currentQuestionIndex.value < quizQuestions.value.length - 1) {
     currentQuestionIndex.value++
-    selectedAnswer.value = null
   }
 }
 
 const previousQuestion = () => {
   if (currentQuestionIndex.value > 0) {
     currentQuestionIndex.value--
-    selectedAnswer.value = null
   }
 }
 
-const selectAnswer = (optionIndex) => {
-  selectedAnswer.value = optionIndex
-  // Update question status in sidebar
-  // questions.value[currentQuestionIndex.value].status = 'answered' // This line is no longer needed
+const goToQuestion = (idx) => {
+  currentQuestionIndex.value = idx
 }
 </script>
 
@@ -961,6 +812,76 @@ const selectAnswer = (optionIndex) => {
   font-weight: $font-weight-semi-bold;
   z-index: 100;
   box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: $black;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid $pink;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: $white;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: $black;
+  padding: 20px;
+}
+
+.error-message {
+  color: $white;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.retry-btn {
+  background: $pink;
+  color: $white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: darken($pink, 5%);
+    transform: translateY(-1px);
+  }
 }
 </style>
 

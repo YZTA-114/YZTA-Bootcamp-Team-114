@@ -90,6 +90,21 @@ const routes = [
         component: () => import('@/pages/student/StudentQuizzes.vue')
       },
       {
+        path: 'quiz/:id',
+        name: 'student-quiz-detail',
+        component: () => import('@/pages/student/QuizDetail.vue')
+      },
+      {
+        path: 'quiz/:quizId/take/:quizTakeId',
+        name: 'take-quiz',
+        component: () => import('@/pages/student/TakeQuiz.vue')
+      },
+      {
+        path: 'quiz/:quizId/report/:quizTakeId',
+        name: 'quiz-report',
+        component: () => import('@/pages/student/QuizReport.vue')
+      },
+      {
         path: 'create-quiz',
         name: 'student-create-quiz',
         component: () => import('@/pages/shared/CreateQuiz.vue')

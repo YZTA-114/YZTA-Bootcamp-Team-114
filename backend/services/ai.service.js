@@ -454,6 +454,78 @@ class AIService {
       return questions;
     }
   }
+
+  /**
+   * Quiz sonuçlarını analiz ederek rapor oluşturur
+   * @param {Object} reportData - Quiz sonuçları
+   * @returns {Promise<string>} - Oluşturulan rapor
+   */
+  async generateQuizReport(reportData) {
+    const prompt = `You are an educational assistant analyzing quiz results. Generate a detailed, personalized feedback report.
+
+INPUT DATA:
+${JSON.stringify(reportData, null, 2)}
+
+The input data includes:
+- Total questions count
+- Number of correct and incorrect answers
+- Time spent in minutes
+- Success rate percentage
+- Detailed information about correct and incorrect answers, including:
+  * Question content
+  * Selected answer
+  * Correct answer
+
+REQUIRED SECTIONS:
+1. OVERALL PERFORMANCE
+- Summarize total questions, correct/incorrect counts, and success rate
+- Comment on time management (time spent vs. question count)
+
+2. STRENGTHS (Based on correct answers)
+- Analyze patterns in correctly answered questions
+- Identify topics/concepts the student understands well
+- Provide specific examples from the correct answers
+
+3. AREAS FOR IMPROVEMENT (Based on incorrect answers)
+- Analyze patterns in incorrectly answered questions
+- Identify topics/concepts that need more attention
+- For each incorrect answer:
+  * Explain why the chosen answer was incorrect
+  * Explain why the correct answer is right
+  * Provide a learning tip specific to that concept
+
+4. PERSONALIZED RECOMMENDATIONS
+- Suggest specific study strategies based on the error patterns
+- Recommend resources or practice methods
+- Provide time management tips if needed
+
+RESPONSE FORMAT:
+- Write in Turkish
+- Use clear, encouraging language
+- Be specific and reference actual questions/answers
+- Keep paragraphs short and focused
+- Maintain a constructive, positive tone
+- Focus on improvement opportunities rather than mistakes
+
+EXAMPLE STRUCTURE (but use actual data and be more detailed):
+"[Quiz özeti ve genel performans analizi]
+
+[Güçlü yönler ve başarılı olunan konular]
+
+[Gelişim alanları ve yanlış cevaplanan sorulara özel açıklamalar]
+
+[Kişiselleştirilmiş öneriler ve sonraki adımlar]"
+
+IMPORTANT:
+- Be specific and reference actual questions from the data
+- Provide actionable feedback
+- Keep a supportive and encouraging tone
+- Focus on learning and improvement
+- Always write in Turkish`;
+
+    const response = await this.model.invoke(prompt);
+    return response;
+  }
 }
 
 module.exports = new AIService();

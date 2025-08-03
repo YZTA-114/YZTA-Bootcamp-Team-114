@@ -35,6 +35,7 @@ const quizQuestions = require("./routes/quiz/question");
 const quizTakes = require("./routes/quiz/quizTake");
 const quizResponses = require("./routes/quiz/response");
 const aiQuiz = require("./routes/quiz/aiQuiz");
+const quizReports = require("./routes/quiz/quizReport");
 const cors = require("cors");
 const app = express();
 
@@ -127,6 +128,7 @@ app.use("/api/v1/quiz-questions", quizQuestions);
 app.use("/api/v1/quiz-takes", quizTakes);
 app.use("/api/v1/quiz-responses", quizResponses);
 app.use("/api/v1/quiz/ai", aiQuiz);
+app.use("/api/v1/quiz-reports", quizReports);
 // Error handler with performance logging
 app.use(errorHandler);
 

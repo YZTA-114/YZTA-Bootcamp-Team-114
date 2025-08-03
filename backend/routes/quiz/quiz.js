@@ -4,7 +4,8 @@ const {
     getQuiz,
     createQuiz,
     updateQuiz,
-    deleteQuiz
+    deleteQuiz,
+    submitQuiz
 } = require('../../controllers/quiz/quizController');
 
 const Quiz = require('../../models/quiz/Quiz');
@@ -42,5 +43,9 @@ router
     .get(getQuiz)
     .put(authorize('teacher', 'admin'), updateQuiz)
     .delete(authorize('teacher', 'admin'), deleteQuiz);
+
+router
+    .route('/:quizTakeId/submit')
+    .post(submitQuiz);
 
 module.exports = router; 

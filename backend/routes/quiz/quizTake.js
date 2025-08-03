@@ -6,6 +6,7 @@ const {
     getMyQuizTakes,
     getQuizTake,
     createQuizTake,
+    updateQuizTake,
     deleteQuizTake
 } = require('../../controllers/quiz/quizTakeController');
 
@@ -13,11 +14,13 @@ const { protect, authorize } = require('../../middleware/auth');
 
 // Include response router
 const responseRouter = require('./response');
+const quizReportRouter = require('./quizReport');
 
 const router = express.Router({ mergeParams: true });
 
 // Re-route into response router
 router.use('/:quizTakeId/quiz-responses', responseRouter);
+router.use('/:quizTakeId/quiz-reports', quizReportRouter);
 
 router.use(protect);
 
@@ -34,6 +37,7 @@ router.route('/me').get(authorize('student'), getMyQuizTakes);
 router
     .route('/:id')
     .get(getQuizTake)
+    .put(authorize('student'), updateQuizTake)
     .delete(authorize('admin'), deleteQuizTake);
 
 module.exports = router; 

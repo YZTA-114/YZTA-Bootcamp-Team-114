@@ -7,7 +7,7 @@ export async function getQuizTakesAxios(quizId) {
 }
 
 export async function getMyQuizTakesAxios() {
-    return await api.get('quiz-takes/my-takes', {
+    return await api.get('quiz-takes/me', {
         withCredentials: true,
     });
 }
@@ -26,6 +26,12 @@ export async function createQuizTakeAxios(quizId) {
 
 export async function deleteQuizTakeAxios(id) {
     return await api.delete(`quiz-takes/${id}`, {
+        withCredentials: true,
+    });
+}
+
+export async function updateQuizTakeAxios(id, data) {
+    return await api.put(`quiz-takes/${id}`, data, {
         withCredentials: true,
     });
 } 

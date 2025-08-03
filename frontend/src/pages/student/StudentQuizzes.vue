@@ -197,20 +197,35 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="quiz in filteredQuizzes" :key="quiz.id">
+              <tr v-for="quiz in filteredQuizzesWithStatus" :key="quiz.id">
                 <td>{{ quiz?.name }}</td>
                 <td>{{ quiz?.lesson.name }}</td>
                 <td>{{ quiz?.questions.length }}</td>
                 <td>
-                  <span :class="['quiz-status', 'not_started']">
-                    Başlamadı
+                  <span :class="['quiz-status', quiz.status]">
+                    {{ getStatusText(quiz.status) }}
                   </span>
                 </td>
-                <td>{{ quiz?.result }}</td>
+                <td>{{ quiz?.result || '-' }}</td>
                 <td>{{ quiz?.startDate }}</td>
                 <td>{{ quiz?.endDate }}</td>
                 <td>
-                  <button class="quiz-action-btn">Başla</button>
+                  <div class="quiz-actions">
+                    <router-link 
+                      v-if="quiz.status !== 'completed'"
+                      :to="{ name: 'student-quiz-detail', params: { id: quiz._id } }" 
+                      class="quiz-action-btn"
+                    >
+                      Başla
+                    </router-link>
+                    <router-link 
+                      v-else
+                      :to="{ name: 'quiz-report', params: { quizId: quiz._id, quizTakeId: getQuizTakeId(quiz) } }" 
+                      class="quiz-action-btn report"
+                    >
+                      Rapor
+                    </router-link>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -248,18 +263,34 @@ const currentClassroom = computed(
   () => store.getters["classroom/getCurrentClassroom"]
 );
 const quizzes = computed(() => store.getters["quiz/getQuizzes"]);
+const quizTakes = computed(() => store.getters["quizTake/getQuizTakes"]);
+
+// Map quiz takes to quizzes to show correct status
+const quizzesWithStatus = computed(() => {
+  return quizzes.value.map(quiz => {
+    const take = quizTakes.value.find(t => t.quiz._id === quiz._id);
+    return {
+      ...quiz,
+      status: take ? take.status : 'not_started',
+      result: take ? take.result : null,
+      startDate: take ? new Date(take.startedAt).toLocaleString() : '-',
+      endDate: take ? (take.completedAt ? new Date(take.completedAt).toLocaleString() : '-') : '-'
+    };
+  });
+});
 
 const handleLogout = () => router.push("/auth/login");
 const handleProfile = () => router.push("/student/profile");
 const handleSettings = () => router.push("/student/settings");
 
-// Watch for classroom changes and fetch quizzes
+// Watch for classroom changes and fetch quizzes and quiz takes
 watch(
   currentClassroom,
   async (newClassroom) => {
     if (newClassroom?._id) {
       try {
         await store.dispatch("quiz/fetchClassroomQuizzes", newClassroom._id);
+        await store.dispatch("quizTake/fetchMyQuizTakes");
         toast.success("Quizler başarıyla yüklendi");
       } catch (err) {
         console.log(err);
@@ -276,8 +307,8 @@ const selectedLesson = ref("");
 const lessons = computed(() => [
   ...new Set(quizzes.value.map((q) => q.lesson)),
 ]);
-const filteredQuizzes = computed(() =>
-  quizzes.value.filter(
+const filteredQuizzesWithStatus = computed(() =>
+  quizzesWithStatus.value.filter(
     (q) =>
       q.name.toLowerCase().includes(search.value.toLowerCase()) &&
       (selectedLesson.value === "" || q.lesson === selectedLesson.value)
@@ -293,6 +324,26 @@ const toggleLessonDropdown = () => {
 const selectLesson = (lesson) => {
   selectedLesson.value = lesson;
   showLessonDropdown.value = false;
+};
+
+// Add getStatusText function
+const getStatusText = (status) => {
+  switch (status) {
+    case 'completed':
+      return 'Tamamlandı';
+    case 'uncompleted':
+      return 'Devam Ediyor';
+    case 'expired':
+      return 'Süresi Doldu';
+    case 'not_started':
+    default:
+      return 'Başlamadı';
+  }
+};
+
+const getQuizTakeId = (quiz) => {
+  const take = quizTakes.value.find(t => t.quiz._id === quiz._id);
+  return take ? take._id : null;
 };
 </script>
 
@@ -366,9 +417,13 @@ const selectLesson = (lesson) => {
   background: #27ae60;
   color: #fff;
 }
-.quiz-status.in_progress {
+.quiz-status.uncompleted {
   background: #f1c40f;
   color: #222;
+}
+.quiz-status.expired {
+  background: #e74c3c;
+  color: #fff;
 }
 .quiz-status.not_started {
   background: #7f8c8d;
@@ -527,6 +582,36 @@ const selectLesson = (lesson) => {
     }
     &.selected .check-icon {
       opacity: 1;
+    }
+  }
+}
+
+.quiz-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.quiz-action-btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+
+  &:hover {
+    background: #e67e22;
+    color: #fff;
+  }
+
+  &.report {
+    background: #2ecc71;
+    
+    &:hover {
+      background: #27ae60;
     }
   }
 }

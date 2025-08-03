@@ -179,4 +179,4 @@ exports.getAIStatus = asyncHandler(async (req, res, next) => {
     success: true,
     data: status
   });
-}); 
+});

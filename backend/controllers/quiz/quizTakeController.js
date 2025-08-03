@@ -142,6 +142,36 @@ exports.createQuizTake = asyncHandler(async (req, res, next) => {
     });
 });
 
+// @desc Update take
+// @route PUT /api/v1/quiz-takes/:id
+// @access Private - Only owner of the take can update it
+exports.updateQuizTake = asyncHandler(async (req, res, next) => {
+    let take = await QuizTake.findById(req.params.id);
+
+    if (!take) {
+        return next(
+            new ErrorResponse(`No quiz take found with id of ${req.params.id}`, 404)
+        );
+    }
+
+    // Make sure user owns the take or is admin
+    if (take.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(
+            new ErrorResponse(`User ${req.user.id} is not authorized to update this quiz take`, 401)
+        );
+    }
+
+    take = await QuizTake.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true
+    });
+
+    res.status(200).json({
+        success: true,
+        data: take
+    });
+});
+
 // @desc Delete take
 // @route DELETE /api/v1/takes/:id
 // @access Private - Admin only

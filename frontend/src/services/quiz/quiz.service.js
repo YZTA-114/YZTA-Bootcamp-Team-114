@@ -40,4 +40,10 @@ export async function deleteQuizAxios(id) {
     return await api.delete(`quizzes/${id}`, {
         withCredentials: true,
     });
+}
+
+export async function submitQuizAxios(quizTakeId, answers) {
+    return await api.post(`quizzes/${quizTakeId}/submit`, answers, {
+        withCredentials: true,
+    });
 } 

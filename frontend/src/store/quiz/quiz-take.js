@@ -3,7 +3,8 @@ import {
     getMyQuizTakesAxios,
     getQuizTakeByIdAxios,
     createQuizTakeAxios,
-    deleteQuizTakeAxios
+    deleteQuizTakeAxios,
+    updateQuizTakeAxios
 } from '@/services/quiz/quiz-take.service';
 
 function asyncHandler(fn, errorHandler) {
@@ -60,6 +61,15 @@ export default {
         },
         SET_ERROR(state, error) {
             state.error = error;
+        },
+        UPDATE_QUIZ_TAKE(state, quizTake) {
+            const index = state.quizTakes.findIndex(qt => qt._id === quizTake._id);
+            if (index !== -1) {
+                state.quizTakes[index] = quizTake;
+            }
+            if (state.currentQuizTake && state.currentQuizTake._id === quizTake._id) {
+                state.currentQuizTake = quizTake;
+            }
         }
     },
 
@@ -97,6 +107,7 @@ export default {
                 if (response.data && response.data.data) {
                     commit('SET_CURRENT_QUIZ_TAKE', response.data.data);
                     commit('SET_ERROR', null);
+                    return response.data.data;
                 }
             } finally {
                 commit('SET_LOADING', false);
@@ -124,6 +135,20 @@ export default {
                 await deleteQuizTakeAxios(id);
                 commit('REMOVE_QUIZ_TAKE', id);
                 commit('SET_ERROR', null);
+            } finally {
+                commit('SET_LOADING', false);
+            }
+        }, handleError),
+
+        updateQuizTake: asyncHandler(async function({ commit }, { id, status, completedAt }) {
+            commit('SET_LOADING', true);
+            try {
+                const response = await updateQuizTakeAxios(id, { status, completedAt });
+                if (response.data && response.data.data) {
+                    commit('UPDATE_QUIZ_TAKE', response.data.data);
+                    commit('SET_ERROR', null);
+                }
+                return response.data.data;
             } finally {
                 commit('SET_LOADING', false);
             }

@@ -4,10 +4,14 @@ import {
     getClassroomQuizzesAxios,
     createQuizAxios,
     updateQuizAxios,
-    deleteQuizAxios
+    deleteQuizAxios,
+    submitQuizAxios
 } from '@/services/quiz/quiz.service';
 import asyncHandler from '@/utils/async';
 import ai from './ai';
+import quizTake from './quiz-take';
+import quizResponse from './quiz-response';
+import quizReport from './quiz-report';
 
 function handleError(error) {
     console.error('Error in quiz store:', error);
@@ -20,7 +24,10 @@ function handleError(error) {
 export default {
     namespaced: true,
     modules: {
-        ai
+        ai,
+        quizTake,
+        quizResponse,
+        quizReport
     },
     
     state() {
@@ -99,6 +106,7 @@ export default {
                 if (response.data && response.data.data) {
                     commit('SET_CURRENT_QUIZ', response.data.data);
                     commit('SET_ERROR', null);
+                    return response.data.data;
                 }
             } finally {
                 commit('SET_LOADING', false);
@@ -141,6 +149,31 @@ export default {
                 commit('SET_ERROR', null);
             } finally {
                 commit('SET_LOADING', false);
+            }
+        }, handleError),
+
+        startQuiz: asyncHandler(async function({ dispatch }, { quizId }) {
+            try {
+                // Create a new quiz take
+                const quizTake = await dispatch('quizTake/createQuizTake', quizId, { root: true });
+                return quizTake;
+            } catch (error) {
+                handleError(error);
+            }
+        }, handleError),
+
+        submitQuiz: asyncHandler(async function(_, { quizTakeId, answers }) {
+            try {
+                // Transform answers to include answerOption ID instead of selectedOptionIndex
+                const transformedAnswers = answers.map(answer => ({
+                    questionId: answer.questionId,
+                    answerOption: answer.answerOption 
+                }));
+                
+                const response = await submitQuizAxios(quizTakeId, { answers: transformedAnswers });
+                return response.data.data;
+            } catch (error) {
+                handleError(error);
             }
         }, handleError)
     },

@@ -6,6 +6,10 @@ const asyncHandler = require('../../middleware/async');
 const { transaction } = require('../../middleware/transaction');
 const QuizQuestion = require('../../models/quiz/QuizQuestion');
 const QuizAnswerOption = require('../../models/quiz/QuizAnswerOption');
+const QuizTake = require('../../models/quiz/QuizTake');
+const QuizResponse = require('../../models/quiz/QuizResponse');
+const QuizReport = require('../../models/quiz/QuizReport');
+const aiService = require('../../services/ai.service');
 
 // @desc Get all quizzes
 // @route GET /api/v1/quizzes
@@ -126,6 +130,14 @@ exports.getQuiz = asyncHandler(async (req, res, next) => {
         {
             path: 'lesson',
             select: 'name'
+        },
+        {
+            path: 'questions',
+            populate: {
+                path: 'options',
+                model: 'QuizAnswerOption',
+                select: 'content isCorrect'
+            }
         }
     ]);
 
@@ -298,4 +310,153 @@ exports.deleteQuiz = asyncHandler(async (req, res, next) => {
         success: true,
         data: {}
     });
+}); 
+
+// @desc Submit a quiz with answers
+// @route POST /api/v1/quizzes/:quizTakeId/submit
+// @access Private
+exports.submitQuiz = asyncHandler(async (req, res, next) => {
+    const submitQuizTransaction = async (req, res, session) => {
+        const { quizTakeId } = req.params;
+        const { answers } = req.body;
+
+        // Find the quiz take
+        const quizTake = await QuizTake.findById(quizTakeId)
+            .populate({
+                path: 'quiz',
+                populate: {
+                    path: 'questions',
+                    populate: {
+                        path: 'options'
+                    }
+                }
+            })
+            .session(session);
+
+        if (!quizTake) {
+            throw new ErrorResponse(`No quiz take found with id of ${quizTakeId}`, 404);
+        }
+
+        // Check if user is authorized to submit this quiz take
+        if (quizTake.user.toString() !== req.user.id) {
+            throw new ErrorResponse(`User ${req.user.id} is not authorized to submit this quiz take`, 401);
+        }
+
+        // Check if quiz take is already completed
+        if (quizTake.status === 'completed') {
+            throw new ErrorResponse(`Quiz take ${quizTakeId} is already completed`, 400);
+        }
+
+        // Create quiz responses for each answer
+        const responses = await Promise.all(
+            answers.map(async (answer) => {
+                const response = await QuizResponse.create([{
+                    quizTake: quizTakeId,
+                    quizQuestion: answer.questionId,
+                    answerOption: answer.answerOption
+                }], { session });
+                return response[0]; // Return the first element since create returns an array
+            })
+        );
+
+        // Calculate time spent
+        const startTime = new Date(quizTake.startedAt);
+        const endTime = new Date();
+        const timeSpentMinutes = Math.round((endTime - startTime) / (1000 * 60));
+
+        // Calculate correct answers and collect question details
+        let correctAnswers = 0;
+        const correctQuestions = [];
+        const incorrectQuestions = [];
+
+        for (const answer of answers) {
+            const question = quizTake.quiz.questions.find(q => q._id.toString() === answer.questionId);
+            if (question) {
+                const selectedOption = question.options.find(opt => opt._id.toString() === answer.answerOption);
+                const correctOption = question.options.find(opt => opt.isCorrect);
+                
+                const questionDetail = {
+                    question: question.content,
+                    selectedAnswer: selectedOption ? selectedOption.content : 'No answer selected',
+                    correctAnswer: correctOption ? correctOption.content : 'No correct answer defined'
+                };
+
+                if (selectedOption && selectedOption.isCorrect) {
+                    correctAnswers++;
+                    correctQuestions.push(questionDetail);
+                } else {
+                    incorrectQuestions.push(questionDetail);
+                }
+            }
+        }
+
+        // Prepare report data with detailed question information
+        const reportData = {
+            totalQuestions: quizTake.quiz.questions.length,
+            answeredQuestions: answers.length,
+            correctAnswers,
+            incorrectAnswers: answers.length - correctAnswers,
+            successRate: Math.round((correctAnswers / answers.length) * 100),
+            timeSpentMinutes,
+            correctQuestions,
+            incorrectQuestions
+        };
+
+        // Generate AI report with detailed question analysis
+        const aiReport = await aiService.generateQuizReport(reportData);
+
+        // Create quiz report
+        const quizReport = await QuizReport.create([{
+            quizTake: quizTakeId,
+            totalQuestions: reportData.totalQuestions,
+            correctAnswers: reportData.correctAnswers,
+            aiReport: aiReport.content,
+            timeSpentMinutes: reportData.timeSpentMinutes
+        }], { session });
+
+        // Update quiz take status and add responses
+        quizTake.status = 'completed';
+        quizTake.completedAt = endTime;
+        quizTake.responses = responses.map(r => r._id);
+        await quizTake.save({ session });
+
+        // Fetch complete quiz take with populated data
+        const populatedQuizTake = await QuizTake.findById(quizTakeId)
+            .populate({
+                path: 'responses',
+                populate: [
+                    {
+                        path: 'quizQuestion',
+                        model: 'QuizQuestion',
+                        populate: {
+                            path: 'options',
+                            model: 'QuizAnswerOption'
+                        }
+                    },
+                    {
+                        path: 'answerOption',
+                        model: 'QuizAnswerOption'
+                    }
+                ]
+            })
+            .session(session);
+
+        return {
+            quizTake: populatedQuizTake,
+            responses,
+            report: quizReport[0] // Get first element since create returns an array
+        };
+    };
+
+    try {
+        // Execute with transaction
+        const result = await transaction(submitQuizTransaction)(req, res, next);
+        
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (err) {
+        next(err);
+    }
 }); 
