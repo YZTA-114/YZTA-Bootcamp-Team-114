@@ -270,6 +270,7 @@
 
   </details>
 
+  
   <details>
     <summary><h1>Sprint 2</h1></summary>
 
@@ -385,6 +386,135 @@
     * TTS (Text-to-Speech) models were not integrated in this sprint. Work on this feature will be carried out in the third sprint to enable visually impaired users to access textual content audibly.
     * UI design updates are planned. Within this scope, a more professional and cohesive visual structure will be established.
     * A UI/UX review will be conducted to evaluate the overall design language, component consistency, and user experience of the application. Necessary improvements will be made based on the findings.
+  </details>
+  <details>
+    <summary><h1>Sprint 3</h1></summary>
+  <details>
+    <summary><h3>Sprint 3 - Web Screenshots</h3></summary>
+  <table style="width: 100%;">
+  <tr>
+      <td colspan="4" style="text-align: center;"><h2>Home Page</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 100%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/main/home-page.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align: center;"><h2>Authentication pages</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 100%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/main/login-page.png" style="max-width: 100%; height: auto;"></td>
+      <td style="width: 100%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/main/register-page1.png" style="max-width: 100%; height: auto;"></td>
+       <td style="width: 100%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/main/register-page2.png" style="max-width: 100%; height: auto;"></td>
+       <td style="width: 100%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/main/register-page3.png" style="max-width: 100%; height: auto;"></td>
+       <td style="width: 100%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/main/register-page4.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align: center;"><h2>Student Dashboard</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/student/student-dash-page.png.png" style="max-width: 100%; height: auto;"></td>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/student/student-document-page.png" style="max-width: 100%; height: auto;"></td>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/student/student-lecture-page.png" style="max-width: 100%; height: auto;"></td>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/student/student-profile-page.png" style="max-width: 100%; height: auto;"></td>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/student/student-quiz-page.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align: center;"><h2>Student Dashboard - Documents</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/student/student-document-page.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align: center;"><h2>Student Quiz Page</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 25%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/student/student-quiz-page.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align: center;"><h2>Teacher Dashboard</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/teacher/teacher-dash.png" style="max-width: 100%; height: auto;"></td>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/teacher/teacher-lecture-page.png" style="max-width: 100%; height: auto;"></td>
+    <tr>
+      <td colspan="4" style="text-align: center;"><h2>Teacher Dashboard - Classroom Creation</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 50%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/teacher/clasroom-creation.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align: center;"><h2>Teacher Dashboard - Quiz Creation</h2></td>
+    </tr>
+    <tr>
+      <td style="width: 25%;"><img src="./readmeFiles/sprints/sprintThree/screenshots/teacher/teacher-quiz-creation.png" style="max-width: 100%; height: auto;"></td>
+    </tr>
+  </table>
+  </details>   
+
+  <details>
+  <summary><h3>Sprint 3 - Project Management</h3></summary>
+  <img src="./readmeFiles/sprints/sprintThree/management/notion_1.png" style="max-width: 100%; height: auto;">
+  <img src="./readmeFiles/sprints/sprintThree/management/notion_2.png" style="max-width: 100%; height: auto;">
+  <img src="./readmeFiles/sprints/sprintThree/management/notion_3.png" style="max-width: 100%; height: auto;">
+  <img src="./readmeFiles/sprints/sprintThree/management/notion_4.png" style="max-width: 100%; height: auto;">
+  <img src="./readmeFiles/sprints/sprintThree/management/notion_5.png" style="max-width: 100%; height: auto;">
+  <img src="./readmeFiles/sprints/sprintThree/management/notion_6.png" style="max-width: 100%; height: auto;">
+  </details>
+
+  <details>
+    <summary><h3>Sprint 3 - Burndown Chart</h3></summary>
+    <img src="./readmeFiles/sprints/sprintThree/stories.png" style="max-width: 100%; height: auto;">
+    <img src="./readmeFiles/sprints/sprintThree/burndown.png" style="max-width: 100%; height: auto;">
+  </details>
+
+
+  - **Sprint Notes**:
+    - We made extensive improvements to page designs. To enhance the user experience, we reorganized the interface elements and created a more modern look.
+    - We successfully integrated the Cloudinary API, which made our visual content management more professional and optimized the storage and processing of media files.
+    - We incorporated the Gemini API into our system. Thanks to this artificial intelligence API, we brought advanced natural language processing capabilities to our application and improved user interactions.
+    - We tested the impact of API integrations on system performance and verified that it works smoothly
+    - We decided to abandon the AI voice-over feature in order to focus the project scope and concentrate on more critical features.
+    - With the Gemini API integration, we strengthened the AI capabilities of our app and were able to offer more valuable services to users.
+    - We created a professional presentation using the Canva platform and created visual presentations that would effectively convey the features, technical details and development process of our project.
+    - In the presentation materials, we discussed our project goals, technical achievements and future plans in detail.
+    During this sprint, we made significant progress in terms of both technical improvements and presentation preparations
+  - **Expected point completion within Sprint**: 89 points
+  - **Point Completion Logic**: 
+    - **Story Point Estimation**: Using Fibonacci sequence (1, 2, 3, 5, 8, 13, 21) for story point estimation
+    - **Point Assignment Criteria**:
+      - 1 point: Very simple tasks (5-15 minutes)
+      - 2 points: Simple tasks (15-30 minutes)
+      - 3 points: Small tasks (30-60 minutes)
+      - 5 points: Medium tasks (1-2 hours)
+      - 8 points: Large tasks (2-4 hours)
+      - 13 points: Very large tasks (4-8 hours)
+      - 21 points: Epic tasks (8+ hours, should be broken down)
+    - **Completion Criteria**: A story is considered complete when:
+      - All acceptance criteria are met
+      - Code is reviewed and approved
+      - Feature is tested and functional
+      - Documentation is updated
+      - No critical bugs remain
+  - **Daily Scrum**: [Sprint 3 Daily Scrum](./readmeFiles/sprints/sprintThree/dailyScrum/)
+  - **Product Backlog URL:** [Click for Backlog (Notion)](https://charmed-quart-e4d.notion.site/244b0bc6365b808fab62dd0137f7d6a9?v=244b0bc6365b81f69ae6000cbea646d6&source=copy_link)
+  - **Sprint Review:**
+
+    * Throughout this sprint, we demonstrated excellent teamwork as a group. Every team member fully completed their assigned tasks, and we experienced no coordination issues within the group.
+
+    * We maintained an intensive work pace to make our product usable. A systematic approach was adopted in line with the determined goals, and all tasks were completed on time.
+    * We implemented comprehensive improvements to the user interface. Significant changes were made on the frontend side that enhanced user experience, making the interface more user-friendly.
+    * We made significant progress in backend development. We successfully completed artificial intelligence integrations, enhancing the system's functionality and adding more intelligent features.
+    * The integration of AI modules with the system was accomplished seamlessly. Through these integrations, our application became capable of offering more advanced features.
+    * We paid careful attention to code quality during the development process and established a sustainable software architecture. This approach created a solid foundation for future developments.
+    * We successfully coordinated between frontend and backend. API integrations worked smoothly, and system integrity was maintained.
+    * We solved the technical challenges we encountered during the sprint as a team. Our problem-solving approach was proactive, and we were able to generate quick solutions when faced with obstacles.
+    * Our team communication was very effective throughout the sprint. Through regular information sharing, everyone stayed informed about the overall project status and supported each other when needed.
+    * At the end of the final sprint, we delivered a usable, fully functional product. We have created the first MVP of our product.
+
+  - **Sprint Review Participants:** `Muharrem Sait Çoktaş`, `Muhammet Emin Bülbül`, `Süleyman Atman`, `İkbal Gençarslan`, `Ayten Adiyan`
+  - **Sprint Retrospective:**
+    * Starting from the third sprint, evaluations of all sprints were conducted, and plans were made in line with the application's future goals. The team gathered together on the Slack platform, prepared the presentation video together, and addressed our other shortcomings.
+    * We conducted comprehensive discussions regarding the future enhancements and developments planned for our product, outlining the essential improvements that need to be addressed.
   </details>
   </body>
   </html>
