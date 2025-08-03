@@ -7,9 +7,9 @@ export const teacherNavigation = [
     icon: 'ri-dashboard-line'
   },
   {
-    id: 'courses',
-    label: 'My Courses',
-    path: '/teacher/courses',
+    id: 'lessons',
+    label: 'Derslerim',
+    path: '/teacher/lessons',
     icon: 'ri-book-line'
   },
   {
@@ -19,34 +19,16 @@ export const teacherNavigation = [
     icon: 'ri-add-circle-line'
   },
   {
-    id: 'assignments',
-    label: 'Assignments',
-    path: '/teacher/assignments',
+    id: 'quizzes',
+    label: 'Quizlerim',
+    path: '/teacher/quizzes',
     icon: 'ri-task-line'
   },
   {
     id: 'students',
-    label: 'Students',
+    label: 'Öğrencilerim',
     path: '/teacher/students',
     icon: 'ri-group-line'
-  },
-  {
-    id: 'grades',
-    label: 'Grades',
-    path: '/teacher/grades',
-    icon: 'ri-bar-chart-line'
-  },
-  {
-    id: 'calendar',
-    label: 'Calendar',
-    path: '/teacher/calendar',
-    icon: 'ri-calendar-line'
-  },
-  {
-    id: 'analytics',
-    label: 'Analytics',
-    path: '/teacher/analytics',
-    icon: 'ri-analytics-line'
   },
   {
     id: 'profile',

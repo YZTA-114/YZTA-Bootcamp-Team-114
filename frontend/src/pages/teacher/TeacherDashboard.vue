@@ -22,8 +22,6 @@
             <h1 class="welcome-title">Hoşgeldin {{ userName }}</h1>
             <p class="welcome-subtitle">Bugün öğretmenlik görevlerin neler.</p>
             <div class="motivation-quote">"Eğitim, geleceği şekillendiren en güçlü araçtır."</div>
-            <h1 class="welcome-title">Welcome back, {{ user?.name || 'Teacher' }}!</h1>
-            <p class="welcome-subtitle">Here's your teaching overview for today.</p>
           </div>
           <div class="welcome-actions">
             <button class="btn btn-primary" @click="goToCourses">
@@ -161,44 +159,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-          <h2 class="section-title">Hızlı İşlemler</h2>
-          <div class="actions-grid">
-            <button class="action-card" @click="createAssignment">
-              <div class="action-icon">
-                <ri-add-line />
-              </div>
-              <h3 class="action-title">Ödev Oluştur</h3>
-              <p class="action-description">Derslerine yeni ödev ekle</p>
-            </button>
-
-            <button class="action-card" @click="scheduleClass">
-              <div class="action-icon">
-                <ri-calendar-line />
-              </div>
-              <h3 class="action-title">Ders Planla</h3>
-              <p class="action-description">Yeni ders oturumu planla</p>
-            </button>
-
-            <button class="action-card" @click="gradeAssignments">
-              <div class="action-icon">
-                <ri-check-line />
-              </div>
-              <h3 class="action-title">Ödevleri Değerlendir</h3>
-              <p class="action-description">Öğrenci ödevlerini incele ve puanla</p>
-            </button>
-
-            <button class="action-card" @click="viewAnalytics">
-              <div class="action-icon">
-                <ri-analytics-line />
-              </div>
-              <h3 class="action-title">Analitikleri Görüntüle</h3>
-              <p class="action-description">Ders performans metriklerini kontrol et</p>
-            </button>
-          </div>
-        </div>
       </div>
     </template>
   </DashboardLayout>
@@ -321,22 +281,6 @@ const gradeSubmission = (submission) => {
 
 const startClass = (classItem) => {
   router.push(`/teacher/classes/${classItem.id}`)
-}
-
-const createAssignment = () => {
-  router.push('/teacher/assignments/create')
-}
-
-const scheduleClass = () => {
-  router.push('/teacher/classes/schedule')
-}
-
-const gradeAssignments = () => {
-  router.push('/teacher/assignments/grade')
-}
-
-const viewAnalytics = () => {
-  router.push('/teacher/analytics')
 }
 
 // Lifecycle
