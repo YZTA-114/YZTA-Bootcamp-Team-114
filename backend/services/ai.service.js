@@ -49,7 +49,7 @@ class AIService {
                       content: { type: "string" },
                       explanation: { type: "string" }
                     },
-                    required: ["isCorrect", "content"]
+                    required: ["isCorrect", "content", "explanation"]
                   }
                 },
                 type: { 
@@ -70,7 +70,7 @@ class AIService {
       function_schema: this.questionsJsonSchema
     });
 
-    // Create prompt template
+        // Create prompt template
     this.promptTemplate = new PromptTemplate({
       template: `Analyze the following text and extract questions and answers. The text may be from an exam, quiz, or test content.
     
@@ -81,7 +81,10 @@ class AIService {
     - A "questions" array containing question objects
     - Each question object should have:
       - "question": the question text
-      - "options": array of option objects (each with "isCorrect", "content", and optional "explanation")
+      - "options": array of option objects with:
+        - "isCorrect": boolean indicating if this is the correct answer
+        - "content": the text of the option
+        - "explanation": REQUIRED detailed explanation of why this option is correct or incorrect
       - "type": either "multiple_choice", "true_false", or "open_ended"
     
     Example format:
@@ -93,11 +96,12 @@ class AIService {
             {{
               "isCorrect": true,
               "content": "Paris",
-              "explanation": "Paris is the capital and largest city of France"
+              "explanation": "Paris is indeed the capital of France. It has been the country's capital since 987 CE and is the largest city in France, serving as its political, economic, and cultural center."
             }},
             {{
               "isCorrect": false,
-              "content": "London"
+              "content": "London",
+              "explanation": "London is incorrect as it is the capital of the United Kingdom, not France. While both are major European capitals, they are in different countries."
             }}
           ],
           "type": "multiple_choice"
@@ -111,7 +115,10 @@ class AIService {
     3. DO NOT add 'json' or any other text at the beginning
     4. DO NOT add any comments or explanations
     5. The response must be valid JSON
-
+    6. EVERY option MUST include a detailed explanation
+    7. Explanations should be educational and help students understand why an answer is correct or incorrect
+    8. For true/false questions, provide thorough explanations for both true and false options
+    
     If no questions are found, return an empty array: {{"questions": []}}`,
       inputVariables: ["text"]
     });
@@ -124,7 +131,7 @@ class AIService {
           z.object({
             isCorrect: z.boolean(),
             content: z.string(),
-            explanation: z.string().optional()
+            explanation: z.string()
           })
         ).optional(),
         type: z.enum(['multiple_choice', 'true_false', 'open_ended'])
@@ -424,7 +431,7 @@ class AIService {
               return {
                 content: (opt.content || '').trim(),
                 isCorrect: Boolean(opt.isCorrect),
-                explanation: opt.explanation ? opt.explanation.trim() : undefined
+                explanation: (opt.explanation || 'No explanation provided').trim()
               };
             });
           } else {

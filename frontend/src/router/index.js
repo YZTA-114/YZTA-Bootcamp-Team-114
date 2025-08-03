@@ -82,7 +82,7 @@ const routes = [
       {
         path: 'lessons',
         name: 'student-lessons',
-        component: () => import('@/pages/student/StudentCourses.vue')
+        component: () => import('@/pages/student/StudentLessons.vue')
       },
       {
         path: 'quizzes',
@@ -123,33 +123,11 @@ const routes = [
         name: 'teacher-create-quiz',
         component: () => import('@/pages/shared/CreateQuiz.vue')
       },
-      /* {
-        path: 'courses',
-        name: 'teacher-courses',
-        component: () => import('@/pages/teacher/TeacherCourses.vue')
-      },
-      /* 
       {
-        path: 'assignments',
-        name: 'teacher-assignments',
-        component: () => import('@/pages/teacher/TeacherAssignments.vue')
+        path: 'lessons',
+        name: 'teacher-lessons',
+        component: () => import('@/pages/teacher/TeacherLessons.vue')
       },
-      {
-        path: 'grades',
-        name: 'teacher-grades',
-        component: () => import('@/pages/teacher/TeacherGrades.vue')
-      },
-      {
-        path: 'calendar',
-        name: 'teacher-calendar',
-        component: () => import('@/pages/teacher/TeacherCalendar.vue')
-      },
-      {
-        path: 'analytics',
-        name: 'teacher-analytics',
-        component: () => import('@/pages/teacher/TeacherAnalytics.vue')
-      },
-      */
       {
         path: 'profile',
         name: 'teacher-profile',

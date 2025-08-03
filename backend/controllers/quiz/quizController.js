@@ -3,7 +3,9 @@ const Quiz = require('../../models/quiz/Quiz');
 const Lesson = require('../../models/classroom/Lesson');
 const ClassroomParticipation = require('../../models/classroom/ClassroomParticipation');
 const asyncHandler = require('../../middleware/async');
-const User = require('../../models/user/User');
+const { transaction } = require('../../middleware/transaction');
+const QuizQuestion = require('../../models/quiz/QuizQuestion');
+const QuizAnswerOption = require('../../models/quiz/QuizAnswerOption');
 
 // @desc Get all quizzes
 // @route GET /api/v1/quizzes
@@ -41,6 +43,13 @@ exports.getQuizzes = asyncHandler(async (req, res, next) => {
                 {
                     path: 'lesson',
                     select: 'name'
+                },
+                {
+                    path: 'questions',
+                    populate: {
+                        path: 'options',
+                        model: 'QuizAnswerOption'
+                    }
                 }
             ]);
 
@@ -158,30 +167,80 @@ exports.getQuiz = asyncHandler(async (req, res, next) => {
 // @route POST /api/v1/lessons/:lessonId/quizzes
 // @access Private
 exports.createQuiz = asyncHandler(async (req, res, next) => {
-    req.body.lesson = req.params.lessonId;
-    req.body.createdBy = req.user.id;
+    const createQuizTransaction = async (req, res, session) => {
+        const lessonId = req.params.lessonId;
+        const { name, description, questions, timeLimit } = req.body;
+        console.log("questions", questions);
+        // Check if lesson exists
+        const lesson = await Lesson.findById(lessonId).session(session);
+        if (!lesson) {
+            throw new ErrorResponse(`No lesson found with id of ${lessonId}`, 404);
+        }
 
-    // Check if teacher is owner of the classroom of the lesson
-    const lesson = await Lesson.findById(req.params.lessonId);
-    if (!lesson) {
-        return next(
-            new ErrorResponse(`No lesson found with id of ${req.params.lessonId}`, 404)
-        );
-    }
-    const isOwner = lesson.owner.toString() === req.user.id;
+        // Create quiz
+        const quiz = await Quiz.create([{
+            name,
+            description,
+            lesson: lessonId,
+            createdBy: req.user.id,
+            timeLimit
+        }], { session });
 
-    if(!isOwner && req.user.role !== 'admin') {
-        return next(
-            new ErrorResponse(`User ${req.user.id} is not authorized to create a quiz in this lesson`, 401)
-        );
-    }
+        const createdQuiz = quiz[0]; // Create returns an array
 
-    const quiz = await Quiz.create(req.body);
+        // Create questions and answer options
+        const createdQuestions = [];
+        for (const questionData of questions) {
+            // Create question
+            const [question] = await QuizQuestion.create([{
+                quiz: createdQuiz._id,
+                content: questionData.question,
+                type: 'multiple_choice', // Default to multiple choice
+                points: 1 // Default points
+            }], { session });
 
-    res.status(201).json({
-        success: true,
-        data: quiz
-    });
+            // Create answer options
+            const answerOptions = await Promise.all(questionData.options.map(async (optionData) => {
+                console.log(optionData);
+                const [option] = await QuizAnswerOption.create([{
+                    question: question._id,
+                    content: optionData.content,
+                    isCorrect: optionData.isCorrect,
+                    explanation: optionData.explanation, // Add explanation field
+                }], { session });
+                return option;
+            }));
+
+            question.options = answerOptions.map(opt => opt._id);
+            await question.save({ session });
+            createdQuestions.push(question);
+        }
+
+        // Add questions to quiz
+        createdQuiz.questions = createdQuestions.map(q => q._id);
+        await createdQuiz.save({ session });
+
+        // Fetch complete quiz with populated data
+        const populatedQuiz = await Quiz.findById(createdQuiz._id)
+            .populate({
+                path: 'questions',
+                populate: {
+                    path: 'options',
+                    model: 'QuizAnswerOption'
+                }
+            })
+            .populate('createdBy', 'email role')
+            .populate('lesson', 'name')
+            .session(session);
+
+        res.status(201).json({
+            success: true,
+            data: populatedQuiz
+        });
+    };
+
+    // Execute with transaction
+    await transaction(createQuizTransaction)(req, res, next);
 });
 
 // @desc Update quiz

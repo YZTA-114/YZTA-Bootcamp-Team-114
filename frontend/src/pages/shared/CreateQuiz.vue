@@ -23,7 +23,7 @@
         </div>
 
         <div class="quiz-form-container">
-          <form @submit.prevent="createQuiz" class="quiz-form">
+          <form @submit.prevent="handleSubmit" class="quiz-form">
             <!-- File Upload Section -->
             <div class="form-section">
               <h2>Quiz Soruları</h2>
@@ -157,18 +157,28 @@
               </button>
               <button type="submit" class="btn-primary" :disabled="!isFormValid || isProcessing">
                 <span v-if="isProcessing" class="loading-spinner"></span>
-                {{ isProcessing ? 'İşleniyor...' : 'Quiz Oluştur' }}
+                {{ isProcessing ? 'İşleniyor...' : 'Soruları Çıkar' }}
               </button>
             </div>
           </form>
         </div>
+
+        <!-- Quiz Preview Modal -->
+        <QuizPreview 
+          v-if="showPreview"
+          :show="showPreview"
+          :extracted-data="extractedData"
+          :is-loading="isCreatingQuiz"
+          @close="closePreview"
+          @confirm="createQuiz"
+        />
       </div>
     </template>
   </DashboardLayout>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useToast } from 'vue-toastification'
@@ -176,6 +186,7 @@ import DashboardLayout from '@/layout/dashboard/DashboardLayout.vue'
 import DashboardNav from '@/components/dashboard/DashboardNav.vue'
 import ClassroomDropdown from '@/components/dashboard/ClassroomDropdown.vue'
 import { useNavigation } from '@/composables/useNavigation'
+import QuizPreview from '@/components/quiz/QuizPreview.vue'
 
 const toast = useToast()
 const store = useStore()
@@ -200,15 +211,8 @@ const fileInput = ref(null)
 
 // Lesson selection
 const selectedLesson = ref(null)
-const showLessonDropdown = ref(false)
-const classroomLessons = ref([
-  { id: 1, name: 'Matematik' },
-  { id: 2, name: 'Fizik' },
-  { id: 3, name: 'Kimya' },
-  { id: 4, name: 'Biyoloji' },
-  { id: 5, name: 'Türkçe' },
-  { id: 6, name: 'İngilizce' }
-])
+const showLessonDropdown = ref(false);
+const classroomLessons = computed(() => store.getters['lesson/getLessons'])
 
 // Form data
 const quizForm = ref({
@@ -229,6 +233,11 @@ const isFormValid = computed(() => {
          quizForm.value.title.trim().length > 0 &&
          selectedLesson.value
 })
+
+// Preview state
+const showPreview = ref(false)
+const isCreatingQuiz = ref(false)
+const extractedData = computed(() => store.getters['ai/getExtractedQuestions'])
 
 // Methods
 const handleLogout = () => {
@@ -310,8 +319,10 @@ const selectLesson = (lesson) => {
   showLessonDropdown.value = false
 }
 
-// Form submission
-const createQuiz = async () => {
+// Handle form submission to extract questions
+const handleSubmit = async (event) => {
+  event.preventDefault()
+  
   if (!isFormValid.value) {
     toast.error('Lütfen tüm gerekli alanları doldurun.')
     return
@@ -329,22 +340,7 @@ const createQuiz = async () => {
     const result = await store.dispatch('ai/extractQuestionsFromFile', uploadedFile.value)
     
     if (result && result.questions && result.questions.length > 0) {
-      // Log extracted questions for testing purposes
-      console.log('=== EXTRACTED QUESTIONS ===')
-      console.log('File Info:', {
-        filename: result.filename,
-        fileType: result.fileType,
-        totalQuestions: result.totalQuestions
-      })
-      console.log('Extracted Text:', result.extractedText)
-      console.log('Questions:', result.questions)
-      console.log('=== END EXTRACTED QUESTIONS ===')
-      
-      toast.success(`Başarıyla ${result.questions.length} soru çıkarıldı! Konsolu kontrol edin.`)
-      
-      // For testing purposes, we're not creating the quiz in database
-      // Just showing the success message and staying on the page
-      
+      showPreview.value = true
     } else {
       toast.warning('Dosyadan herhangi bir soru çıkarılamadı. Lütfen dosyanın soru içerdiğinden emin olun.')
     }
@@ -361,10 +357,68 @@ const createQuiz = async () => {
       toast.error('Dosya işlenirken bir hata oluştu. Lütfen tekrar deneyin.')
     }
     
-    // Also log the full error for debugging
     console.error('Full error details:', error)
   } finally {
     isLoading.value = false
+  }
+}
+
+// Close preview modal
+const closePreview = () => {
+  showPreview.value = false
+}
+
+  // Create quiz with extracted questions
+const createQuiz = async () => {
+  if (!extractedData.value || !extractedData.value.length) {
+    toast.error('Soru verisi bulunamadı.')
+    return
+  }
+
+  isCreatingQuiz.value = true
+
+  try {
+    // Process questions to ensure they have explanations
+    const processedQuestions = extractedData.value.map(question => {
+      // Ensure each option has an explanation
+      const processedOptions = question.options.map(option => ({
+        content: option.content,
+        isCorrect: option.isCorrect,
+        explanation: option.explanation || 'No explanation provided' // Ensure explanation exists
+      }))
+
+      return {
+        ...question,
+        options: processedOptions
+      }
+    })
+
+    // Prepare quiz data
+    const quizData = {
+      name: quizForm.value.title,
+      description: quizForm.value.description,
+      questions: processedQuestions,
+      timeLimit: 10,
+    }
+
+    // Create quiz in database with correct parameter structure
+    const response = await store.dispatch('quiz/createQuiz', {
+      lessonId: selectedLesson.value._id,
+      quizData
+    })
+
+    if (response) {
+      toast.success('Quiz başarıyla oluşturuldu!')
+      // Redirect to appropriate page based on user role
+      const route = userRole.value === 'teacher' ? '/teacher/quizzes' : '/student/quizzes'
+      router.push(route)
+    }
+  } catch (error) {
+    console.error('Quiz creation error:', error)
+    toast.error('Quiz oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.')
+  } finally {
+    isCreatingQuiz.value = false
+    showPreview.value = false
   }
 }
 
@@ -372,6 +426,22 @@ const goBack = () => {
   const route = userRole.value === 'teacher' ? '/teacher/dashboard' : '/student/quizzes'
   router.push(route)
 }
+
+const handleClassroomChange = async (classroom) => {
+  if (classroom) {
+   
+      await store.dispatch('lesson/fetchClassroomLessons', classroom._id).then(() => {
+      }).catch((err) => {
+        toast.error(err.message || 'Dersler yüklenirken bir hata oluştu')
+      })
+  }
+}
+
+watch(selectedClassroom, (newVal) => {
+  if (newVal) {
+    handleClassroomChange(newVal);
+  }
+});
 </script>
 
 <style lang="scss" scoped>

@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const LessonSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'Please add a name']
+        required: [true, 'Please add a name'],
+        unique: true
     },
     classroom: {
         type: mongoose.Schema.Types.ObjectId,

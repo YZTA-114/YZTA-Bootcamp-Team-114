@@ -35,7 +35,7 @@ router
         ]),
         getQuizzes
     )
-    .post(authorize('teacher', 'admin'), createQuiz);
+    .post(createQuiz);
 
 router
     .route('/:id')

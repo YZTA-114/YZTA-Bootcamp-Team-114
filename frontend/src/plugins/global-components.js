@@ -86,7 +86,8 @@ import {
   RiFunctionLine,
   RiAtomLine,
   RiMicLine,
-  RiAddCircleLine
+  RiAddCircleLine,
+  RiArrowDownSFill
 } from "@remixicon/vue";
 
 
@@ -178,7 +179,9 @@ const remixIcons = [
   { name: "ri-code-line", component: RiCodeLine },
   { name: "ri-function-line", component: RiFunctionLine },
   { name: "ri-atom-line", component: RiAtomLine },
-  { name: "ri-mic-line", component: RiMicLine }
+  { name: "ri-mic-line", component: RiMicLine },
+  { name: "ri-arrow-down-s-line", component: RiArrowDownSLine },
+  { name: "ri-arrow-down-s-fill", component: RiArrowDownSFill }
 ];
 
 export default {

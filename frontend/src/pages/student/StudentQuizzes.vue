@@ -10,7 +10,7 @@
       <span>Quizler</span>
     </template>
     <template #sidebar-classroom-dropdown>
-              <ClassroomDropdown />
+      <ClassroomDropdown />
     </template>
     <template #sidebar-nav>
       <DashboardNav :nav-items="navItems" :collapsed="isSidebarCollapsed" />
@@ -143,7 +143,7 @@
                 >
                   <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18" />
                 </svg>
-                <span class="filter-text">{{ statusLabel }}</span>
+                <span class="filter-text">Status Label</span>
               </div>
               <svg
                 class="dropdown-arrow"
@@ -202,24 +202,15 @@
                 <td>{{ quiz?.lesson.name }}</td>
                 <td>{{ quiz?.questions.length }}</td>
                 <td>
-                  <span :class="['quiz-status', quiz.status]">
-                    {{ statusText(quiz.status) }}
+                  <span :class="['quiz-status', 'not_started']">
+                    Başlamadı
                   </span>
                 </td>
-                <td>{{ quiz.result }}</td>
-                <td>{{ quiz.startDate }}</td>
-                <td>{{ quiz.endDate }}</td>
+                <td>{{ quiz?.result }}</td>
+                <td>{{ quiz?.startDate }}</td>
+                <td>{{ quiz?.endDate }}</td>
                 <td>
-                  <button class="quiz-action-btn">Detay</button>
-                  <button
-                    v-if="
-                      quiz.status === 'not_started' ||
-                      quiz.status === 'in_progress'
-                    "
-                    class="quiz-action-btn"
-                  >
-                    Başla
-                  </button>
+                  <button class="quiz-action-btn">Başla</button>
                 </td>
               </tr>
             </tbody>
@@ -238,7 +229,7 @@ import DashboardNav from "@/components/dashboard/DashboardNav.vue";
 import { useStore } from "vuex";
 import { useToast } from "vue-toastification";
 import { useNavigation } from "@/composables/useNavigation";
-import ClassroomDropdown from '@/components/dashboard/ClassroomDropdown.vue';
+import ClassroomDropdown from "@/components/dashboard/ClassroomDropdown.vue";
 
 const toast = useToast();
 const store = useStore();
@@ -247,13 +238,15 @@ const router = useRouter();
 const currentPage = ref("Quizlerim");
 const notificationCount = ref(3);
 
-const user = computed(() => store.getters['auth/getUser']);
-const userRole = computed(() => user.value?.role || 'student');
+const user = computed(() => store.getters["auth/getUser"]);
+const userRole = computed(() => user.value?.role || "student");
 
 // Navigation
 const { navItems, isSidebarCollapsed } = useNavigation(userRole);
 
-const currentClassroom = computed(() => store.getters["classroom/getCurrentClassroom"]);
+const currentClassroom = computed(
+  () => store.getters["classroom/getCurrentClassroom"]
+);
 const quizzes = computed(() => store.getters["quiz/getQuizzes"]);
 
 const handleLogout = () => router.push("/auth/login");
@@ -261,17 +254,21 @@ const handleProfile = () => router.push("/student/profile");
 const handleSettings = () => router.push("/student/settings");
 
 // Watch for classroom changes and fetch quizzes
-watch(currentClassroom, async (newClassroom) => {
-  if (newClassroom?._id) {
-    try {
-      await store.dispatch("quiz/fetchClassroomQuizzes", newClassroom._id);
-      toast.success("Quizler başarıyla yüklendi");
-    } catch (err) {
-      console.log(err);
-      toast.error(err.message);
+watch(
+  currentClassroom,
+  async (newClassroom) => {
+    if (newClassroom?._id) {
+      try {
+        await store.dispatch("quiz/fetchClassroomQuizzes", newClassroom._id);
+        toast.success("Quizler başarıyla yüklendi");
+      } catch (err) {
+        console.log(err);
+        toast.error(err.message);
+      }
     }
-  }
-}, { immediate: true });
+  },
+  { immediate: true }
+);
 
 const search = ref("");
 const selectedLesson = ref("");

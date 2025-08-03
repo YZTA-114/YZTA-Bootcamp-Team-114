@@ -14,6 +14,17 @@ const QuizQuestionSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+
+// Create options virtual field
+QuizQuestionSchema.virtual('options', {
+    ref: 'QuizAnswerOption',
+    localField: '_id',
+    foreignField: 'question',
+    justOne: false
 });
 
 module.exports = mongoose.model("QuizQuestion", QuizQuestionSchema);

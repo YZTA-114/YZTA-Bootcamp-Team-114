@@ -8,7 +8,7 @@ const QuizAnswerOptionSchema = new mongoose.Schema({
     },
     explanation: {
         type: String,
-        required: [true, "Please add an explanation"]
+        required: false
     },
     isCorrect: {
         type: Boolean,
